@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Locomotion · performans bataryası</title>
+<style>
+  :root{
+    --ink:#12161C; --ink2:#1A202A; --ink3:#232B36;
+    --ivory:#ECE7DC; --copper:#C9855A; --steel:#8CA3B8;
+    --dim:#5F6E7C; --danger:#8A2F2F; --line:#2A3340;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%}
+  body{background:var(--ink);color:var(--ivory);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    overflow:hidden;touch-action:manipulation}
+  .stage{position:absolute;inset:0;display:none;flex-direction:column;padding:24px;overflow-y:auto}
+  .stage.active{display:flex}
+  .eyebrow{font-size:12px;letter-spacing:3px;color:var(--copper);text-transform:uppercase}
+  .sub{font-size:13px;color:var(--steel)}
+  h1{font-size:32px;font-weight:500;margin:6px 0 2px}
+  .ruler{display:flex;align-items:flex-end;height:22px;margin:18px 0}
+  .ruler i{flex:1;border-left:2px solid var(--ink3);height:10px}
+  .ruler i.major{height:20px;border-left-color:var(--dim)}
+  .ruler i.major.done{border-left-color:var(--copper)}
+  button{font:inherit;color:var(--ivory);background:transparent;
+    border:1px solid var(--dim);border-radius:10px;padding:14px 18px;
+    font-size:15px;cursor:pointer;width:100%}
+  button.primary{border-color:var(--copper);color:var(--copper);font-weight:500}
+  button:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
+  button:active{transform:scale(.985)}
+  .btnrow{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:20px}
+  input[type=text],select{font:inherit;font-size:15px;color:var(--ivory);
+    background:var(--ink2);border:1px solid var(--ink3);border-radius:10px;
+    padding:12px 14px;width:100%}
+  label{font-size:12px;color:var(--steel);display:block;margin:16px 0 6px}
+  .rules{margin-top:16px;display:flex;flex-direction:column;gap:9px}
+  .rules p{font-size:14px;line-height:1.5}
+  .rules p b{color:var(--copper);font-weight:500}
+
+  /* hub */
+  .gamelist{display:flex;flex-direction:column;gap:10px;margin-top:20px}
+  .gamecard{background:var(--ink2);border:1px solid var(--ink3);border-radius:12px;
+    padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left}
+  .gamecard.done{border-color:var(--copper)}
+  .gamecard .gi{font-size:11px;letter-spacing:2px;color:var(--copper);width:62px;flex-shrink:0}
+  .gamecard .gt{flex:1}
+  .gamecard .gt .n{font-size:16px;font-weight:500}
+  .gamecard .gt .d{font-size:12px;color:var(--steel);margin-top:2px}
+  .gamecard .gs{font-size:18px;font-weight:500;color:var(--copper);
+    font-variant-numeric:tabular-nums;text-align:right}
+  .gamecard .gs small{display:block;font-size:10px;color:var(--dim);font-weight:400}
+  .synth{margin-top:18px;border:1px solid var(--copper);border-radius:12px;padding:14px 16px}
+  .synth .sl{font-size:11px;letter-spacing:2px;color:var(--copper);text-transform:uppercase}
+  .synth .sv{font-size:28px;font-weight:500;margin-top:6px;font-variant-numeric:tabular-nums}
+  .synth .sd{font-size:12px;color:var(--steel);margin-top:4px;line-height:1.5}
+
+  /* şimşek + pusula sahnesi */
+  .playstage{padding:0}
+  #tapzone,#compasszone{flex:1;position:relative;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;
+    touch-action:none}
+  #tapzone.go{background:var(--copper)}
+  #tapzone.bad,#compasszone.bad{background:var(--danger)}
+  #tapword{font-size:44px;font-weight:500;letter-spacing:2px;color:var(--dim)}
+  #tapzone.go #tapword{color:var(--ink);font-size:56px}
+  #tapzone.bad #tapword{color:var(--ivory)}
+  #tapsub{font-size:14px;color:var(--dim);margin-top:10px}
+  #tapzone.go #tapsub{color:var(--ink)}
+  .topruler{position:absolute;top:0;left:0;right:0;padding:14px 24px 0;pointer-events:none;z-index:2}
+  .feedline{position:absolute;bottom:24px;left:0;right:0;text-align:center;
+    font-size:15px;color:var(--steel);pointer-events:none;z-index:2}
+  .feedline b{color:var(--ivory);font-variant-numeric:tabular-nums}
+
+  /* pusula yön butonları */
+  .padgrid{position:absolute;inset:0;display:grid;
+    grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr}
+  .pad{border:none;background:transparent;border-radius:0;padding:0;
+    display:flex;align-items:center;justify-content:center;color:var(--ink3);font-size:26px}
+  .pad.up{grid-area:1/2/2/3} .pad.down{grid-area:3/2/4/3}
+  .pad.left{grid-area:2/1/3/2} .pad.right{grid-area:2/3/3/4}
+  .pad:active{background:var(--ink2)}
+  #arrow{grid-area:2/2/3/3;display:flex;align-items:center;justify-content:center;
+    font-size:96px;font-weight:500;color:var(--dim);pointer-events:none}
+  #arrow.live{color:var(--copper)}
+
+  /* sonuç */
+  .hero{margin-top:22px}
+  .hero .num{font-size:70px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
+  .hero .unit{font-size:22px;color:var(--steel);margin-left:6px}
+  .hero .cap{font-size:13px;color:var(--steel);margin-top:6px}
+  .metrics{display:flex;gap:9px;margin-top:20px}
+  .metric{flex:1;background:var(--ink2);border-radius:10px;padding:11px}
+  .metric .v{font-size:19px;font-weight:500;font-variant-numeric:tabular-nums}
+  .metric .l{font-size:10px;color:var(--steel);margin-top:3px}
+  .scorebox{margin-top:13px;border:1px solid var(--copper);border-radius:10px;
+    padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+  .scorebox .s{font-size:24px;font-weight:500;color:var(--copper);font-variant-numeric:tabular-nums}
+  .scorebox .t{font-size:12px;color:var(--steel);text-align:right}
+  .chartbox{margin-top:20px}
+  .charttitle{font-size:12px;color:var(--steel);margin-bottom:8px}
+  .chartcap{font-size:11px;color:var(--dim);margin-top:6px}
+  .chartbox svg{width:100%;height:auto;display:block}
+  #cardwrap{margin-top:18px;display:flex;justify-content:center}
+  #cardcanvas{width:min(58vw,215px);height:auto;border-radius:14px;border:1px solid var(--ink3)}
+  .note{font-size:11px;color:var(--dim);margin-top:14px;line-height:1.5}
+  #newrecord{color:var(--copper)}
+  @media (prefers-reduced-motion:no-preference){
+    .pulse{animation:pl 1.6s ease-in-out infinite}
+    @keyframes pl{50%{opacity:.55}}
+  }
+  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+  /* KVKK: aydınlatma metni + rıza + yaş uyarısı */
+  .privacynotice{margin-top:16px;background:var(--ink2);border:1px solid var(--ink3);
+    border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+  .privacynotice p{font-size:12px;line-height:1.6;color:var(--steel)}
+  .privacynotice p b{color:var(--ivory);font-weight:500}
+  .agewarn{font-size:12px;line-height:1.5;color:var(--danger);margin-top:8px;
+    border:1px solid var(--danger);border-radius:8px;padding:10px 12px}
+  .consentrow{display:flex;align-items:flex-start;gap:10px;margin-top:18px;cursor:pointer}
+  .consentrow input[type=checkbox]{width:20px;height:20px;flex-shrink:0;accent-color:var(--copper);
+    margin-top:1px}
+  .consentrow span{font-size:12px;line-height:1.5;color:var(--ivory)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  button:disabled:active{transform:none}
+  #deletedatabtn{border-color:var(--danger);color:var(--danger)}
+</style>
+</head>
+<body>
+
+<!-- ================= HUB ================= -->
+<section class="stage active" id="hub">
+  <span class="eyebrow">Locomotion</span>
+  <h1>Performans bataryası</h1>
+  <p class="sub">iki ölçüm · bir dakikadan az</p>
+  <div class="ruler" id="hubruler" aria-hidden="true"></div>
+  <div class="gamelist" id="gamelist"></div>
+  <div class="synth" id="synthbox" hidden>
+    <div class="sl" id="synthlabel">karar süresi</div>
+    <div class="sv" id="synthval">—</div>
+    <div class="sd" id="synthdesc"></div>
+  </div>
+  <div class="btnrow">
+    <button id="settingsbtn">Takma ad ve ayarlar</button>
+    <button id="exportbtn">Oturum verisini indir (JSON)</button>
+  </div>
+</section>
+
+<!-- ================= AYARLAR ================= -->
+<section class="stage" id="settings">
+  <span class="eyebrow">Ayarlar</span>
+  <h1>Seni tanıyalım</h1>
+  <p class="sub">norm karşılaştırması için · kimlik bilgisi istenmez</p>
+
+  <div class="privacynotice" id="privacynotice">
+    <p><b>Hangi veriler, ne için?</b> Takma ad, doğum yılı ve cinsiyet, ölçüm sonucunu
+    yaş/cinsiyet normlarıyla karşılaştırmak için kullanılır. Ayrıca cihaz ve tarayıcı bilgisi
+    (ekran boyutu, dokunma desteği vb.) ile oturum içi bağlam bilgisi (sekme görünürlüğü,
+    ekran döndürme gibi), ölçümün geçerliliğini kontrol etmek amacıyla otomatik toplanır.</p>
+    <p><b>Kalıcı kimlik:</b> Cihazına, oturumlarını birbirine bağlamak için kalıcı ve
+    isimsiz bir kimlik numarası (user_id) atanır; bu kimlik cihaz bilgisiyle birlikte saklanır.</p>
+    <p><b>Saklama:</b> Bu bilgiler cihazında ve (bağlanıldığında) sunucuda, hesabın aktif
+    olduğu sürece saklanır. Dilediğin an aşağıdaki "Verilerimi sil" ile kaydını silebilirsin.</p>
+    <p><b>Paylaşım:</b> Skor kartını kendi isteğinle Instagram'da paylaşman dışında, verilerin
+    üçüncü taraflarla paylaşılmaz.</p>
+  </div>
+
+  <label for="alias">Takma ad (skor kartında görünür)</label>
+  <input type="text" id="alias" maxlength="16" placeholder="kartal27" autocomplete="off">
+  <label for="birthyear">Doğum yılı</label>
+  <input type="text" id="birthyear" inputmode="numeric" maxlength="4" placeholder="1990">
+  <p class="agewarn" id="agewarn" hidden>18 yaşından küçük görünüyorsun. Bu ölçümü kullanmak
+    için bir veli/vasinin bilgisi ve onayı gerekir. Onay yoksa devam etmemeni öneririz.</p>
+  <label for="sex">Cinsiyet</label>
+  <select id="sex">
+    <option value="">belirtmek istemiyorum</option>
+    <option value="f">kadın</option>
+    <option value="m">erkek</option>
+  </select>
+
+  <label class="consentrow" id="consentrow">
+    <input type="checkbox" id="consentbox">
+    <span>Yukarıdaki açıklamayı okudum, verilerimin belirtilen amaçla işlenmesini kabul ediyorum.</span>
+  </label>
+
+  <div class="btnrow">
+    <button class="primary" id="savesettings" disabled>Kaydet</button>
+    <button id="deletedatabtn">Verilerimi sil</button>
+  </div>
+</section>
+
+<!-- ================= ŞİMŞEK ================= -->
+<section class="stage playstage" id="simsek">
+  <div class="topruler"><div class="ruler" id="simsekruler" aria-hidden="true"></div></div>
+  <div id="tapzone">
+    <div id="tapword">bekle</div>
+    <div id="tapsub">bakır yanınca dokun</div>
+  </div>
+  <div class="feedline" id="simsekfeed" aria-live="polite"></div>
+</section>
+
+<!-- ================= PUSULA ================= -->
+<section class="stage playstage" id="pusula">
+  <div class="topruler"><div class="ruler" id="pusularuler" aria-hidden="true"></div></div>
+  <div id="compasszone">
+    <div class="padgrid">
+      <button class="pad up"    data-dir="up"    aria-label="yukarı">▲</button>
+      <button class="pad left"  data-dir="left"  aria-label="sol">◀</button>
+      <div id="arrow">·</div>
+      <button class="pad right" data-dir="right" aria-label="sağ">▶</button>
+      <button class="pad down"  data-dir="down"  aria-label="aşağı">▼</button>
+    </div>
+  </div>
+  <div class="feedline" id="pusulafeed" aria-live="polite"></div>
+</section>
+
+<!-- ================= SONUÇ ================= -->
+<section class="stage" id="results">
+  <span class="eyebrow" id="resultgame">—</span>
+  <p class="sub" id="resultsub"></p>
+  <div class="hero">
+    <span class="num" id="heroval">—</span><span class="unit" id="herounit"></span>
+    <div class="cap"><span id="herolabel"></span> <span id="newrecord" hidden>· yeni rekor</span></div>
+  </div>
+  <div class="metrics" id="metricrow"></div>
+  <div class="scorebox">
+    <span class="s" id="scoreval">—</span>
+    <span class="t">geçici skor<br>0–100</span>
+  </div>
+  <div class="chartbox" id="chartbox" hidden>
+    <div class="charttitle" id="charttitle"></div>
+    <div id="chartsvg"></div>
+    <div class="chartcap" id="chartcap"></div>
+  </div>
+  <div id="cardwrap"><canvas id="cardcanvas" width="1080" height="1920"></canvas></div>
+  <div class="btnrow">
+    <button class="primary" id="sharebtn">Kartı paylaş</button>
+    <button id="dlcard">Kartı indir (PNG)</button>
+    <button id="againbtn">Tekrar oyna</button>
+    <button id="hubbtn">Oyunlara dön</button>
+  </div>
+  <p class="note">Performans oyunudur, tıbbi ölçüm değildir. Bu prototipte veriler yalnızca
+    cihazında (yerel depoda) tutulur, herhangi bir sunucuya otomatik gönderilmez. Aşağıdaki
+    JSON indirme, üretim sürümünde sunucuya gidecek kaydın örnek biçimini gösterir — canlıya
+    alınmadan önce sunucu konumu, saklama süresi ve aktarım kapsamı aydınlatma metnine
+    eklenmelidir.</p>
+</section>
+
+<script>
+"use strict";
+/* =====================================================================
+   PROTOKOL SABİTLERİ — 2. katman. Değişirse game_version artar.
+===================================================================== */
+const GAMES = {
+  simsek:{ id:"simsek", version:"1.0.0", name:"Şimşek", desc:"basit reaksiyon · 7 deneme",
+    trials:7, delay_min:1500, delay_max:3500,
+    rt_min:100, rt_max:1000, min_valid:3, score_ref:150, score_k:350 },
+  pusula:{ id:"pusula", version:"1.0.0", name:"Pusula", desc:"seçimli reaksiyon · 10 deneme",
+    trials:10, delay_min:1200, delay_max:2800,
+    rt_min:150, rt_max:1500, min_valid:5, score_ref:280, score_k:420 }
+};
+
+/* ---------------------- yardımcılar ---------------------- */
+const $ = id => document.getElementById(id);
+const uuid = () => (crypto.randomUUID ? crypto.randomUUID() :
+  "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0; return (c==="x"?r:(r&3|8)).toString(16); }));
+const nowIso = () => new Date().toISOString();
+const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
+const sd = a => a.length>1 ?
+  Math.sqrt(a.map(x=>(x-mean(a))**2).reduce((p,q)=>p+q,0)/(a.length-1)) : 0;
+function median(a){ const s=[...a].sort((x,y)=>x-y);
+  return s.length%2 ? s[(s.length-1)/2] : (s[s.length/2-1]+s[s.length/2])/2; }
+function verifyCode(id){
+  const ab="23456789ABCDEFGHJKMNPQRSTUVWXYZ"; let h=0;
+  for(let i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))>>>0;
+  let o=""; for(let i=0;i<6;i++){ o+=ab[h%ab.length]; h=((h/ab.length)>>>0)||((h*7+i+1)>>>0); }
+  return o.slice(0,3)+"-"+o.slice(3);
+}
+const store = {
+  ok: typeof window.storage!=="undefined",
+  async get(k){ if(!this.ok) return null;
+    try{ const r=await window.storage.get(k); return r?JSON.parse(r.value):null; }catch(e){ return null; } },
+  async set(k,v){ if(!this.ok) return;
+    try{ await window.storage.set(k,JSON.stringify(v)); }catch(e){} },
+  async delete(k){ if(!this.ok) return;
+    try{ await window.storage.delete(k); }catch(e){} }
+};
+
+/* ---------------------- cihaz + bağlam ---------------------- */
+function deviceInfo(){
+  const ua=navigator.userAgent||"";
+  const d={ ua, brand:null, model:null, os:null, browser:null, browser_ver:null,
+    in_app_browser:null, screen_w:screen.width, screen_h:screen.height,
+    dpr:window.devicePixelRatio||1,
+    touch:("ontouchstart" in window)||navigator.maxTouchPoints>0 };
+  if(navigator.userAgentData){
+    const b=navigator.userAgentData.brands?.find(x=>!/Not/.test(x.brand));
+    if(b){ d.browser=b.brand; d.browser_ver=b.version; }
+    d.os=navigator.userAgentData.platform||null; d.mobile=navigator.userAgentData.mobile;
+  }
+  if(!d.os){ d.os = /Android/i.test(ua)?"Android" : /iPhone|iPad|iPod/i.test(ua)?"iOS"
+    : /Windows/i.test(ua)?"Windows" : /Mac/i.test(ua)?"macOS" : /Linux/i.test(ua)?"Linux":null; }
+  const am=ua.match(/Android [\d.]+; ([^);]+)/); if(am) d.model=am[1].trim();
+  const im=ua.match(/Instagram|FBAN|FBAV|TikTok|Line\//i); d.in_app_browser=im?im[0]:null;
+  return d;
+}
+const ctxLog={ visibility:[], orientation:[], resize:[], frame_interval_estimate:null };
+document.addEventListener("visibilitychange",()=>{
+  ctxLog.visibility.push({t:performance.now(),state:document.visibilityState});
+  if(document.visibilityState==="hidden") onHidden();
+});
+window.addEventListener("orientationchange",()=>ctxLog.orientation.push(
+  {t:performance.now(),o:(screen.orientation&&screen.orientation.type)||window.orientation}));
+window.addEventListener("resize",()=>ctxLog.resize.push(
+  {t:performance.now(),w:innerWidth,h:innerHeight}));
+(function(){ const ts=[]; let n=0;
+  function f(t){ ts.push(t); if(++n<32) requestAnimationFrame(f);
+    else{ const d=[]; for(let i=1;i<ts.length;i++) d.push(ts[i]-ts[i-1]);
+      d.sort((a,b)=>a-b); ctxLog.frame_interval_estimate=+d[d.length>>1].toFixed(2); } }
+  requestAnimationFrame(f); })();
+function sourceInfo(){
+  const p=new URLSearchParams(location.search);
+  return { utm_source:p.get("utm_source"), utm_medium:p.get("utm_medium"),
+    utm_campaign:p.get("utm_campaign"),
+    referral_type:p.get("duel")?"duel_invite":(p.get("utm_source")?"campaign":"direct"),
+    duel_id:p.get("duel") };
+}
+
+/* =====================================================================
+   OTURUM DURUMU
+===================================================================== */
+const CONSENT_VERSION="1.0";
+let user={ user_id:null, alias:null, birth_year:null, sex:null, visit_no:1,
+  consent_given_at:null, consent_version:null };
+let session=null, attempt=null, current=null;
+const sessionResults={};   // game_id -> metrics (sentez için)
+const orderCounter={ n:0 };
+
+async function initUser(){
+  const s=await store.get("bat-user");
+  if(s){ user=Object.assign(user,s); user.visit_no=(user.visit_no||0)+1; }
+  else user.user_id=uuid();
+  await store.set("bat-user",user);
+  $("alias").value=user.alias||"";
+  $("birthyear").value=user.birth_year||"";
+  $("sex").value=user.sex||"";
+  const consented = !!(user.consent_given_at && user.consent_version===CONSENT_VERSION);
+  $("consentbox").checked=consented;
+  $("savesettings").disabled=!consented;
+  checkAge();
+}
+function checkAge(){
+  const y=parseInt($("birthyear").value,10);
+  const valid=y>=1900&&y<=new Date().getFullYear();
+  const age=valid?(new Date().getFullYear()-y):null;
+  $("agewarn").hidden = !(valid && age<18);
+}
+function newSession(){
+  session={ session_id:uuid(), user_id:user.user_id, started_at_utc:nowIso(),
+    tz_offset_min:-new Date().getTimezoneOffset(), visit_no:user.visit_no,
+    device:deviceInfo(), source:sourceInfo(), attempts:[] };
+}
+function newAttempt(g){
+  current=g;
+  attempt={ attempt_id:uuid(), session_id:session.session_id, game_id:g.id,
+    game_version:g.version, order_in_session:++orderCounter.n,
+    attempt_no:1, started_at:nowIso(), status:"in_progress", invalid_reason:null,
+    metrics:null, score_0_100:null, raw:{}, events:[] };
+}
+function commitAttempt(){ session.attempts.push(attempt); }
+
+/* ---------------------- sahne yönetimi ---------------------- */
+const stages={ hub:$("hub"), settings:$("settings"), simsek:$("simsek"),
+  pusula:$("pusula"), results:$("results") };
+function show(n){ Object.values(stages).forEach(s=>s.classList.remove("active"));
+  stages[n].classList.add("active"); }
+function buildRuler(el,seg){
+  el.innerHTML="";
+  for(let i=0;i<seg;i++){ const m=document.createElement("i"); m.className="major";
+    el.appendChild(m); for(let j=0;j<3;j++) el.appendChild(document.createElement("i")); }
+  const e=document.createElement("i"); e.className="major"; el.appendChild(e);
+}
+function paintRuler(el,done){
+  [...el.querySelectorAll("i.major")].forEach((m,i)=>m.classList.toggle("done",i<done));
+}
+function onHidden(){
+  if(current&&(current.id==="simsek"||current.id==="pusula")) abortRtTrial();
+}
+
+/* =====================================================================
+   ŞİMŞEK + PUSULA — ortak reaksiyon motoru
+===================================================================== */
+let phase="idle", trialNo=0, curTrial=null, stimT=0, delayTimer=null;
+const DIRS=["up","down","left","right"];
+const ARROWS={up:"▲",down:"▼",left:"◀",right:"▶"};
+
+function startRt(g){
+  newAttempt(g); trialNo=0;
+  const rul = g.id==="simsek" ? $("simsekruler") : $("pusularuler");
+  buildRuler(rul,g.trials); paintRuler(rul,0);
+  attempt.raw.touch_log=[]; attempt.raw.context_log=ctxLog;
+  (g.id==="simsek"?$("simsekfeed"):$("pusulafeed")).textContent="";
+  show(g.id); nextRtTrial();
+}
+function nextRtTrial(){
+  const g=current;
+  if(trialNo>=g.trials) return finishRt();
+  phase="armed";
+  if(g.id==="simsek"){
+    const z=$("tapzone"); z.className="";
+    $("tapword").textContent="bekle"; $("tapword").classList.add("pulse");
+    $("tapsub").textContent="deneme "+(trialNo+1)+" / "+g.trials;
+  }else{
+    $("compasszone").className="";
+    const a=$("arrow"); a.className=""; a.textContent="·";
+  }
+  curTrial={ trial_no:trialNo+1,
+    planned_delay_ms:Math.round(g.delay_min+Math.random()*(g.delay_max-g.delay_min)),
+    stimulus_type: g.id==="pusula" ? DIRS[Math.floor(Math.random()*4)] : "go",
+    stimulus_drawn_at:null, pointerdown:null, tapped_zone:null,
+    premature_taps:[], rt_ms:null, correct:null, valid:null, exclusion_reason:null };
+  delayTimer=setTimeout(fireStim,curTrial.planned_delay_ms);
+}
+function fireStim(){
+  if(phase!=="armed") return;
+  phase="pending";
+  if(current.id==="simsek"){
+    $("tapzone").classList.add("go");
+    $("tapword").classList.remove("pulse");
+    $("tapword").textContent="dokun"; $("tapsub").textContent="";
+  }else{
+    const a=$("arrow"); a.className="live"; a.textContent=ARROWS[curTrial.stimulus_type];
+  }
+  requestAnimationFrame(()=>requestAnimationFrame(t=>{
+    stimT=t; curTrial.stimulus_drawn_at=t;
+    if(phase==="pending") phase="stimulus";
+  }));
+}
+function registerTap(t,zone,ev){
+  const g=current;
+  if(phase==="armed"||phase==="pending"){
+    curTrial.premature_taps.push({t,zone,pointerType:ev?ev.pointerType:null});
+    return badTrial("false_start","erken","uyaranı bekle — deneme tekrarlanıyor");
+  }
+  if(phase!=="stimulus") return;
+  phase="feedback";
+  const rt=t-stimT;
+  curTrial.rt_ms=+rt.toFixed(1); curTrial.tapped_zone=zone;
+  if(ev) curTrial.pointerdown={t,x:ev.clientX,y:ev.clientY,pointerType:ev.pointerType};
+  curTrial.correct = g.id==="pusula" ? (zone===curTrial.stimulus_type) : true;
+
+  if(rt<g.rt_min){
+    curTrial.valid=false; curTrial.exclusion_reason="anticipation";
+    attempt.raw.touch_log.push(curTrial);
+    return retryTrial("çok erken","refleks değil tahmin — tekrar");
+  }
+  if(!curTrial.correct){
+    curTrial.valid=false; curTrial.exclusion_reason="wrong_direction";
+  } else if(rt>g.rt_max){
+    curTrial.valid=false; curTrial.exclusion_reason="lapse";
+  } else curTrial.valid=true;
+
+  attempt.raw.touch_log.push(curTrial);
+  trialNo++;
+  const rul=g.id==="simsek"?$("simsekruler"):$("pusularuler");
+  paintRuler(rul,trialNo);
+  const feed=g.id==="simsek"?$("simsekfeed"):$("pusulafeed");
+  feed.innerHTML = !curTrial.correct ? "<b>yanlış yön</b>"
+    : curTrial.valid ? "<b>"+Math.round(rt)+" ms</b>"
+    : "<b>"+Math.round(rt)+" ms</b> · dalgınlık";
+  if(g.id==="simsek"){
+    $("tapword").textContent=Math.round(rt); $("tapsub").textContent="ms";
+  }else{
+    const a=$("arrow");
+    if(!curTrial.correct){ $("compasszone").className="bad"; a.textContent="✕"; }
+    else a.textContent=Math.round(rt);
+  }
+  setTimeout(nextRtTrial,850);
+}
+function badTrial(reason,word,sub){
+  clearTimeout(delayTimer); phase="feedback";
+  curTrial.valid=false; curTrial.exclusion_reason=reason;
+  attempt.raw.touch_log.push(curTrial);
+  if(current.id==="simsek"){
+    $("tapzone").className="bad"; $("tapword").classList.remove("pulse");
+    $("tapword").textContent=word; $("tapsub").textContent=sub;
+  }else{
+    $("compasszone").className="bad"; $("arrow").textContent="✕";
+    $("pusulafeed").innerHTML="<b>"+word+"</b> · "+sub;
+  }
+  setTimeout(nextRtTrial,1150);
+}
+function retryTrial(word,sub){
+  clearTimeout(delayTimer);
+  if(current.id==="simsek"){
+    $("tapzone").className="bad"; $("tapword").classList.remove("pulse");
+    $("tapword").textContent=word; $("tapsub").textContent=sub;
+  }else{ $("compasszone").className="bad"; $("arrow").textContent="✕"; }
+  setTimeout(nextRtTrial,1150);
+}
+function abortRtTrial(){
+  if(phase==="armed"||phase==="pending"||phase==="stimulus"){
+    clearTimeout(delayTimer); phase="feedback";
+    if(curTrial){ curTrial.valid=false; curTrial.exclusion_reason="tab_hidden";
+      attempt.raw.touch_log.push(curTrial); }
+    setTimeout(nextRtTrial,400);
+  }
+}
+$("tapzone").addEventListener("pointerdown",e=>{
+  if(e.isPrimary) registerTap(performance.now(),"center",e); });
+$("tapzone").addEventListener("contextmenu",e=>e.preventDefault());
+document.querySelectorAll(".pad").forEach(p=>{
+  p.addEventListener("pointerdown",e=>{
+    if(e.isPrimary) registerTap(performance.now(),p.dataset.dir,e); });
+  p.addEventListener("contextmenu",e=>e.preventDefault());
+});
+
+function finishRt(){
+  const g=current, all=attempt.raw.touch_log;
+  const good=all.filter(x=>x.valid).map(x=>x.rt_ms);
+  const fs=all.filter(x=>x.exclusion_reason==="false_start").length;
+  const ant=all.filter(x=>x.exclusion_reason==="anticipation").length;
+  const lap=all.filter(x=>x.exclusion_reason==="lapse").length;
+  const wrong=all.filter(x=>x.exclusion_reason==="wrong_direction").length;
+  const answered=all.filter(x=>x.rt_ms!==null&&x.exclusion_reason!=="anticipation").length;
+  if(good.length<g.min_valid){
+    attempt.status="invalid"; attempt.invalid_reason="too_few_valid_trials";
+    commitAttempt(); alert("Yeterli geçerli deneme yok. Tekrar dene."); return goHub();
+  }
+  const mu=mean(good), s=sd(good);
+  const m={ trials_planned:g.trials, trials_valid:good.length,
+    rt_list_ms:good.map(x=>+x.toFixed(1)),
+    rt_mean_ms:+mu.toFixed(1), rt_median_ms:+median(good).toFixed(1),
+    rt_sd_ms:+s.toFixed(1), rt_cv_pct:+(mu?100*s/mu:0).toFixed(1),
+    best_rt_ms:+Math.min(...good).toFixed(1),
+    false_starts:fs, anticipations:ant, lapses:lap };
+  if(g.id==="pusula"){
+    m.errors=wrong;
+    m.error_rate_pct=answered?+(100*wrong/answered).toFixed(1):0;
+    m.per_direction={};
+    DIRS.forEach(d=>{
+      const v=all.filter(x=>x.valid&&x.stimulus_type===d).map(x=>x.rt_ms);
+      m.per_direction[d]=v.length?+mean(v).toFixed(1):null;
+    });
+  }
+  attempt.status="completed"; attempt.metrics=m;
+  attempt.score_0_100=Math.max(1,Math.min(100,
+    Math.round(100*Math.exp(-(mu-g.score_ref)/g.score_k))));
+  commitAttempt(); sessionResults[g.id]=m;
+  finishAndShow(g,m);
+}
+
+/* =====================================================================
+   SONUÇ + KART + GRAFİK
+===================================================================== */
+async function finishAndShow(g,m){
+  const key="bat-best-"+g.id, hkey="bat-hist-"+g.id;
+  const prim = m.rt_mean_ms;
+  const best=await store.get(key);
+  const isRecord = !best || prim<best.value;
+  if(isRecord) await store.set(key,{value:prim,date:nowIso()});
+  const hist=(await store.get(hkey))||[];
+  hist.push({ at:attempt.started_at, value:prim, score:attempt.score_0_100 });
+  const trimmed=hist.slice(-10);
+  await store.set(hkey,trimmed);
+  renderResults(g,m,isRecord);
+  renderChart(g,trimmed);
+  drawCard(cardData(g,m,isRecord));
+}
+function renderResults(g,m,isRecord){
+  $("resultgame").textContent=g.name;
+  $("resultsub").textContent=new Date().toLocaleDateString("tr-TR",
+    {day:"numeric",month:"long",year:"numeric"});
+  $("newrecord").hidden=!isRecord;
+  $("scoreval").textContent=attempt.score_0_100;
+  const row=$("metricrow"); row.innerHTML="";
+  const add=(v,l)=>{ const d=document.createElement("div"); d.className="metric";
+    d.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>'; row.appendChild(d); };
+  $("heroval").textContent=Math.round(m.rt_mean_ms);
+  $("herounit").textContent="ms";
+  $("herolabel").textContent="ortalama reaksiyon";
+  add("%"+m.rt_cv_pct.toFixed(1),"tutarlılık (CV)");
+  add(Math.round(m.best_rt_ms)+" ms","en iyi deneme");
+  if(g.id==="pusula") add("%"+m.error_rate_pct.toFixed(0),"yön hatası");
+  else add(m.false_starts+m.anticipations,"erken çıkış");
+  show("results");
+}
+function renderChart(g,hist){
+  const box=$("chartbox");
+  if(!store.ok||!hist||!hist.length){ box.hidden=true; return; }
+  box.hidden=false;
+  $("charttitle").textContent="ortalama reaksiyon · geçmiş oturumlar";
+  $("chartcap").textContent="yukarı = daha iyi";
+  const W=600,H=140,pL=48,pR=16,pT=14,pB=26,plotW=W-pL-pR,plotH=H-pT-pB;
+  const copper="#C9855A",steel="#8CA3B8",dim="#5F6E7C",line="#2A3340";
+  const fmt=v=>Math.round(v)+" ms";
+  if(hist.length===1){
+    $("chartsvg").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="ilk ölçüm">'+
+      '<line x1="'+pL+'" y1="'+(H/2)+'" x2="'+(W-pR)+'" y2="'+(H/2)+'" stroke="'+line+'"/>'+
+      '<circle cx="'+(W/2)+'" cy="'+(H/2)+'" r="5" fill="'+copper+'"/>'+
+      '<text x="'+(W/2)+'" y="'+(H/2-14)+'" text-anchor="middle" fill="'+copper+'" font-size="15">'+fmt(hist[0].value)+'</text>'+
+      '<text x="'+(W/2)+'" y="'+(H/2+22)+'" text-anchor="middle" fill="'+dim+'" font-size="11">ilk ölçüm</text></svg>';
+    return;
+  }
+  const vals=hist.map(h=>h.value), mn=Math.min(...vals), mx=Math.max(...vals), rg=(mx-mn)||1;
+  const n=hist.length, xs=plotW/(n-1);
+  const pts=hist.map((h,i)=>({ x:pL+i*xs,
+    y: pT + (h.value-mn)/rg * plotH,
+    v:h.value, at:h.at }));
+  const path=pts.map((p,i)=>(i?"L":"M")+p.x.toFixed(1)+","+p.y.toFixed(1)).join(" ");
+  const dots=pts.map((p,i)=>{
+    const last=i===n-1;
+    return '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+(last?5:3)+
+      '" fill="'+(last?copper:steel)+'"/>'+(last?
+      '<text x="'+p.x.toFixed(1)+'" y="'+(p.y-12).toFixed(1)+'" text-anchor="end" fill="'+
+      copper+'" font-size="14">'+fmt(p.v)+'</text>':"");
+  }).join("");
+  const df=iso=>{ const d=new Date(iso); return d.getDate()+"."+(d.getMonth()+1); };
+  $("chartsvg").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="son '+n+' oturum">'+
+    '<text x="'+(pL-8)+'" y="'+(pT+4)+'" text-anchor="end" fill="'+dim+'" font-size="11">'+fmt(mn)+'</text>'+
+    '<text x="'+(pL-8)+'" y="'+(pT+plotH)+'" text-anchor="end" fill="'+dim+'" font-size="11">'+fmt(mx)+'</text>'+
+    '<line x1="'+pL+'" y1="'+(pT+plotH)+'" x2="'+(W-pR)+'" y2="'+(pT+plotH)+'" stroke="'+line+'"/>'+
+    '<path d="'+path+'" fill="none" stroke="'+steel+'" stroke-width="2" opacity="0.7"/>'+dots+
+    '<text x="'+pL+'" y="'+(H-4)+'" fill="'+dim+'" font-size="10">'+df(pts[0].at)+'</text>'+
+    '<text x="'+(W-pR)+'" y="'+(H-4)+'" text-anchor="end" fill="'+dim+'" font-size="10">'+df(pts[n-1].at)+'</text></svg>';
+}
+function cardData(g,m,isRecord){
+  const d={ card_type:"solo", game_id:g.id, alias:user.alias||"isimsiz",
+    verify_code:verifyCode(attempt.attempt_id),
+    date:new Date().toLocaleDateString("tr-TR"),
+    context: isRecord?{type:"record",value:"yeni rekor"}
+                     :{type:"score",value:attempt.score_0_100} };
+  d.hero={ value:Math.round(m.rt_mean_ms), unit:"ms", label:"ortalama reaksiyon" };
+  d.subs=[{value:"CV %"+m.rt_cv_pct.toFixed(1)},
+          {value: g.id==="pusula" ? ("hata %"+m.error_rate_pct.toFixed(0))
+                                  : ("en iyi "+Math.round(m.best_rt_ms)+" ms")}];
+  return d;
+}
+function rr(c,x,y,w,h,r){
+  if(c.roundRect) return c.roundRect(x,y,w,h,r);
+  c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
+  c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
+}
+function drawCard(d){
+  const cv=$("cardcanvas"), c=cv.getContext("2d");
+  const W=1080,H=1920,ink="#12161C",ivory="#ECE7DC",copper="#C9855A",
+        steel="#8CA3B8",dim="#5F6E7C",line="#2A3340";
+  c.fillStyle=ink; c.fillRect(0,0,W,H);
+  const ruler=y=>{ c.strokeStyle=line; c.lineWidth=3;
+    for(let i=0;i<=36;i++){ const x=90+i*(W-180)/36,h=i%6===0?26:13;
+      c.beginPath(); c.moveTo(x,y); c.lineTo(x,y-h); c.stroke(); } };
+  ruler(150); c.textBaseline="alphabetic"; c.textAlign="left";
+  c.fillStyle=copper; c.font="500 40px system-ui,sans-serif";
+  const nm=GAMES[d.game_id].name.toUpperCase();
+  c.save(); c.translate(90,235);
+  nm.split("").forEach((ch,i)=>c.fillText(ch,i*52,0)); c.restore();
+  c.fillStyle=steel; c.font="400 34px system-ui,sans-serif";
+  c.textAlign="right"; c.fillText(d.date,W-90,235); c.textAlign="left";
+  c.fillStyle=ivory; c.font="400 46px system-ui,sans-serif"; c.fillText(d.alias,90,380);
+  c.font="500 280px system-ui,sans-serif";
+  c.fillText(String(d.hero.value),82,720);
+  const hw=c.measureText(String(d.hero.value)).width;
+  c.fillStyle=steel; c.font="400 60px system-ui,sans-serif";
+  c.fillText(d.hero.unit,82+hw+18,720);
+  c.font="400 40px system-ui,sans-serif"; c.fillText(d.hero.label,90,800);
+  c.fillStyle=ivory; c.font="400 42px system-ui,sans-serif";
+  c.fillText(d.subs.map(s=>s.value).join("   ·   "),90,920);
+  c.strokeStyle=copper; c.lineWidth=3;
+  c.beginPath(); rr(c,90,1020,W-180,170,22); c.stroke();
+  if(d.context.type==="record"){
+    c.fillStyle=copper; c.font="500 66px system-ui,sans-serif";
+    c.fillText("yeni rekor",130,1130);
+  }else{
+    c.fillStyle=copper; c.font="500 90px system-ui,sans-serif";
+    c.fillText(String(d.context.value),130,1140);
+    c.fillStyle=steel; c.font="400 34px system-ui,sans-serif";
+    c.textAlign="right"; c.fillText("geçici skor · 0–100",W-130,1120); c.textAlign="left";
+  }
+  c.fillStyle=ivory; c.font="400 46px system-ui,sans-serif";
+  c.fillText("beni geçebilir misin?",90,1560);
+  c.fillStyle=copper; c.fillText("→ link bio'da",90,1630);
+  c.fillStyle=steel; c.font="400 36px system-ui,sans-serif";
+  c.fillText("@locomotion",90,1750);
+  c.textAlign="right"; c.fillText(d.verify_code,W-90,1750); c.textAlign="left";
+  c.fillStyle=dim; c.font="400 28px system-ui,sans-serif";
+  c.fillText("performans oyunudur, tıbbi ölçüm değildir",90,1806);
+  ruler(1870);
+}
+
+/* =====================================================================
+   HUB + SENTEZ
+===================================================================== */
+async function renderHub(){
+  const list=$("gamelist"); list.innerHTML="";
+  for(const k of ["simsek","pusula"]){
+    const g=GAMES[k], m=sessionResults[k];
+    const b=document.createElement("button");
+    b.className="gamecard"+(m?" done":"");
+    const val = m ? Math.round(m.rt_mean_ms)+"<small>ms</small>" : "";
+    b.innerHTML='<span class="gi">'+g.name.toUpperCase()+'</span>'+
+      '<span class="gt"><span class="n">'+(m?"tekrar oyna":"başla")+'</span>'+
+      '<span class="d">'+g.desc+'</span></span><span class="gs">'+val+'</span>';
+    b.addEventListener("click",()=>launch(k));
+    list.appendChild(b);
+  }
+  const s=sessionResults.simsek, p=sessionResults.pusula;
+  if(s&&p){
+    const dec=p.rt_mean_ms-s.rt_mean_ms;
+    $("synthbox").hidden=false;
+    $("synthlabel").textContent="karar süresi";
+    $("synthval").textContent=Math.round(dec)+" ms";
+    $("synthdesc").textContent="Pusula ile Şimşek farkı: motor hız çıkarıldığında geriye kalan "+
+      "saf karar verme süresi. Tek oyunla ölçülemez.";
+  } else $("synthbox").hidden=true;
+}
+function launch(k){
+  if(!session) newSession();
+  startRt(GAMES[k]);
+}
+function goHub(){ current=null; renderHub(); show("hub"); }
+
+/* ---------------------- dışa aktarım ---------------------- */
+function download(name,blob){
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
+}
+$("exportbtn").addEventListener("click",()=>{
+  if(!session) return alert("Önce bir oyun oyna.");
+  download("batarya-"+session.session_id.slice(0,8)+".json",
+    new Blob([JSON.stringify({profile:{birth_year:user.birth_year,sex:user.sex},
+      session},null,2)],{type:"application/json"}));
+});
+$("dlcard").addEventListener("click",()=>
+  $("cardcanvas").toBlob(b=>download("kart.png",b),"image/png"));
+function isMobile(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent||"");
+}
+$("sharebtn").addEventListener("click",()=>{
+  $("cardcanvas").toBlob(async b=>{
+    const f=new File([b],"kart.png",{type:"image/png"});
+    if(isMobile()&&navigator.canShare&&navigator.canShare({files:[f]})){
+      try{
+        await navigator.share({files:[f],title:"Locomotion",text:"Skorumu geçebilir misin?"});
+        return;
+      }catch(e){ if(e.name==="AbortError") return; }
+    }
+    // native share desteklenmiyorsa: indir + Instagram'a yönlendirmeyi dene
+    download("kart.png",b);
+    alert("Kart galerine kaydedildi. Instagram'ı aç → Hikaye oluştur → galeriden seç.");
+  },"image/png");
+});
+$("againbtn").addEventListener("click",()=>{ if(current) launch(current.id); });
+$("hubbtn").addEventListener("click",goHub);
+$("settingsbtn").addEventListener("click",()=>show("settings"));
+$("birthyear").addEventListener("input",checkAge);
+$("consentbox").addEventListener("change",()=>{
+  $("savesettings").disabled=!$("consentbox").checked;
+});
+$("savesettings").addEventListener("click",async()=>{
+  if(!$("consentbox").checked) return;
+  user.alias=$("alias").value.trim()||null;
+  const y=parseInt($("birthyear").value,10);
+  user.birth_year=(y>=1900&&y<=new Date().getFullYear())?y:null;
+  user.sex=$("sex").value||null;
+  user.consent_given_at=nowIso();
+  user.consent_version=CONSENT_VERSION;
+  await store.set("bat-user",user);
+  goHub();
+});
+$("deletedatabtn").addEventListener("click",async()=>{
+  if(!confirm("Tüm kayıtlı verilerin (takma ad, doğum yılı, cinsiyet, rekor ve geçmiş) "+
+    "bu cihazdan silinsin mi? Bu işlem geri alınamaz.")) return;
+  await store.delete("bat-user");
+  await store.delete("bat-best-simsek");
+  await store.delete("bat-best-pusula");
+  await store.delete("bat-hist-simsek");
+  await store.delete("bat-hist-pusula");
+  user={ user_id:uuid(), alias:null, birth_year:null, sex:null, visit_no:1,
+    consent_given_at:null, consent_version:null };
+  session=null; attempt=null; current=null;
+  Object.keys(sessionResults).forEach(k=>delete sessionResults[k]);
+  await store.set("bat-user",user);
+  $("alias").value=""; $("birthyear").value=""; $("sex").value="";
+  $("consentbox").checked=false; $("savesettings").disabled=true;
+  $("agewarn").hidden=true;
+  alert("Verilerin silindi.");
+  goHub();
+});
+
+buildRuler($("hubruler"),6);
+[...$("hubruler").querySelectorAll("i.major")].forEach(m=>m.classList.add("done"));
+initUser().then(renderHub);
+</script>
+</body>
+</html>
