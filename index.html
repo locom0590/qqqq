@@ -10,7 +10,7 @@
 <meta property="og:url" content="https://locomotion.com.tr/" />
 <meta property="og:title" content="REACTO ⚡ Ne kadar hızlısın?" />
 <meta property="og:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku. Locomotion Academy &amp; Studio." />
-<meta property="og:image" content="https://locomotion.com.tr/og-reaksiyon.png" />
+<meta property="og:image" content="https://locomotion.com.tr/og-reacto.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="Locomotion Reaksiyon Testi" />
@@ -18,7 +18,7 @@
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="REACTO ⚡ Ne kadar hızlısın?" />
 <meta name="twitter:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
-<meta name="twitter:image" content="https://locomotion.com.tr/og-reaksiyon.png" />
+<meta name="twitter:image" content="https://locomotion.com.tr/og-reacto.png" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
@@ -983,10 +983,10 @@
     step();
   }
   function fmt(ms){ return String(Math.max(0,Math.round(ms))); }
-  function counter(ms){ return '<div class="rx-ms rx-live" id="rxLive">'+fmt(ms)+'<i> ms</i></div>'; }
+  function counter(ms){ return '<div class="rx-ms rx-live">'+fmt(ms)+'<i> ms</i></div>'; }
+  let liveEl=null;             // amber ekranındaki canlı sayaç düğümü
   function tick(){
-    const el=document.getElementById('rxLive');
-    if(el) el.firstChild.nodeValue=fmt(performance.now()-goAt);
+    if(liveEl) liveEl.firstChild.nodeValue=fmt(performance.now()-goAt);
     rafId=requestAnimationFrame(tick);
   }
 
@@ -1072,6 +1072,7 @@
     const goHTML='<div class="rx-eyebrow">Dokun</div>'+counter(0)+(practiceMode?'<div class="rx-word now">ŞİMDİ</div>':'')+dots();
     const goBox=document.createElement('div');
     goBox.style.display='none'; goBox.innerHTML=goHTML; content.appendChild(goBox);
+    liveEl=goBox.querySelector('.rx-live');
     timerId=setTimeout(function(){
       state='go'; stage.className='rx-stage rx-go';
       // görünür kıl: bekleyen içerik gizlenir, amber içerik açılır (yeniden parse yok)
@@ -1111,9 +1112,8 @@
     if(!goAt) return; // amber karesi henüz boyanmadı: ölçüm başlamadı
     if(performance.now()-goAt < 150){ earlyTap(); return; } // 150 ms altı: tepki değil tahmin
     cancelAnimationFrame(rafId);
-    const live=document.getElementById('rxLive');
     const ms=Math.round(performance.now()-goAt);
-    if(live) live.firstChild.nodeValue=fmt(ms);
+    if(liveEl) liveEl.firstChild.nodeValue=fmt(ms);
     state='roundResult'; stage.className='rx-stage';
     if(practiceMode){
       practiceIndex++;
