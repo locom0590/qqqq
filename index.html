@@ -8,16 +8,16 @@
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Locomotion Academy &amp; Studio" />
 <meta property="og:url" content="https://locomotion.com.tr/" />
-<meta property="og:title" content="Reaksiyon Testi ⚡ Ne kadar hızlısın?" />
-<meta property="og:description" content="7 tur, 45 saniye, tarayıcıda. Rekorunu ölç, arkadaşına meydan oku. Locomotion Academy &amp; Studio." />
+<meta property="og:title" content="REACTO ⚡ Ne kadar hızlısın?" />
+<meta property="og:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku. Locomotion Academy &amp; Studio." />
 <meta property="og:image" content="https://locomotion.com.tr/og-reaksiyon.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="Locomotion Reaksiyon Testi" />
 <meta property="og:locale" content="tr_TR" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Reaksiyon Testi ⚡ Ne kadar hızlısın?" />
-<meta name="twitter:description" content="7 tur, 45 saniye, tarayıcıda. Rekorunu ölç, arkadaşına meydan oku." />
+<meta name="twitter:title" content="REACTO ⚡ Ne kadar hızlısın?" />
+<meta name="twitter:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
 <meta name="twitter:image" content="https://locomotion.com.tr/og-reaksiyon.png" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -213,9 +213,9 @@
   .rx-close{background:transparent;border:1.5px solid rgba(243,241,235,.35);color:var(--bone);width:42px;height:42px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;transition:all .15s}
   .rx-close:hover{border-color:var(--amber);color:var(--amber)}
   .rx-main{flex:1;display:block;padding:16px 20px 32px;position:relative;z-index:2;overflow-y:auto;-webkit-overflow-scrolling:touch}
-  .rx-stage{width:min(560px,100%);margin:0 auto;border-radius:26px;min-height:min(62vh,500px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 24px;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border:1px solid rgba(243,241,235,.14);background:rgba(243,241,235,.04);transition:background .12s;color:var(--bone)}
+  .rx-stage{width:min(560px,100%);margin:0 auto;border-radius:26px;min-height:min(62vh,500px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 24px;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border:1px solid rgba(243,241,235,.14);background:rgba(243,241,235,.04);transition:background .12s;color:var(--bone);will-change:background-color}
   .rx-stage.rx-waiting{background:rgba(224,102,102,.10);border-color:rgba(224,102,102,.4)}
-  .rx-stage.rx-go{background:var(--amber);border-color:var(--amber);color:var(--deep)}
+  .rx-stage.rx-go{background:var(--amber);border-color:var(--amber);color:var(--deep);transition:none}
   .rx-stage.rx-early{background:rgba(224,102,102,.2);border-color:#E06666}
   .rx-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--amber);text-transform:uppercase;margin-bottom:14px}
   .rx-stage.rx-go .rx-eyebrow{color:var(--deep)}
@@ -234,10 +234,20 @@
   .rx-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--disp);font-weight:800;font-size:15px;padding:13px 26px;border-radius:999px;border:none;cursor:pointer;background:var(--amber);color:var(--deep);margin-top:24px;transition:transform .12s}
   .rx-btn:active{transform:scale(.97)}
   .rx-btn.rx-ghost{background:transparent;border:1.5px solid rgba(243,241,235,.4);color:var(--bone)}
+  .rx-word{font-family:var(--disp);font-weight:900;font-size:clamp(30px,9vw,46px);letter-spacing:.06em;line-height:1;margin-top:14px}
+  .rx-word.wait{color:rgba(243,241,235,.55)}
+  .rx-word.now{color:var(--deep)}
   .rx-count{font-family:var(--disp);font-weight:900;font-size:clamp(110px,28vw,180px);line-height:1;color:var(--bone);letter-spacing:-.03em}
   .rx-cta{display:block;width:100%;max-width:340px;margin:18px auto 0;background:var(--amber);color:var(--deep);font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:-.01em;padding:18px 20px;border-radius:18px;border:none;cursor:pointer;text-align:center;transition:transform .12s}
   .rx-cta:active{transform:scale(.98)}
   .rx-cta small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.2em;margin-top:4px;opacity:.75}
+  .rx-raw{margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(243,241,235,.4);line-height:1.7;max-width:340px}
+  .rx-raw span{color:rgba(243,241,235,.3)}
+  .rx-name{max-width:340px;margin:12px auto 0}
+  .rx-name input{width:100%;background:rgba(243,241,235,.06);border:1px solid rgba(243,241,235,.2);border-radius:12px;padding:11px 14px;color:var(--bone);font-family:var(--body);font-size:14px;text-align:center}
+  .rx-name input::placeholder{color:rgba(243,241,235,.4)}
+  .rx-name input:focus{outline:none;border-color:var(--amber)}
+  .rx-name small{display:block;margin-top:6px;font-size:11px;color:rgba(243,241,235,.45);line-height:1.5}
   .rx-verdict{margin:0 auto 14px;max-width:340px;border-radius:14px;padding:11px 14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;line-height:1.5}
   .rx-verdict span{display:block;margin-top:5px;font-size:9.5px;letter-spacing:.14em;opacity:.7}
   .rx-verdict.win{background:rgba(46,125,50,.18);border:1px solid rgba(143,212,155,.45);color:#8FD49B}
@@ -412,7 +422,7 @@
       <a href="#programlar">Programlar</a>
       <a href="#ilkeler">İlkeler</a>
       <a href="#prehab">Prehab Index</a>
-      <a href="reaksiyon.html">Reaksiyon ⚡</a>
+      <a href="reaksiyon.html">REACTO ⚡</a>
       <a href="#iletisim" class="btn solid">Değerlendirme Randevusu</a>
     </div>
   </div>
@@ -435,7 +445,7 @@
     <div class="lab lab-game" id="heroGame">
       <div class="dash-head">
         <div class="hg-tabs" role="tablist">
-          <button class="hg-tab on" role="tab" aria-selected="true" data-pane="hgReaction">REAKSİYON LAB ⚡</button>
+          <button class="hg-tab on" role="tab" aria-selected="true" data-pane="hgReaction">REACTO ⚡</button>
           <button class="hg-tab" role="tab" aria-selected="false" data-pane="hgIndex">PREHAB INDEX</button>
         </div>
         <span class="dash-tag" id="hgTag">CANLI TEST</span>
@@ -854,7 +864,7 @@
         <a href="#programlar">Programlar</a>
         <a href="#ilkeler">İlkeler</a>
         <a href="#prehab">Prehab Index</a>
-        <a href="reaksiyon.html">Reaksiyon Lab ⚡</a>
+        <a href="reaksiyon.html">REACTO ⚡</a>
       </div>
       <div class="foot-col">
         <b>İletişim</b>
@@ -879,7 +889,7 @@
 <!-- REAKSİYON MODAL -->
 <div class="rx-overlay" id="rxOverlay" aria-hidden="true" role="dialog" aria-label="Reaksiyon testi">
   <div class="rx-top">
-    <div class="rx-title">REAKSİYON LAB ⚡</div>
+    <div class="rx-title">REACTO ⚡</div>
     <button class="rx-close" id="rxClose" aria-label="Kapat">×</button>
   </div>
   <div class="rx-main">
@@ -927,12 +937,24 @@
     'Bu test sırasında ad, soyad, iletişim bilgisi gibi kişisel veriler toplanmaz ve hiçbir bilgi sunucuya gönderilmez.<br><br>'+
     'Onay vermeniz halinde yalnızca <b>en iyi skorunuz</b>, tekrar oynadığınızda gösterilmek üzere tarayıcınızın yerel depolama alanında — kendi cihazınızda — saklanır. Bu veri bize iletilmez ve tarayıcı site verilerinizi temizleyerek dilediğiniz an silebilirsiniz.<br><br>'+
     '"Meydan Oku" özelliği yalnızca sizin paylaşmayı seçtiğiniz bir bağlantı oluşturur; otomatik paylaşım yapılmaz.<br><br>'+
+    '<b>Meydan okuma bağlantısı:</b> Oluşturduğunuz bağlantıda yalnızca yazdığınız takma ad, skorunuz ve tarih taşınır. Bu bilgiler Locomotion\u2019a iletilmez ve saklanmaz; bağlantı sizin cihazınızda üretilir, kiminle paylaşacağınıza siz karar verirsiniz. Takma ad zorunlu değildir ve gerçek adınız olmak zorunda değildir.<br><br>'+
     '<b>Anonim istatistik (isteğe bağlı):</b> Ayrıca onay verirseniz yalnızca tur süreleriniz (milisaniye), erken dokunma sayınız ve test tarihi, hiçbir kimlik, cihaz veya IP bilgisi olmadan Locomotion\u2019a iletilir. Amaç, ziyaretçi ortalamasını hesaplamaktır. Veri kişiyle eşleştirilemediğinden geri çağrılamaz; onayı her testte yeniden verirsiniz, kutuyu işaretlemezseniz hiçbir şey gönderilmez.<br><br>'+
     'Ayrıntılı bilgi ve veri sorumlusu iletişim bilgileri için: locomotion.com.tr/kvkk<br>'+
     'Veri Sorumlusu: [Locomotion — ticari unvan/adres]';
 
   let state='idle', times=[], earlyCount=0, roundsDone=0, goAt=0, timerId=null, rafId=null, cdId=null;
   let practiceMode=false, practiceIndex=0, challengeTarget=null, duelRound=1, myLastScore=null;
+  let leaderName=null, leaderAt=null;
+  function esc(t){ return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function cleanName(t){ return String(t||'').replace(/[^\p{L}\p{N} ._-]/gu,'').trim().slice(0,20); }
+  function agoText(ts){
+    if(!ts) return '';
+    const d=Math.floor((Date.now()-ts)/86400000);
+    const h=Math.floor((Date.now()-ts)/3600000);
+    if(d>=1) return d+' gün önce';
+    if(h>=1) return h+' saat önce';
+    return 'az önce';
+  }
   let actx=null;
   function beep(freq,dur,vol){
     try{
@@ -960,18 +982,20 @@
     }
     step();
   }
-  function fmt(ms){ return (ms/1000).toFixed(3); }
-  function counter(ms){ return '<div class="rx-ms rx-live" id="rxLive">'+fmt(ms)+'<i> sn</i></div>'; }
+  function fmt(ms){ return String(Math.max(0,Math.round(ms))); }
+  function counter(ms){ return '<div class="rx-ms rx-live" id="rxLive">'+fmt(ms)+'<i> ms</i></div>'; }
   function tick(){
     const el=document.getElementById('rxLive');
     if(el) el.firstChild.nodeValue=fmt(performance.now()-goAt);
     rafId=requestAnimationFrame(tick);
   }
 
-  function shareUrl(best, opponentBest, round){
+  function shareUrl(best, opponentBest, round, name){
     let u = window.location.origin + window.location.pathname + '?meydan=' + best;
     if(round) u += '&tur=' + round;
-    if(opponentBest) u += '&skor=' + opponentBest; // rakibin bir önceki skoru: geri dönen linkte karşılaştırma için
+    if(opponentBest) u += '&skor=' + opponentBest;
+    if(name) u += '&ad=' + encodeURIComponent(name);
+    u += '&t=' + Date.now();
     return u;
   }
   function dots(){
@@ -986,28 +1010,31 @@
     const consented=raw.get(CONSENT_KEY)==='1';
     content.innerHTML=
       '<div class="rx-intro">'+
-      '<div class="rx-eyebrow" style="text-align:center">Reaksiyon Testi</div>'+
+      '<div class="rx-eyebrow" style="text-align:center">REACTO \u00b7 Görsel Reaksiyon Testi</div>'+
       '<h3>Ne kadar hızlısın?</h3>'+
-      '<p class="rx-sub">Önce 2 deneme, ardından 7 ölçüm turu \u2014 toplam yaklaşık 45 saniye.</p>'+
+      '<p class="rx-sub">Görsel reaksiyon testi. Önce 2 deneme, ardından 7 ölçüm turu \u2014 toplam yaklaşık 45 saniye.</p>'+
       (challengeTarget?
         '<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--amber)">'+
-          (duelRound>1?'RÖVANŞ \u00b7 '+duelRound+'. RAUND<br>':'SANA MEYDAN OKUNDU<br>')+
-          'GEÇMEN GEREKEN REKOR: '+challengeTarget+' MS'+
-          (myLastScore?'<br><span style="color:rgba(243,241,235,.55)">GEÇEN SEFERKİ REKORUN: '+myLastScore+' MS</span>':'')+
+          (duelRound>1?'RÖVANŞ \u00b7 '+duelRound+'. RAUND<br>':'TAHTTAKİ REKOR<br>')+
+          (leaderName?esc(leaderName).toUpperCase()+' \u2014 ':'')+'REACTO '+challengeTarget+
+          (leaderAt?' <span style="color:rgba(243,241,235,.45)">('+agoText(leaderAt)+')</span>':'')+
+          '<br><span style="color:rgba(243,241,235,.6)">GEÇERSEN TAHT SENİN</span>'+
+          (myLastScore?'<br><span style="color:rgba(243,241,235,.45)">GEÇEN SEFERKİ SKORUN: '+myLastScore+'</span>':'')+
         '</p>'
-        :(best?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">REKORUN: '+best+' ms</p>':''))+
+        :(best?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">EN İYİ REACTO SKORUN: '+best+'</p>':''))+
       '<ul class="rx-steps">'+
         '<li><b>01</b><span>Önce 2 deneme turu yaparsın; bu turlar ölçülmez, sadece alışman içindir.</span></li>'+
         '<li><b>02</b><span>Kırmızı ekranda sayaç 0.000\u2019da bekler. Ne zaman ambere döneceği rastgeledir; tahmin etmeye çalışma.</span></li>'+
         '<li><b>03</b><span>Ekran kırmızıdan ambere geçer geçmez dokun. Sayaç durur; o turun süren budur.</span></li>'+
-        '<li><b>04</b><span>Denemelerden sonra 7 ölçüm turu kendiliğinden akar, aralarda dokunmana gerek yok.</span></li>'+
-        '<li><b>05</b><span>Amber gelmeden dokunursan tur \u201cerken\u201d sayılır ve ortalamana girmez. Ceza değil, veri: kaç kez erken bastığın sonucunda görünür.</span></li>'+
+        '<li><b>04</b><span>Ses ve titreşim yalnızca geri bildirimdir; telefonda ikisi de görüntüden sonra ulaşır, o yüzden rengi bekle.</span></li>'+
+        '<li><b>05</b><span>Denemelerden sonra 7 ölçüm turu kendiliğinden akar, aralarda dokunmana gerek yok.</span></li>'+
+        '<li><b>06</b><span>Amber gelmeden dokunursan tur \u201cerken\u201d sayılır ve ortalamana girmez. Ceza değil, veri: kaç kez erken bastığın sonucunda görünür.</span></li>'+
       '</ul>'+
       '<p class="rx-key">Ekran <b class="c-red">kırmızıyken</b> bekle; <b class="c-amb">amber</b> renge döndüğü an dokun.</p>'+
       '<div class="rx-why">'+
-        '<b>Neden ölçüyoruz?</b> Basit reaksiyon süresi, sinir sistemi ile kas arasındaki iletişim hızının en eski ölçümlerinden biridir. Prehab Index\u2019te kontrol halkasının bir parçasıdır: vücudun bir uyarana ne kadar çabuk cevap verdiği.'+
+        '<b>Neden ölçüyoruz?</b> Basit görsel reaksiyon süresi, sinir sistemi ile kas arasındaki iletişim hızının en eski ölçümlerinden biridir. Prehab Index\u2019te kontrol halkasının bir parçasıdır: vücudun bir uyarana ne kadar çabuk cevap verdiği.'+
         '<details><summary>DAHA FAZLA OKU \u2193</summary>'+
-        '<p>Araştırmalarda reaksiyon süresi yaşla yavaşlama, uykusuzluk, yorgunluk ve alkolün etkisi, sporcularda sakatlık sonrası toparlanma takibi ve ileri yaşta düşme riskiyle ilişkisi açısından incelenir. Ortalama yetişkin basit görsel uyaranda yaklaşık 250\u2013270 ms civarındadır; bu kaba bir referanstır, kesin bir norm değildir.</p>'+
+        '<p>Araştırmalarda reaksiyon süresi yaşla yavaşlama, uykusuzluk, yorgunluk ve alkolün etkisi, sporcularda sakatlık sonrası toparlanma takibi ve ileri yaşta düşme riskiyle ilişkisi açısından incelenir. Laboratuvar koşullarında ortalama yetişkin görsel uyaranda yaklaşık 250\u2013270 ms civarındadır. Telefonda ölçülen süre bundan yüksek çıkar: ekranın tazeleme hızı, dokunmatik örnekleme ve tarayıcı gecikmesi toplamda 40\u2013100 ms ekler. Bu yüzden buradaki sayıyı literatürdeki değerlerle değil, kendi önceki denemelerinle kıyasla.</p>'+
         '<p>Bu test eğlence ve merak amaçlıdır; tanı koymaz, klinik bir değerlendirmenin yerini tutmaz.</p>'+
         '</details>'+
       '</div>'+
@@ -1035,16 +1062,27 @@
   }
 
   function startRound(){
-    state='waiting'; stage.className='rx-stage rx-waiting';
+    state='waiting'; stage.className='rx-stage rx-waiting'; goAt=0;
     content.innerHTML=
       '<div class="rx-eyebrow">'+(practiceMode?('Deneme '+(practiceIndex+1)+' / '+TOTAL_PRACTICE+' \u00b7 sayılmaz'):('Tur '+(roundsDone+1)+' / '+TOTAL_ROUNDS))+'</div>'+
       counter(0)+
-      '<p style="font-family:var(--mono);font-size:11px;letter-spacing:.16em">KIRMIZI \u2192 BEKLE &nbsp;\u00b7&nbsp; AMBER \u2192 DOKUN</p>'+dots();
+      '<div class="rx-word wait">BEKLE</div>'+dots();
     clearAll();
+    // Amber ekranı önceden kur, gizli tut: 'go' karesinde DOM yeniden kurulmasın
+    const goHTML='<div class="rx-eyebrow">Dokun</div>'+counter(0)+(practiceMode?'<div class="rx-word now">ŞİMDİ</div>':'')+dots();
+    const goBox=document.createElement('div');
+    goBox.style.display='none'; goBox.innerHTML=goHTML; content.appendChild(goBox);
     timerId=setTimeout(function(){
-      state='go'; stage.className='rx-stage rx-go'; goAt=performance.now(); beep(1040,0.18,0.18); buzz(120);
-      content.innerHTML='<div class="rx-eyebrow">Şimdi — dokun</div>'+counter(0)+dots();
-      rafId=requestAnimationFrame(tick);
+      state='go'; stage.className='rx-stage rx-go';
+      // görünür kıl: bekleyen içerik gizlenir, amber içerik açılır (yeniden parse yok)
+      Array.prototype.forEach.call(content.children,function(el){ el.style.display = (el===goBox)?'':'none'; });
+      goBox.style.display='';
+      // Zaman damgası boyamadan SONRA: bu rAF geri çağrısı, amber karesi ekrana verildikten sonra çalışır
+      requestAnimationFrame(function(){
+        goAt=performance.now();
+        beep(1040,0.18,0.18); buzz(120);   // ses/titreşim damgadan sonra: boyamayı geciktirmesin
+        rafId=requestAnimationFrame(tick);
+      });
     }, Math.random()<0.2 ? 4500+Math.random()*1500 : 1000+Math.random()*3000);
   }
   function earlyTap(){
@@ -1070,6 +1108,8 @@
     cdId=setTimeout(startRound,2200);
   }
   function recordTap(){
+    if(!goAt) return; // amber karesi henüz boyanmadı: ölçüm başlamadı
+    if(performance.now()-goAt < 150){ earlyTap(); return; } // 150 ms altı: tepki değil tahmin
     cancelAnimationFrame(rafId);
     const live=document.getElementById('rxLive');
     const ms=Math.round(performance.now()-goAt);
@@ -1080,7 +1120,7 @@
       const donePractice = practiceIndex>=TOTAL_PRACTICE;
       content.innerHTML=
         '<div class="rx-eyebrow">Deneme '+practiceIndex+' / '+TOTAL_PRACTICE+' \u00b7 sayılmaz</div>'+
-        '<div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+
+        '<div class="rx-ms">'+fmt(ms)+'<i> ms</i></div>'+
         '<p>'+(donePractice?'Denemeler bitti; gerçek ölçüm birazdan başlıyor.':'Sıradaki deneme birazdan.')+'</p>';
       beep(880,0.08,0.1); buzz(40);
       if(donePractice){ cdId=setTimeout(function(){ practiceMode=false; countdown(); },1400); }
@@ -1089,21 +1129,43 @@
     }
     times.push(ms); roundsDone++;
     if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,900);
-      content.innerHTML='<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div><div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+dots(); return; }
+      content.innerHTML='<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div><div class="rx-ms">'+fmt(ms)+'<i> ms</i></div>'+dots(); return; }
     content.innerHTML=
       '<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div>'+
-      '<div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+
-      '<p style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">'+ms+' MS</p>'+dots()+
+      '<div class="rx-ms">'+fmt(ms)+'<i> ms</i></div>'+dots()+
       '<p>Sonraki tur birazdan.</p>';
     beep(880,0.08,0.1); buzz(40);
     cdId=setTimeout(startRound,1200);
   }
-  function rating(avg){
-    if(avg<200) return 'REFLEKS MAKİNESİ ⚡';
-    if(avg<250) return 'SPORCU SEVİYESİ';
-    if(avg<300) return 'ORTALAMA ÜSTÜ';
-    if(avg<350) return 'ORTALAMA';
-    return 'ISINMAN LAZIM 🙂';
+  /* ---- REACTO skoru ----
+     Ekranda ölçülen süre, cihazın kendi gecikmesini de içerir. Bu gecikmeyi düşüp
+     saniyedeki tepki sayısına çeviriyoruz: yüksek skor = hızlı.
+     skor = 100000 / (ölçülen - cihaz gecikmesi), payda 120 ms'nin altına inemez. */
+  let frameMs = 16.7;                       // cihazın kare süresi, ölçülerek güncellenir
+  function probeRefresh(){
+    let n=0, first=0, last=0;
+    function step(t){
+      if(!n){ first=t; } else { last=t; }
+      if(++n<25){ requestAnimationFrame(step); }
+      else if(last>first){ frameMs=(last-first)/(n-2); }
+    }
+    requestAnimationFrame(step);
+  }
+  function deviceLag(){
+    // taban gecikme (dokunmatik örnekleme + OS/tarayıcı iletimi) + kare kuantumunun yarısı
+    return 45 + frameMs/2;
+  }
+  function reacto(ms){
+    const adj = Math.max(120, ms - deviceLag());
+    return Math.round(100000/adj);
+  }
+  function rating(score){
+    if(score>=450) return 'YILDIRIM';
+    if(score>=400) return 'KEDİ REFLEKSİ';
+    if(score>=350) return 'KALECİ ELİ';
+    if(score>=300) return 'UYANIK';
+    if(score>=260) return 'SABAH KAHVESİ SONRASI';
+    return 'HENÜZ ISINMADIN';
   }
   function showFinal(){
     state='finished'; stage.className='rx-stage';
@@ -1115,45 +1177,51 @@
     }
     const avg=Math.round(times.reduce(function(a,b){return a+b;},0)/times.length);
     const best=Math.min.apply(null,times);
+    const scoreBest=reacto(best), scoreAvg=reacto(avg);
     const prev=parseInt(store.get('locomotion_best_ms')||'99999',10);
-    if(avg<prev) store.set('locomotion_best_ms',String(avg));
+    if(scoreBest>parseInt(store.get('locomotion_best_ms')||'0',10)) store.set('locomotion_best_ms',String(scoreBest));
     sendStats({times:times.slice(),early:earlyCount,date:new Date().toISOString().slice(0,10)});
     let verdict='', duelWin=null;
     if(challengeTarget){
-      duelWin = best < challengeTarget;
-      const diff = Math.abs(challengeTarget - best);
+      duelWin = scoreBest > challengeTarget;
+      const diff = Math.abs(challengeTarget - scoreBest);
       verdict='<div class="rx-verdict '+(duelWin?'win':'lose')+'">'+
-        (duelWin? 'KAZANDIN \u2014 '+diff+' MS DAHA HIZLISIN' : 'KAYBETTİN \u2014 SADECE '+diff+' MS GERİDESİN')+
-        '<span>RAKİBİN REKORU: '+challengeTarget+' MS &nbsp;\u00b7&nbsp; SENİN REKORUN: '+best+' MS</span>'+
-        (duelWin?'':'<span style="opacity:1;color:var(--bone);margin-top:7px">'+(diff<=40?'Çok az kaldı. Bir tur daha at.':'Bir tur daha at, ısındıkça hızlanırsın.')+'</span>')+
+        (duelWin? 'TAHT SENİN \u2014 '+diff+' PUAN ÖNDESİN' : 'TAHT HÂLÂ '+(leaderName?esc(leaderName).toUpperCase()+'\u2019DA':'RAKİBİNDE')+' \u2014 SADECE '+diff+' PUAN GERİDESİN')+
+        '<span>'+(leaderName?esc(leaderName).toUpperCase():'RAKİBİN')+': '+challengeTarget+' &nbsp;\u00b7&nbsp; SEN: '+scoreBest+'</span>'+
+        (duelWin?'':'<span style="opacity:1;color:var(--bone);margin-top:7px">'+(diff<=25?'Çok az kaldı. Bir tur daha at.':'Bir tur daha at, ısındıkça hızlanırsın.')+'</span>')+
       '</div>';
     }
     content.innerHTML=
-      '<div class="rx-eyebrow">Sonuç</div>'+
+      '<div class="rx-eyebrow">REACTO Skorun</div>'+
       verdict+
-      '<div class="rx-ms">'+avg+'<i> ms</i></div>'+
+      '<div class="rx-ms">'+scoreBest+'</div>'+
+      '<div class="rx-rating">'+rating(scoreBest)+'</div>'+
       '<div class="rx-resgrid">'+
-        '<div class="rx-rescell"><div class="rx-lbl">En Hızlı Tur</div><div class="rx-val">'+best+'<i> ms</i></div></div>'+
+        '<div class="rx-rescell"><div class="rx-lbl">Ortalama Skor</div><div class="rx-val">'+scoreAvg+'</div></div>'+
         '<div class="rx-rescell"><div class="rx-lbl">Geçerli / Erken</div><div class="rx-val">'+times.length+' <i>/</i> '+earlyCount+'</div></div>'+
       '</div>'+
-      '<div class="rx-rating">'+rating(avg)+'</div>'+
+      '<p class="rx-raw">ham ölçüm: en hızlı tur '+best+' ms \u00b7 ortalama '+avg+' ms<br>'+
+        '<span>REACTO skoru, cihazının gecikmesi (~'+Math.round(deviceLag())+' ms) düşülerek hesaplanır. Yüksek skor = hızlı.</span></p>'+
       '<p style="margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:rgba(243,241,235,.55)">REAKSİYON, PREHAB INDEX\u2019İN KONTROL HALKASININ PARÇASIDIR</p>'+
       (duelWin===false
-        ? '<button class="rx-cta" id="rxRematchBtn">Rövanş \u2192<small>'+challengeTarget+' MS\u2019NİN ALTINA İN</small></button>'+
+        ? '<button class="rx-cta" id="rxRematchBtn">Rövanş \u2192<small>'+challengeTarget+' PUANI GEÇ</small></button>'+
           '<div class="rx-btnrow"><button class="rx-btn rx-ghost" id="rxBridge">Prehab Index\u2019i dene</button></div>'
         : '<button class="rx-cta" id="rxBridge">Prehab Index\u2019i dene \u2192<small>VÜCUDUN NE KADAR HAZIR?</small></button>'+
           '<div class="rx-btnrow"><button class="rx-btn rx-ghost" id="rxAgainBtn">Tekrar</button></div>')+
       '<p style="margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(243,241,235,.5)">'+
         (challengeTarget
           ? (duelWin?'SONUCU GERİ GÖNDER \u2014 RAKİBİN HABERSİZ':'SONUCU GERİ GÖNDER, RÖVANŞ İSTE')
-          : 'REKORUN <b style="color:var(--amber)">'+best+' MS</b> \u2014 GEÇEBİLECEK Mİ?')+
+          : 'REACTO SKORUN <b style="color:var(--amber)">'+scoreBest+'</b> \u2014 GEÇEBİLECEK Mİ?')+
       '</p>'+
+      '<div class="rx-name"><input id="rxName" type="text" maxlength="20" placeholder="Takma adın (isteğe bağlı)" aria-label="Takma adın" /><small>Linkte görünür. Gerçek adın olması gerekmez; boş bırakırsan \u201cbir rakip\u201d yazar.</small></div>'+
       '<div class="rx-share">'+
         '<button class="rx-share-btn wa" id="rxShareWa" aria-label="WhatsApp\u2019ta meydan oku"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i>WhatsApp\u2019ta meydan oku</button>'+
         '<button class="rx-share-btn ig" id="rxShareIg" aria-label="Instagram\u2019da meydan oku"><i class="ti ti-brand-instagram" aria-hidden="true"></i>Instagram\u2019da meydan oku</button>'+
         (navigator.share?'<button class="rx-share-btn" id="rxShareMore" aria-label="Diğer uygulamada meydan oku"><i class="ti ti-share-2" aria-hidden="true"></i>Diğer</button>':'')+
         '<button class="rx-share-btn" id="rxShareCopy" aria-label="Bağlantıyı kopyala"><i class="ti ti-link" aria-hidden="true"></i>Linki kopyala</button>'+
       '</div>';
+    const nameEl=document.getElementById('rxName');
+    if(nameEl){ ['click','pointerdown','keydown'].forEach(function(ev){ nameEl.addEventListener(ev,function(e){e.stopPropagation();}); }); }
     const againBtn=document.getElementById('rxAgainBtn');
     if(againBtn) againBtn.addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
     const rematchBtn=document.getElementById('rxRematchBtn');
@@ -1166,32 +1234,41 @@
       const t=document.getElementById('heroGame'); if(t) t.scrollIntoView({behavior:'smooth',block:'center'});
     });
     (function(){
-      const url=shareUrl(best, challengeTarget||null, challengeTarget?duelRound+1:1);
-      const stats='('+times.length+' geçerli tur, ortalama '+avg+' ms'+(earlyCount?', '+earlyCount+' erken':'')+')';
-      let text;
-      if(challengeTarget && duelWin){
-        text='⚡ Geçtim: '+best+' ms. Senin rekorun '+challengeTarget+' ms\u2019ydi.\n'+stats+'\nRövanş?';
-      } else if(challengeTarget){
-        text='⚡ '+best+' ms yaptım, '+Math.abs(challengeTarget-best)+' ms geride kaldım. Rövanş istiyorum.\n'+stats;
-      } else {
-        text='⚡ Rekorum '+best+' ms. Sıra sende.\n'+stats+'\nLocomotion Reaksiyon Testi \u2014 7 tur, 45 saniye:';
+      const stats='('+times.length+' geçerli tur, ortalama skor '+scoreAvg+(earlyCount?', '+earlyCount+' erken':'')+')';
+      function myName(){ const el=document.getElementById('rxName'); return cleanName(el?el.value:''); }
+      function payload(){
+        const nm=myName();
+        const url=shareUrl(scoreBest, challengeTarget||null, challengeTarget?duelRound+1:1, nm||null);
+        const who=nm?nm+' \u2014 ':'';
+        let text;
+        if(challengeTarget && duelWin){
+          text='\u265b Taht bende: '+who+'REACTO '+scoreBest+'.\n'+(leaderName?leaderName+'\u2019ın skoru '+challengeTarget+'\u2019di.':'Önceki skor '+challengeTarget+'\u2019di.')+'\n'+stats+'\nGeçen olursa taht onun:';
+        } else if(challengeTarget){
+          text='⚡ '+who+'REACTO '+scoreBest+'. Tahtı alamadım, '+Math.abs(challengeTarget-scoreBest)+' puan kaldı.\n'+stats+'\nDeneyen var mı?';
+        } else {
+          text='\u265b Taht bende: '+who+'REACTO '+scoreBest+'.\n'+stats+'\nGeçen olursa taht onun \u2014 7 tur, 45 saniye:';
+        }
+        return {text:text, url:url};
       }
-      function copy(){ if(navigator.clipboard) return navigator.clipboard.writeText(text+' '+url).catch(function(){}); }
+      function copy(){ const p=payload(); if(navigator.clipboard) return navigator.clipboard.writeText(p.text+'\n'+p.url).catch(function(){}); }
       const wa=document.getElementById('rxShareWa');
       if(wa) wa.addEventListener('click',function(e){
         e.stopPropagation();
-        window.open('https://wa.me/?text='+encodeURIComponent(text+' '+url),'_blank','noopener');
+        const p=payload();
+        window.open('https://wa.me/?text='+encodeURIComponent(p.text+'\n'+p.url),'_blank','noopener');
       });
       const ig=document.getElementById('rxShareIg');
       if(ig) ig.addEventListener('click',function(e){
         e.stopPropagation();
-        if(navigator.share){ navigator.share({title:'Locomotion Reaksiyon Lab',text:text,url:url}).catch(function(){}); }
+        const p=payload();
+        if(navigator.share){ navigator.share({title:'Locomotion REACTO',text:p.text,url:p.url}).catch(function(){}); }
         else { copy(); showToast('Link kopyalandı — Instagram\u2019da hikayene veya DM\u2019e yapıştır'); }
       });
       const more=document.getElementById('rxShareMore');
       if(more) more.addEventListener('click',function(e){
         e.stopPropagation();
-        navigator.share({title:'Locomotion Reaksiyon Lab',text:text,url:url}).catch(function(){});
+        const p=payload();
+        navigator.share({title:'Locomotion REACTO',text:p.text,url:p.url}).catch(function(){});
       });
       const cp=document.getElementById('rxShareCopy');
       if(cp) cp.addEventListener('click',function(e){
@@ -1216,6 +1293,7 @@
     overlay.classList.add('open');
     overlay.setAttribute('aria-hidden','false');
     document.body.style.overflow='hidden';
+    probeRefresh();
     showIntro();
   }
   function closeModal(){
@@ -1240,6 +1318,8 @@
     challengeTarget = parseInt(target,10) || null;
     duelRound = parseInt(q.get('tur'),10) || 1;
     myLastScore = parseInt(q.get('skor'),10) || null;
+    leaderName = cleanName(q.get('ad')) || null;
+    leaderAt = parseInt(q.get('t'),10) || null;
     setTimeout(function(){ openModal(); },300);
   })();
   // hero panel: whole surface opens the modal (except the anchor, which handles itself)
