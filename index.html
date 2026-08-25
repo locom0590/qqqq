@@ -1,799 +1,1172 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Locomotion · performans bataryası</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Locomotion — Academy &amp; Studio</title>
+<meta name="description" content="Hekim değerlendirmesiyle başlayan, bilimsel triyaj protokolüne dayalı medikal fitness. Locomotion Academy & Studio." />
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
   :root{
-    --ink:#12161C; --ink2:#1A202A; --ink3:#232B36;
-    --ivory:#ECE7DC; --copper:#C9855A; --steel:#8CA3B8;
-    --dim:#5F6E7C; --danger:#8A2F2F; --line:#2A3340;
+    --bone:#F3F1EB;
+    --bone-2:#EAE7DE;
+    --navy:#1F3864;
+    --deep:#111D33;
+    --deep-2:#1A2A4A;
+    --amber:#D9912B;
+    --steel:#7C8698;
+    --ink:#171E2B;
+    --line:rgba(23,30,43,.12);
+    --radius:22px;--ok:#8FD49B;--warn:#E8B15E;--bad:#E77D6A;
+    --disp:'Archivo',system-ui,sans-serif;
+    --body:'IBM Plex Sans',system-ui,sans-serif;
+    --mono:'IBM Plex Mono',ui-monospace,monospace;
   }
-  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
-  body{background:var(--ink);color:var(--ivory);
-    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-    overflow:hidden;touch-action:manipulation}
-  .stage{position:absolute;inset:0;display:none;flex-direction:column;padding:24px;overflow-y:auto}
-  .stage.active{display:flex}
-  .eyebrow{font-size:12px;letter-spacing:3px;color:var(--copper);text-transform:uppercase}
-  .sub{font-size:13px;color:var(--steel)}
-  h1{font-size:32px;font-weight:500;margin:6px 0 2px}
-  .ruler{display:flex;align-items:flex-end;height:22px;margin:18px 0}
-  .ruler i{flex:1;border-left:2px solid var(--ink3);height:10px}
-  .ruler i.major{height:20px;border-left-color:var(--dim)}
-  .ruler i.major.done{border-left-color:var(--copper)}
-  button{font:inherit;color:var(--ivory);background:transparent;
-    border:1px solid var(--dim);border-radius:10px;padding:14px 18px;
-    font-size:15px;cursor:pointer;width:100%}
-  button.primary{border-color:var(--copper);color:var(--copper);font-weight:500}
-  button:focus-visible{outline:2px solid var(--copper);outline-offset:2px}
-  button:active{transform:scale(.985)}
-  .btnrow{display:flex;flex-direction:column;gap:10px;margin-top:auto;padding-top:20px}
-  input[type=text],select{font:inherit;font-size:15px;color:var(--ivory);
-    background:var(--ink2);border:1px solid var(--ink3);border-radius:10px;
-    padding:12px 14px;width:100%}
-  label{font-size:12px;color:var(--steel);display:block;margin:16px 0 6px}
-  .rules{margin-top:16px;display:flex;flex-direction:column;gap:9px}
-  .rules p{font-size:14px;line-height:1.5}
-  .rules p b{color:var(--copper);font-weight:500}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--bone);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  img{max-width:100%}
+  ::selection{background:var(--amber);color:var(--deep)}
 
-  /* hub */
-  .gamelist{display:flex;flex-direction:column;gap:10px;margin-top:20px}
-  .gamecard{background:var(--ink2);border:1px solid var(--ink3);border-radius:12px;
-    padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left}
-  .gamecard.done{border-color:var(--copper)}
-  .gamecard .gi{font-size:11px;letter-spacing:2px;color:var(--copper);width:62px;flex-shrink:0}
-  .gamecard .gt{flex:1}
-  .gamecard .gt .n{font-size:16px;font-weight:500}
-  .gamecard .gt .d{font-size:12px;color:var(--steel);margin-top:2px}
-  .gamecard .gs{font-size:18px;font-weight:500;color:var(--copper);
-    font-variant-numeric:tabular-nums;text-align:right}
-  .gamecard .gs small{display:block;font-size:10px;color:var(--dim);font-weight:400}
-  .synth{margin-top:18px;border:1px solid var(--copper);border-radius:12px;padding:14px 16px}
-  .synth .sl{font-size:11px;letter-spacing:2px;color:var(--copper);text-transform:uppercase}
-  .synth .sv{font-size:28px;font-weight:500;margin-top:6px;font-variant-numeric:tabular-nums}
-  .synth .sd{font-size:12px;color:var(--steel);margin-top:4px;line-height:1.5}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
 
-  /* şimşek + pusula sahnesi */
-  .playstage{padding:0}
-  #tapzone,#compasszone{flex:1;position:relative;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;user-select:none;-webkit-user-select:none;
-    touch-action:none}
-  #tapzone.go{background:var(--copper)}
-  #tapzone.bad,#compasszone.bad{background:var(--danger)}
-  #tapword{font-size:44px;font-weight:500;letter-spacing:2px;color:var(--dim)}
-  #tapzone.go #tapword{color:var(--ink);font-size:56px}
-  #tapzone.bad #tapword{color:var(--ivory)}
-  #tapsub{font-size:14px;color:var(--dim);margin-top:10px}
-  #tapzone.go #tapsub{color:var(--ink)}
-  .topruler{position:absolute;top:0;left:0;right:0;padding:14px 24px 0;pointer-events:none;z-index:2}
-  .feedline{position:absolute;bottom:24px;left:0;right:0;text-align:center;
-    font-size:15px;color:var(--steel);pointer-events:none;z-index:2}
-  .feedline b{color:var(--ivory);font-variant-numeric:tabular-nums}
+  /* ---------- NAV ---------- */
+  nav{position:sticky;top:0;z-index:50;background:rgba(243,241,235,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
+  .wordmark{font-family:var(--disp);font-weight:900;font-size:20px;letter-spacing:.14em;color:var(--navy)}
+  .wordmark small{display:block;font-family:var(--mono);font-weight:400;font-size:9.5px;letter-spacing:.32em;color:var(--steel);margin-top:1px}
+  .nav-links{display:flex;gap:28px;align-items:center;font-size:14px;font-weight:500}
+  .nav-links a{color:#3a4252;transition:color .15s}
+  .nav-links a:hover{color:var(--navy)}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:600;font-size:14px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--navy);color:var(--navy);transition:all .18s;cursor:pointer;background:transparent}
+  .btn:hover{background:var(--navy);color:var(--bone)}
+  .btn.solid{background:var(--navy);color:var(--bone)}
+  .btn.solid:hover{background:var(--deep)}
+  .btn.amber{background:var(--amber);border-color:var(--amber);color:var(--deep)}
+  .btn.amber:hover{background:#c07f21;border-color:#c07f21}
+  @media(max-width:760px){.nav-links a:not(.btn){display:none}}
 
-  /* pusula yön butonları */
-  .padgrid{position:absolute;inset:0;display:grid;
-    grid-template-columns:1fr 1fr 1fr;grid-template-rows:1fr 1fr 1fr}
-  .pad{border:none;background:transparent;border-radius:0;padding:0;
-    display:flex;align-items:center;justify-content:center;color:var(--ink3);font-size:26px}
-  .pad.up{grid-area:1/2/2/3} .pad.down{grid-area:3/2/4/3}
-  .pad.left{grid-area:2/1/3/2} .pad.right{grid-area:2/3/3/4}
-  .pad:active{background:var(--ink2)}
-  #arrow{grid-area:2/2/3/3;display:flex;align-items:center;justify-content:center;
-    font-size:96px;font-weight:500;color:var(--dim);pointer-events:none}
-  #arrow.live{color:var(--copper)}
+  /* ---------- HERO ---------- */
+  .hero{padding:72px 0 40px}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+  @media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;font-weight:500;margin-bottom:18px}
+  h1{font-family:var(--disp);font-weight:900;font-size:clamp(38px,5.4vw,62px);line-height:1.04;letter-spacing:-.015em;color:var(--navy)}
+  h1 .stroke{color:transparent;-webkit-text-stroke:1.6px var(--navy)}
+  .hero p.lead{margin:22px 0 30px;font-size:17px;color:#454e60;max-width:46ch}
+  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+  .hero-note{margin-top:26px;font-family:var(--mono);font-size:12px;color:var(--steel);letter-spacing:.04em}
 
-  /* sonuç */
-  .hero{margin-top:22px}
-  .hero .num{font-size:70px;font-weight:500;line-height:1;font-variant-numeric:tabular-nums}
-  .hero .unit{font-size:22px;color:var(--steel);margin-left:6px}
-  .hero .cap{font-size:13px;color:var(--steel);margin-top:6px}
-  .metrics{display:flex;gap:9px;margin-top:20px}
-  .metric{flex:1;background:var(--ink2);border-radius:10px;padding:11px}
-  .metric .v{font-size:19px;font-weight:500;font-variant-numeric:tabular-nums}
-  .metric .l{font-size:10px;color:var(--steel);margin-top:3px}
-  .scorebox{margin-top:13px;border:1px solid var(--copper);border-radius:10px;
-    padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
-  .scorebox .s{font-size:24px;font-weight:500;color:var(--copper);font-variant-numeric:tabular-nums}
-  .scorebox .t{font-size:12px;color:var(--steel);text-align:right}
-  .chartbox{margin-top:20px}
-  .charttitle{font-size:12px;color:var(--steel);margin-bottom:8px}
-  .chartcap{font-size:11px;color:var(--dim);margin-top:6px}
-  .chartbox svg{width:100%;height:auto;display:block}
-  #cardwrap{margin-top:18px;display:flex;justify-content:center}
-  #cardcanvas{width:min(58vw,215px);height:auto;border-radius:14px;border:1px solid var(--ink3)}
-  .note{font-size:11px;color:var(--dim);margin-top:14px;line-height:1.5}
-  #newrecord{color:var(--copper)}
-  @media (prefers-reduced-motion:no-preference){
-    .pulse{animation:pl 1.6s ease-in-out infinite}
-    @keyframes pl{50%{opacity:.55}}
+  /* assessment dashboard panel */
+  .lab{position:relative;background:linear-gradient(160deg,#14213C 0%,#0F1A30 55%,#182B50 100%);border-radius:28px;padding:28px;box-shadow:0 30px 60px -30px rgba(17,29,51,.55);overflow:hidden}
+  .lab::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(243,241,235,.06) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
+  .dash{position:relative}
+  .dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .dash-title{font-family:var(--mono);font-size:12px;letter-spacing:.24em;color:rgba(243,241,235,.85);font-weight:500}
+  .dash-tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--amber);border:1px solid rgba(217,145,43,.5);border-radius:999px;padding:4px 10px}
+  .dash-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center}
+  @media(max-width:460px){.dash-grid{grid-template-columns:1fr}}
+  .radar-wrap svg{display:block;width:100%;height:auto}
+  .metrics{display:flex;flex-direction:column;gap:16px}
+  .metric .m-row{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:rgba(243,241,235,.6);margin-bottom:6px}
+  .metric .m-row b{font-size:15px;color:var(--bone);font-weight:500;letter-spacing:0}
+  .metric .m-row i{font-style:normal;font-size:10px;color:rgba(243,241,235,.45)}
+  .m-bar{height:6px;border-radius:99px;background:rgba(243,241,235,.12);overflow:hidden}
+  .m-bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D9912B,#E8B15E)}
+  .dash-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(243,241,235,.12);flex-wrap:wrap}
+  .spark{flex:1;min-width:170px}
+  .spark-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:rgba(243,241,235,.55);margin-bottom:8px}
+  .spark-label b{color:var(--amber);font-weight:500}
+  .spark svg{width:100%;max-width:200px;height:44px;display:block}
+  .triage-chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:#8FD49B;border:1px solid rgba(143,212,155,.45);background:rgba(46,125,50,.16);border-radius:10px;padding:9px 13px}
+  .dash-note{margin-top:16px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:rgba(243,241,235,.35)}
+
+  /* hero game launcher */
+  .lab-game{display:flex;flex-direction:column;cursor:pointer}
+  .hg-body{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px 14px;position:relative;z-index:1}
+  .hg-q{font-family:var(--disp);font-weight:900;font-size:clamp(88px,10vw,130px);line-height:1;color:var(--bone);letter-spacing:-.02em}
+  .hg-q i{font-style:normal;font-size:.3em;color:var(--amber);font-weight:800}
+  .hg-body h3{font-family:var(--disp);font-weight:900;font-size:clamp(22px,2.6vw,30px);color:var(--bone);margin-top:14px}
+  .hg-body p{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--steel);margin-top:10px}
+  .hg-avg{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:rgba(243,241,235,.5);margin-top:16px;border-top:1px solid rgba(243,241,235,.12);padding-top:14px;width:100%;max-width:280px}
+  .lab-game .btn{margin-top:20px}
+  .hg-tabs{display:flex;gap:6px;background:rgba(243,241,235,.06);border:1px solid rgba(243,241,235,.12);border-radius:999px;padding:4px}
+  .hg-tab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:rgba(243,241,235,.6);background:transparent;border:none;border-radius:999px;padding:7px 12px;cursor:pointer;transition:all .15s}
+  .hg-tab.on{background:var(--amber);color:var(--deep)}
+  .hg-pane{display:none}
+  .hg-pane.on{display:block}
+  .hg-mini{position:relative;z-index:1;padding:14px 4px 6px;cursor:default}
+  .hg-mini .sl{grid-template-columns:96px 1fr 22px;padding:7px 0;font-size:10px}
+  .hg-mini .hg-res{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(243,241,235,.12)}
+  .hg-mini .hg-num{font-family:var(--disp);font-weight:900;font-size:64px;line-height:.9;color:var(--amber);letter-spacing:-.03em}
+  .hg-mini .hg-num small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.2em;color:rgba(243,241,235,.55);margin-bottom:6px}
+  .hg-mini .hg-meta{text-align:right;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:rgba(243,241,235,.65);line-height:1.9}
+  .hg-mini .hg-meta b{color:var(--bone);font-weight:500}
+  .hg-mini .hg-meta b.bad{color:var(--bad)}
+  .hg-mini .hg-link{display:block;margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--amber);text-decoration:none}
+  @media(max-width:900px){
+    .hero{padding:26px 0 34px}
+    .lab-game{order:-1}
   }
-  .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
-  /* KVKK: aydınlatma metni + rıza + yaş uyarısı */
-  .privacynotice{margin-top:16px;background:var(--ink2);border:1px solid var(--ink3);
-    border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
-  .privacynotice p{font-size:12px;line-height:1.6;color:var(--steel)}
-  .privacynotice p b{color:var(--ivory);font-weight:500}
-  .agewarn{font-size:12px;line-height:1.5;color:var(--danger);margin-top:8px;
-    border:1px solid var(--danger);border-radius:8px;padding:10px 12px}
-  .consentrow{display:flex;align-items:flex-start;gap:10px;margin-top:18px;cursor:pointer}
-  .consentrow input[type=checkbox]{width:20px;height:20px;flex-shrink:0;accent-color:var(--copper);
-    margin-top:1px}
-  .consentrow span{font-size:12px;line-height:1.5;color:var(--ivory)}
-  button:disabled{opacity:.4;cursor:not-allowed}
-  button:disabled:active{transform:none}
-  #deletedatabtn{border-color:var(--danger);color:var(--danger)}
+  /* ---------- GAIT STRIP ---------- */
+  .gait{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bone-2)}
+  .gait-in{display:grid;grid-template-columns:repeat(4,1fr)}
+  @media(max-width:820px){.gait-in{grid-template-columns:repeat(2,1fr)}}
+  .phase{padding:26px 22px;border-left:1px solid var(--line)}
+  .phase:first-child{border-left:none}
+  @media(max-width:820px){.phase:nth-child(3){border-left:none}.phase{border-top:1px solid var(--line)}.phase:nth-child(-n+2){border-top:none}}
+  .phase .ph{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--amber);text-transform:uppercase}
+  .phase h3{font-family:var(--disp);font-weight:800;font-size:17px;color:var(--navy);margin:6px 0 4px}
+  .phase p{font-size:13.5px;color:#596172}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:88px 0}
+  .sec-head{max-width:640px;margin-bottom:48px}
+  .sec-head h2{font-family:var(--disp);font-weight:900;font-size:clamp(28px,3.6vw,40px);color:var(--navy);letter-spacing:-.01em;line-height:1.12}
+  .sec-head p{margin-top:14px;color:#4b5468;font-size:16px}
+
+  /* approach cards */
+  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+  @media(max-width:820px){.cards{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px 28px;position:relative;transition:transform .2s, box-shadow .2s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(17,29,51,.28)}
+  .card .num{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--amber)}
+  .card h3{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--navy);margin:10px 0 10px}
+  .card p{font-size:14.5px;color:#535c6e}
+
+  /* programs */
+  .prog{background:var(--deep);color:var(--bone);border-radius:34px;padding:72px 0}
+  .prog .sec-head h2{color:var(--bone)}
+  .prog .sec-head p{color:#aab3c4}
+  .prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  @media(max-width:860px){.prog-grid{grid-template-columns:1fr}}
+  .pcard{border:1px solid rgba(243,241,235,.14);border-radius:var(--radius);padding:30px 26px;background:linear-gradient(170deg,rgba(243,241,235,.05),rgba(243,241,235,.01))}
+  .pcard .tag{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--amber);text-transform:uppercase}
+  .pcard h3{font-family:var(--disp);font-weight:800;font-size:22px;margin:12px 0 10px}
+  .pcard p{font-size:14px;color:#b8c0d0}
+  .pcard ul{margin-top:16px;list-style:none}
+  .pcard li{font-size:13.5px;color:#cfd6e2;padding:7px 0;border-top:1px solid rgba(243,241,235,.1);display:flex;gap:10px}
+  .pcard li::before{content:"→";color:var(--amber);flex-shrink:0}
+
+  /* principles */
+  .principles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media(max-width:820px){.principles{grid-template-columns:1fr}}
+  .pr{border-top:2px solid var(--navy);padding-top:20px}
+  .pr .big{font-family:var(--disp);font-weight:900;font-size:34px;color:var(--navy);letter-spacing:-.02em}
+  .pr .big span{color:var(--amber)}
+  .pr p{font-size:14px;color:#535c6e;margin-top:8px}
+
+  /* contact / footer */
+  .game-band{background:linear-gradient(150deg,#16233F,#0F1A30);border:1px solid rgba(217,145,43,.4);border-radius:34px;padding:56px 48px;display:flex;align-items:center;justify-content:space-between;gap:36px;flex-wrap:wrap;position:relative;overflow:hidden}
+  .game-band::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(217,145,43,.18),transparent 70%);pointer-events:none}
+  .game-band h2{font-family:var(--disp);font-weight:900;font-size:clamp(26px,3.2vw,36px);color:var(--bone);letter-spacing:-.01em;margin:14px 0 12px}
+  .game-band p{color:#aab3c4;font-size:15px;max-width:42ch;margin-bottom:24px}
+  .game-band .eyebrow{margin-bottom:0}
+  .game-ms{text-align:right}
+  .game-ms b{font-family:var(--disp);font-weight:900;font-size:clamp(64px,9vw,110px);color:var(--bone);letter-spacing:-.03em;line-height:1;display:block}
+  .game-ms b i{font-style:normal;font-size:.32em;color:var(--amber)}
+  .game-ms span{display:block;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--steel)}
+  @media(max-width:700px){.game-ms{text-align:left}}
+  .cta-band{background:var(--navy);border-radius:34px;padding:64px 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+  .cta-band h2{font-family:var(--disp);font-weight:900;font-size:clamp(26px,3.2vw,36px);color:var(--bone);letter-spacing:-.01em;max-width:20ch;line-height:1.15}
+  .cta-band p{color:#b9c3d6;margin-top:10px;font-size:15px;max-width:44ch}
+  footer{padding:56px 0 40px;border-top:1px solid var(--line);margin-top:88px}
+  .foot{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
+  .foot .wordmark{font-size:18px}
+  .foot-col{font-size:13.5px;color:#596172}
+  .foot-col b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--navy);text-transform:uppercase;margin-bottom:10px}
+  .foot-col a{display:block;padding:3px 0}
+  .foot-col a:hover{color:var(--navy)}
+  .legal{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--steel);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease, transform .6s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media (prefers-reduced-motion: reduce){
+    .reveal{opacity:1;transform:none;transition:none}
+    html{scroll-behavior:auto}
+  }
+
+  /* ---------- REAKSİYON MODAL (rx- scoped) ---------- */
+  .rx-overlay{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;background:linear-gradient(160deg,#14213C 0%,#0F1A30 60%,#182B50 100%)}
+  .rx-overlay.open{display:flex}
+  .rx-overlay::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(243,241,235,.06) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
+  .rx-top{display:flex;justify-content:space-between;align-items:center;padding:18px 22px;position:relative;z-index:2}
+  .rx-title{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--amber)}
+  .rx-close{background:transparent;border:1.5px solid rgba(243,241,235,.35);color:var(--bone);width:42px;height:42px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;transition:all .15s}
+  .rx-close:hover{border-color:var(--amber);color:var(--amber)}
+  .rx-main{flex:1;display:flex;align-items:center;justify-content:center;padding:16px 20px;position:relative;z-index:2;overflow-y:auto}
+  .rx-stage{width:min(560px,100%);border-radius:26px;min-height:min(62vh,500px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 24px;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border:1px solid rgba(243,241,235,.14);background:rgba(243,241,235,.04);transition:background .12s;color:var(--bone)}
+  .rx-stage.rx-waiting{background:rgba(224,102,102,.10);border-color:rgba(224,102,102,.4)}
+  .rx-stage.rx-go{background:var(--amber);border-color:var(--amber);color:var(--deep)}
+  .rx-stage.rx-early{background:rgba(224,102,102,.2);border-color:#E06666}
+  .rx-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--amber);text-transform:uppercase;margin-bottom:14px}
+  .rx-stage.rx-go .rx-eyebrow{color:var(--deep)}
+  .rx-stage h3{font-family:var(--disp);font-weight:900;font-size:clamp(24px,6vw,38px);line-height:1.1;letter-spacing:-.01em;color:inherit}
+  .rx-stage p{margin-top:14px;font-size:15px;color:var(--steel);max-width:36ch}
+  .rx-stage.rx-go p{color:rgba(20,33,60,.75)}
+  .rx-ms{font-family:var(--disp);font-weight:900;font-size:clamp(64px,16vw,110px);line-height:1;letter-spacing:-.02em}
+  .rx-ms.rx-live{font-variant-numeric:tabular-nums;color:rgba(243,241,235,.45)}
+  .rx-stage.rx-go .rx-ms.rx-live{color:var(--deep)}
+  .rx-ms.rx-live i{color:inherit;opacity:.7}
+  .rx-ms i{font-style:normal;font-size:.32em;color:var(--amber);font-weight:800}
+  .rx-stage.rx-go .rx-ms i{color:var(--deep)}
+  .rx-rounds{display:flex;gap:10px;margin-top:22px}
+  .rx-dot{width:12px;height:12px;border-radius:50%;background:rgba(243,241,235,.18)}
+  .rx-dot.rx-done{background:var(--amber)}
+  .rx-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--disp);font-weight:800;font-size:15px;padding:13px 26px;border-radius:999px;border:none;cursor:pointer;background:var(--amber);color:var(--deep);margin-top:24px;transition:transform .12s}
+  .rx-btn:active{transform:scale(.97)}
+  .rx-btn.rx-ghost{background:transparent;border:1.5px solid rgba(243,241,235,.4);color:var(--bone)}
+  .rx-count{font-family:var(--disp);font-weight:900;font-size:clamp(110px,28vw,180px);line-height:1;color:var(--bone);letter-spacing:-.03em}
+  .rx-cta{display:block;width:100%;max-width:340px;margin:18px auto 0;background:var(--amber);color:var(--deep);font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:-.01em;padding:18px 20px;border-radius:18px;border:none;cursor:pointer;text-align:center;transition:transform .12s}
+  .rx-cta:active{transform:scale(.98)}
+  .rx-cta small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.2em;margin-top:4px;opacity:.75}
+  .rx-btnrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .rx-resgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:340px;margin-top:22px}
+  .rx-rescell{border:1px solid rgba(243,241,235,.14);border-radius:14px;padding:12px}
+  .rx-rescell .rx-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--steel);text-transform:uppercase}
+  .rx-rescell .rx-val{font-family:var(--disp);font-weight:900;font-size:24px;margin-top:4px}
+  .rx-rescell .rx-val i{font-style:normal;font-size:12px;color:var(--amber)}
+  .rx-rating{margin-top:16px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:#8FD49B;border:1px solid rgba(143,212,155,.4);border-radius:10px;padding:8px 14px;display:inline-block}
+  .rx-intro{width:100%;max-width:460px;text-align:left}
+  .rx-intro h3{text-align:center}
+  .rx-intro .rx-sub{text-align:center;margin-top:8px}
+  .rx-steps{list-style:none;margin:18px 0 0;display:grid;gap:10px}
+  .rx-steps li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:14px;color:var(--bone);line-height:1.5}
+  .rx-steps li b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--amber);padding-top:3px;font-weight:500}
+  .rx-key{margin-top:16px;display:flex;gap:10px;justify-content:center}
+  .rx-key span{font-family:var(--mono);font-size:11px;letter-spacing:.16em;padding:8px 14px;border-radius:10px;border:1px solid rgba(243,241,235,.16)}
+  .rx-key .k-red{background:rgba(224,102,102,.14);color:#F0A0A0}
+  .rx-key .k-amb{background:var(--amber);color:var(--deep);border-color:var(--amber)}
+  .rx-why{margin-top:16px;font-size:13px;line-height:1.6;color:var(--steel)}
+  .rx-why b{color:var(--bone);font-weight:500}
+  .rx-why details{margin-top:8px}
+  .rx-why summary{cursor:pointer;color:var(--amber);font-family:var(--mono);font-size:11px;letter-spacing:.14em;list-style:none}
+  .rx-why summary::-webkit-details-marker{display:none}
+  .rx-why details p{margin-top:8px}
+  .rx-checks{margin-top:18px;display:grid;gap:10px;border-top:1px solid rgba(243,241,235,.12);padding-top:16px}
+  .rx-checks label{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:13px;line-height:1.5;color:var(--bone);cursor:pointer}
+  .rx-checks input{width:18px;height:18px;margin-top:2px;accent-color:var(--amber)}
+  .rx-checks small{display:block;font-size:11.5px;color:var(--steel)}
+  .rx-checks a{color:var(--amber);text-decoration:underline}
+  .rx-cta[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+  .rx-consent{max-height:170px;overflow-y:auto;text-align:left;font-size:12.5px;line-height:1.6;color:var(--steel);border:1px solid rgba(243,241,235,.16);border-radius:12px;padding:14px 16px;margin-top:16px;width:100%;max-width:430px}
+  .rx-consent b{color:var(--bone)}
+  .rx-foot{padding:14px 22px;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--steel);position:relative;z-index:2}
+  .rx-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--bone);color:var(--deep);font-family:var(--mono);font-size:12.5px;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120}
+  .rx-toast.rx-show{opacity:1}
+/* ---------- 1. Concept: the chain ---------- */
+  .chain{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px}
+  @media(max-width:700px){.chain{grid-template-columns:repeat(5,1fr);gap:8px}}
+  .link{background:rgba(243,241,235,.05);border:1px solid rgba(243,241,235,.12);border-radius:16px;padding:16px 10px;text-align:center}
+  .link .n{font-family:var(--disp);font-weight:900;font-size:34px;line-height:1;color:var(--bone)}
+  .link .l{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:rgba(243,241,235,.6);margin-top:8px;text-transform:uppercase}
+  .link.weak{border-color:rgba(231,125,106,.6);background:rgba(231,125,106,.08)}
+  .link.weak .n{color:var(--bad)}
+  .rule{display:flex;align-items:center;gap:14px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(243,241,235,.12);flex-wrap:wrap}
+  .rule .eq{font-family:var(--mono);font-size:13px;color:rgba(243,241,235,.75);letter-spacing:.04em}
+  .rule .eq b{color:var(--amber);font-weight:500}
+  .rule .res{margin-left:auto;font-family:var(--disp);font-weight:800;font-size:20px;color:var(--bone)}
+  .rule .res small{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.16em;color:var(--bad);margin-left:10px}
+
+  /* three pillars */
+  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+  @media(max-width:760px){.pillars{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px 26px}
+  .card .k{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--amber);text-transform:uppercase}
+  .card h3{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--navy);margin:10px 0 8px}
+  .card p{font-size:14.5px;color:#454e60}
+
+  /* ---------- 2. Report ---------- */
+  .rep{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:start}
+  @media(max-width:820px){.rep{grid-template-columns:1fr}}
+  .hero-num{display:flex;align-items:flex-end;gap:16px}
+  .hero-num .pi-big{font-family:var(--disp);font-weight:900;font-size:96px;line-height:.9;color:var(--bone);letter-spacing:-.03em}
+  .hero-num .pi-big span{font-size:30px;color:rgba(243,241,235,.4);letter-spacing:0}
+  .hero-num .side{padding-bottom:10px}
+  .hero-num .side .t{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(243,241,235,.55)}
+  .hero-num .side .v{font-family:var(--disp);font-weight:600;font-size:15px;color:var(--ok);margin-top:4px}
+  .pi-prog{margin-top:20px}
+  .pi-prog .m-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:rgba(243,241,235,.6);margin-bottom:6px}
+  .m-bar{height:6px;border-radius:99px;background:rgba(243,241,235,.12);overflow:hidden}
+  .m-bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D9912B,#E8B15E)}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
+  .stat{background:rgba(243,241,235,.05);border:1px solid rgba(243,241,235,.1);border-radius:14px;padding:12px 14px}
+  .stat .t{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:rgba(243,241,235,.5);text-transform:uppercase}
+  .stat .v{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--bone);margin-top:4px}
+  .stat .v.ok{color:var(--ok)}
+  .halkalar .row{display:grid;grid-template-columns:110px 1fr 28px;align-items:center;gap:12px;padding:9px 0;border-top:1px solid rgba(243,241,235,.08);font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:rgba(243,241,235,.8)}
+  .halkalar .row:first-child{border-top:0}
+  .seg{display:flex;gap:4px}
+  .seg i{flex:1;height:9px;border-radius:3px;background:rgba(243,241,235,.1)}
+  .seg i.f{background:var(--amber)}
+  .seg i.w{background:var(--bad)}
+  .halkalar .row .num{text-align:right;color:var(--bone);font-size:14px}
+  .halkalar .row.weak{color:var(--bad)}
+  .chip{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;border-radius:999px;padding:3px 9px;margin-left:8px;vertical-align:middle}
+  .chip.bad{color:var(--bad);border:1px solid rgba(231,125,106,.5)}
+  .chip.ok{color:var(--ok);border:1px solid rgba(143,212,155,.45);background:rgba(46,125,50,.16)}
+  .chip.warn{color:var(--warn);border:1px solid rgba(232,177,94,.5)}
+  .tl{margin-top:22px;padding-top:18px;border-top:1px solid rgba(243,241,235,.12)}
+  .tl .t{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:rgba(243,241,235,.55);margin-bottom:10px}
+  .tl svg{width:100%;height:auto;display:block}
+
+  /* ---------- 3. App mockup ---------- */
+  .app-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center}
+  @media(max-width:860px){.app-grid{grid-template-columns:1fr}}
+  .phone{width:300px;margin:0 auto;background:var(--deep);border-radius:40px;padding:12px;box-shadow:0 40px 70px -30px rgba(17,29,51,.6)}
+  .screen{background:var(--bone);border-radius:30px;padding:18px 16px 14px;color:var(--ink)}
+  .s-top{display:flex;justify-content:space-between;align-items:center}
+  .s-top .who{font-family:var(--disp);font-weight:800;font-size:15px;color:var(--navy)}
+  .s-top .sub{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--steel)}
+  .s-lvl{text-align:center;margin:20px 0 8px}
+  .s-lvl .l{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--steel);text-transform:uppercase}
+  .s-lvl .n{font-family:var(--disp);font-weight:900;font-size:72px;line-height:1;color:var(--navy);letter-spacing:-.03em}
+  .s-lvl .n span{font-size:22px;color:var(--steel);letter-spacing:0}
+  .s-lvl .d{font-size:12.5px;color:#2e7d32;font-weight:500;margin-top:6px}
+  .s-bar{margin:8px 6px 0}
+  .s-bar .r{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--steel)}
+  .s-bar .b{height:6px;border-radius:99px;background:var(--bone-2);margin-top:4px;overflow:hidden}
+  .s-bar .b i{display:block;height:100%;width:20%;background:var(--amber);border-radius:99px}
+  .s-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:12px}
+  .s-card .h{display:flex;justify-content:space-between;align-items:center;font-family:var(--disp);font-weight:700;font-size:13px;color:var(--navy)}
+  .s-card .h .chip{margin:0;color:#b5482f;border-color:rgba(181,72,47,.4)}
+  .rings{display:flex;justify-content:space-between;margin-top:10px}
+  .ring{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--steel)}
+  .ring b{width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--bone);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:15px}
+  .ring.weak b{background:#fff;color:#b5482f;border:2px solid #b5482f}
+  .s-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+  .s-mini{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 12px}
+  .s-mini .t{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--steel);text-transform:uppercase}
+  .s-mini .v{font-family:var(--disp);font-weight:800;font-size:17px;color:var(--navy);margin-top:2px}
+  .s-mini .v.ok{color:#2e7d32}
+  .s-list{font-size:12px;color:#454e60}
+  .s-list div{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line)}
+  .s-list div:first-child{border-top:0}
+  .s-list span:last-child{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--steel)}
+  .s-nav{display:flex;justify-content:space-around;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--steel)}
+  .s-nav .on{color:var(--navy);font-weight:500}
+  .app-copy h3{font-family:var(--disp);font-weight:900;font-size:clamp(26px,3vw,34px);color:var(--navy);line-height:1.12;letter-spacing:-.01em}
+  .app-copy p{margin-top:14px;font-size:16px;color:#454e60;max-width:44ch}
+  .app-copy ul{list-style:none;margin-top:22px;display:grid;gap:12px}
+  .app-copy li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;font-size:14.5px;color:#454e60}
+  .app-copy li b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--amber);padding-top:4px}
+  .app-copy li strong{display:block;font-family:var(--disp);font-weight:700;font-size:15px;color:var(--navy);margin-bottom:2px}
+  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:600;font-size:14px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--navy);color:var(--navy);background:transparent;margin-top:26px;text-decoration:none}
+  .btn.amber{background:var(--amber);border-color:var(--amber);color:var(--deep)}
+
+  /* ---------- 4. Demo calculator ---------- */
+  .calc{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
+  @media(max-width:820px){.calc{grid-template-columns:1fr}}
+  .sl{display:grid;grid-template-columns:120px 1fr 26px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid rgba(243,241,235,.08);font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:rgba(243,241,235,.75)}
+  .sl:first-child{border-top:0}
+  .sl input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
+  .sl output{text-align:right;font-size:15px;color:var(--bone)}
+  .sl.weak{color:var(--bad)}
+  .sl.weak output{color:var(--bad)}
+  .out{background:rgba(243,241,235,.05);border:1px solid rgba(243,241,235,.12);border-radius:20px;padding:22px}
+  .out .pi-big{font-family:var(--disp);font-weight:900;font-size:84px;line-height:.9;color:var(--amber);letter-spacing:-.03em}
+  .out .pi-big small{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.2em;color:rgba(243,241,235,.55);display:block;margin-bottom:8px}
+  .out .line{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:rgba(243,241,235,.65);padding:9px 0;border-top:1px solid rgba(243,241,235,.1)}
+  .out .line b{color:var(--bone);font-weight:500}
+  .out .line b.bad{color:var(--bad)}
+  .out .formula{margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:rgba(243,241,235,.45);line-height:1.7}
+  .out .formula em{color:var(--amber);font-style:normal}
+  .disc{margin-top:22px;font-size:13.5px;color:#596172;max-width:64ch}
 </style>
 </head>
 <body>
 
-<!-- ================= HUB ================= -->
-<section class="stage active" id="hub">
-  <span class="eyebrow">Locomotion</span>
-  <h1>Performans bataryası</h1>
-  <p class="sub">iki ölçüm · bir dakikadan az</p>
-  <div class="ruler" id="hubruler" aria-hidden="true"></div>
-  <div class="gamelist" id="gamelist"></div>
-  <div class="synth" id="synthbox" hidden>
-    <div class="sl" id="synthlabel">karar süresi</div>
-    <div class="sv" id="synthval">—</div>
-    <div class="sd" id="synthdesc"></div>
-  </div>
-  <div class="btnrow">
-    <button id="settingsbtn">Takma ad ve ayarlar</button>
-    <button id="exportbtn">Oturum verisini indir (JSON)</button>
-  </div>
-</section>
-
-<!-- ================= AYARLAR ================= -->
-<section class="stage" id="settings">
-  <span class="eyebrow">Ayarlar</span>
-  <h1>Seni tanıyalım</h1>
-  <p class="sub">norm karşılaştırması için · kimlik bilgisi istenmez</p>
-
-  <div class="privacynotice" id="privacynotice">
-    <p><b>Hangi veriler, ne için?</b> Takma ad, doğum yılı ve cinsiyet, ölçüm sonucunu
-    yaş/cinsiyet normlarıyla karşılaştırmak için kullanılır. Ayrıca cihaz ve tarayıcı bilgisi
-    (ekran boyutu, dokunma desteği vb.) ile oturum içi bağlam bilgisi (sekme görünürlüğü,
-    ekran döndürme gibi), ölçümün geçerliliğini kontrol etmek amacıyla otomatik toplanır.</p>
-    <p><b>Kalıcı kimlik:</b> Cihazına, oturumlarını birbirine bağlamak için kalıcı ve
-    isimsiz bir kimlik numarası (user_id) atanır; bu kimlik cihaz bilgisiyle birlikte saklanır.</p>
-    <p><b>Saklama:</b> Bu bilgiler cihazında ve (bağlanıldığında) sunucuda, hesabın aktif
-    olduğu sürece saklanır. Dilediğin an aşağıdaki "Verilerimi sil" ile kaydını silebilirsin.</p>
-    <p><b>Paylaşım:</b> Skor kartını kendi isteğinle Instagram'da paylaşman dışında, verilerin
-    üçüncü taraflarla paylaşılmaz.</p>
-  </div>
-
-  <label for="alias">Takma ad (skor kartında görünür)</label>
-  <input type="text" id="alias" maxlength="16" placeholder="kartal27" autocomplete="off">
-  <label for="birthyear">Doğum yılı</label>
-  <input type="text" id="birthyear" inputmode="numeric" maxlength="4" placeholder="1990">
-  <p class="agewarn" id="agewarn" hidden>18 yaşından küçük görünüyorsun. Bu ölçümü kullanmak
-    için bir veli/vasinin bilgisi ve onayı gerekir. Onay yoksa devam etmemeni öneririz.</p>
-  <label for="sex">Cinsiyet</label>
-  <select id="sex">
-    <option value="">belirtmek istemiyorum</option>
-    <option value="f">kadın</option>
-    <option value="m">erkek</option>
-  </select>
-
-  <label class="consentrow" id="consentrow">
-    <input type="checkbox" id="consentbox">
-    <span>Yukarıdaki açıklamayı okudum, verilerimin belirtilen amaçla işlenmesini kabul ediyorum.</span>
-  </label>
-
-  <div class="btnrow">
-    <button class="primary" id="savesettings" disabled>Kaydet</button>
-    <button id="deletedatabtn">Verilerimi sil</button>
-  </div>
-</section>
-
-<!-- ================= ŞİMŞEK ================= -->
-<section class="stage playstage" id="simsek">
-  <div class="topruler"><div class="ruler" id="simsekruler" aria-hidden="true"></div></div>
-  <div id="tapzone">
-    <div id="tapword">bekle</div>
-    <div id="tapsub">bakır yanınca dokun</div>
-  </div>
-  <div class="feedline" id="simsekfeed" aria-live="polite"></div>
-</section>
-
-<!-- ================= PUSULA ================= -->
-<section class="stage playstage" id="pusula">
-  <div class="topruler"><div class="ruler" id="pusularuler" aria-hidden="true"></div></div>
-  <div id="compasszone">
-    <div class="padgrid">
-      <button class="pad up"    data-dir="up"    aria-label="yukarı">▲</button>
-      <button class="pad left"  data-dir="left"  aria-label="sol">◀</button>
-      <div id="arrow">·</div>
-      <button class="pad right" data-dir="right" aria-label="sağ">▶</button>
-      <button class="pad down"  data-dir="down"  aria-label="aşağı">▼</button>
+<nav>
+  <div class="wrap nav-in">
+    <a href="#top" class="wordmark">LOCOMOTION<small>ACADEMY &amp; STUDIO</small></a>
+    <div class="nav-links">
+      <a href="#yaklasim">Yaklaşım</a>
+      <a href="#programlar">Programlar</a>
+      <a href="#ilkeler">İlkeler</a>
+      <a href="#prehab">Prehab Index</a>
+      <a href="reaksiyon.html">Reaksiyon ⚡</a>
+      <a href="#iletisim" class="btn solid">Değerlendirme Randevusu</a>
     </div>
   </div>
-  <div class="feedline" id="pusulafeed" aria-live="polite"></div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">Medikal Fitness · Hareket Bilimi</div>
+      <h1>Hareketi<br><span class="stroke">bilimle</span><br>yeniden kur.</h1>
+      <p class="lead">Locomotion'da her program bir hekim değerlendirmesiyle başlar. Üç filtreli klinik
+      triyaj, yazılı onay ve bölgeye özel hareket protokolleri — antrenman güvenliği, sistemin kendisidir.</p>
+      <div class="hero-ctas">
+        <a href="#iletisim" class="btn amber">Değerlendirme Planla</a>
+        <a href="#yaklasim" class="btn">Sürecimizi İncele</a>
+      </div>
+      <div class="hero-note">locomotion.com.tr — hekim onayı olmadan program başlamaz.</div>
+    </div>
+    <div class="lab lab-game" id="heroGame">
+      <div class="dash-head">
+        <div class="hg-tabs" role="tablist">
+          <button class="hg-tab on" role="tab" aria-selected="true" data-pane="hgReaction">REAKSİYON LAB ⚡</button>
+          <button class="hg-tab" role="tab" aria-selected="false" data-pane="hgIndex">PREHAB INDEX</button>
+        </div>
+        <span class="dash-tag" id="hgTag">CANLI TEST</span>
+      </div>
+      <div class="hg-pane hg-body on" id="hgReaction">
+        <div class="hg-q">?<i>ms</i></div>
+        <h3>Ne kadar hızlısın?</h3>
+        <p>7 tur · yaklaşık 40 sn · uygulama gerekmez</p>
+        <span class="hg-avg">ORTALAMA İNSAN: ~273 MS</span>
+        <a class="btn amber" href="reaksiyon.html">Testi Başlat ⚡</a>
+      </div>
+      <div class="hg-pane hg-mini" id="hgIndex" data-calc>
+        <div class="sl"><span>AĞRI</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Ağrı"><output>3</output></div>
+        <div class="sl"><span>HAREKET</span><input type="range" min="1" max="5" step="1" value="4" aria-label="Hareket"><output>4</output></div>
+        <div class="sl"><span>GÜÇ</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Güç"><output>3</output></div>
+        <div class="sl"><span>KONTROL</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Kontrol"><output>2</output></div>
+        <div class="sl"><span>DAYANIKLILIK</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Dayanıklılık"><output>2</output></div>
+        <div class="hg-res">
+          <div class="hg-num"><small>PREHAB INDEX</small><span data-o="index">32</span></div>
+          <div class="hg-meta">SEVİYE <b data-o="lvl">2 / 5</b><br>İLERLEME <b data-o="pct">%60</b><br>SENİ TUTAN <b class="bad" data-o="weak">KONTROL</b></div>
+        </div>
+        <a class="hg-link" href="#prehab">Beş halka nasıl çalışır? Formülü gör →</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- GAIT STRIP: member journey mapped to gait phases -->
+<div class="gait">
+  <div class="wrap gait-in">
+    <div class="phase reveal">
+      <div class="ph">01 · Heel Strike</div>
+      <h3>Değerlendirme</h3>
+      <p>Hekim muayenesi ve üç filtreli klinik triyaj. Gerekirse görüntüleme ve FTR yönlendirmesi.</p>
+    </div>
+    <div class="phase reveal">
+      <div class="ph">02 · Mid Stance</div>
+      <h3>Programlama</h3>
+      <p>Bölgeye özel hareket kısıtlamalarıyla, yazılı onaya dayalı kişisel program.</p>
+    </div>
+    <div class="phase reveal">
+      <div class="ph">03 · Toe Off</div>
+      <h3>Güçlenme</h3>
+      <p>Kademeli yüklenme; her seansta semptom takibi ve kayıt.</p>
+    </div>
+    <div class="phase reveal">
+      <div class="ph">04 · Swing</div>
+      <h3>Sürdürülebilirlik</h3>
+      <p>4. haftada sınırlayıcı halka, 8. haftada tam Prehab Index ölçümü ile uzun vadeli ilerleme.</p>
+    </div>
+  </div>
+</div>
+
+<!-- YAKLAŞIM -->
+<section id="yaklasim">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Spor salonu değil,<br>klinik bir süreç.</h2>
+      <p>Locomotion'ın işleyişi yazılı bir standart işletim prosedürüne dayanır: kimin doğrudan
+      programa başlayabileceği, kimin önce rehabilitasyona yönlendirileceği önceden tanımlı
+      klinik kriterlerle belirlenir.</p>
+    </div>
+    <div class="cards">
+      <div class="card reveal">
+        <div class="num">ADIM / 01</div>
+        <h3>Hekim Değerlendirmesi</h3>
+        <p>Her üye, programa başlamadan önce muayene edilir. Bel/boyun, omuz, diz, kalça, ayak bileği
+        ve dirsek/el bileği için ayrı klinik triyaj protokolleri uygulanır.</p>
+      </div>
+      <div class="card reveal">
+        <div class="num">ADIM / 02</div>
+        <h3>FTR Köprüsü</h3>
+        <p>Aktif bulgusu olan üyeler önce fiziksel tıp ve rehabilitasyon sürecine yönlendirilir;
+        salona geçiş yalnızca yazılı transfer notuyla gerçekleşir.</p>
+      </div>
+      <div class="card reveal">
+        <div class="num">ADIM / 03</div>
+        <h3>Kısıtlamalı Programlama</h3>
+        <p>Hekim onay formunda her hareket grubu tek tek tanımlanır: serbest, sınırlı veya yasak.
+        Antrenör bu sınırların dışına çıkmaz.</p>
+      </div>
+      <div class="card reveal">
+        <div class="num">ADIM / 04</div>
+        <h3>Sürekli Takip</h3>
+        <p>Semptomlar her seansta kaydedilir; herhangi bir kötüleşmede egzersiz durdurulur ve
+        üye aynı gün hekime geri yönlendirilir. İlerleme Prehab Index ile ölçülür ve sevk eden hekime raporlanır.</p>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- ================= SONUÇ ================= -->
-<section class="stage" id="results">
-  <span class="eyebrow" id="resultgame">—</span>
-  <p class="sub" id="resultsub"></p>
-  <div class="hero">
-    <span class="num" id="heroval">—</span><span class="unit" id="herounit"></span>
-    <div class="cap"><span id="herolabel"></span> <span id="newrecord" hidden>· yeni rekor</span></div>
+<!-- PROGRAMLAR -->
+<section id="programlar" style="padding-top:0">
+  <div class="wrap">
+    <div class="prog">
+      <div class="wrap">
+        <div class="sec-head reveal">
+          <h2>Programlar</h2>
+          <p>Üç ana hat: klinik gereksinimi olanlar, performansını geliştirmek isteyenler ve
+          bu yaklaşımı öğrenmek isteyen profesyoneller.</p>
+        </div>
+        <div class="prog-grid">
+          <div class="pcard reveal">
+            <div class="tag">Studio</div>
+            <h3>Medikal Fitness</h3>
+            <p>Kas-iskelet sistemi şikayeti olan üyeler için hekim onaylı, bölgeye özel programlar.</p>
+            <ul>
+              <li>Üç filtreli klinik triyaj</li>
+              <li>Bölgeye özel hareket kısıtlamaları</li>
+              <li>Prehab Index ile ilerleme takibi</li>
+            </ul>
+          </div>
+          <div class="pcard reveal">
+            <div class="tag">Studio</div>
+            <h3>Performans &amp; Kondisyon</h3>
+            <p>Sağlıklı bireyler için hareket kalitesi önceliğiyle kurgulanmış güç ve kondisyon antrenmanı.</p>
+            <ul>
+              <li>Hareket taraması ile başlangıç</li>
+              <li>Kademeli yüklenme modeli</li>
+              <li>Prehab Index ile ilerleme takibi</li>
+            </ul>
+          </div>
+          <div class="pcard reveal">
+            <div class="tag">Academy</div>
+            <h3>Eğitimler &amp; Atölyeler</h3>
+            <p>Antrenörler ve sağlık profesyonelleri için klinik triyaj ve güvenli programlama eğitimleri.</p>
+            <ul>
+              <li>Red flag tanıma atölyeleri</li>
+              <li>Vaka temelli programlama</li>
+              <li>Kurum içi protokol danışmanlığı</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="metrics" id="metricrow"></div>
-  <div class="scorebox">
-    <span class="s" id="scoreval">—</span>
-    <span class="t">geçici skor<br>0–100</span>
-  </div>
-  <div class="chartbox" id="chartbox" hidden>
-    <div class="charttitle" id="charttitle"></div>
-    <div id="chartsvg"></div>
-    <div class="chartcap" id="chartcap"></div>
-  </div>
-  <div id="cardwrap"><canvas id="cardcanvas" width="1080" height="1920"></canvas></div>
-  <div class="btnrow">
-    <button class="primary" id="sharebtn">Kartı paylaş</button>
-    <button id="dlcard">Kartı indir (PNG)</button>
-    <button id="againbtn">Tekrar oyna</button>
-    <button id="hubbtn">Oyunlara dön</button>
-  </div>
-  <p class="note">Performans oyunudur, tıbbi ölçüm değildir. Bu prototipte veriler yalnızca
-    cihazında (yerel depoda) tutulur, herhangi bir sunucuya otomatik gönderilmez. Aşağıdaki
-    JSON indirme, üretim sürümünde sunucuya gidecek kaydın örnek biçimini gösterir — canlıya
-    alınmadan önce sunucu konumu, saklama süresi ve aktarım kapsamı aydınlatma metnine
-    eklenmelidir.</p>
 </section>
+
+<!-- İLKELER -->
+<section id="ilkeler">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Sayılarla sistem</h2>
+      <p>Güven, söylemle değil yapıyla kurulur. Locomotion'ın işleyişini tanımlayan yapı taşları:</p>
+    </div>
+    <div class="principles">
+      <div class="pr reveal">
+        <div class="big">3<span>×</span> Filtre</div>
+        <p>Her başvuru üç aşamalı klinik triyajdan geçer: acil sevk, rehabilitasyon yönlendirmesi
+        veya kısıtlamalı kabul.</p>
+      </div>
+      <div class="pr reveal">
+        <div class="big">6 <span>Bölge</span></div>
+        <p>Bel/boyun, omuz, diz, kalça, ayak bileği ve dirsek/el bileği için ayrı yazılı protokoller.</p>
+      </div>
+      <div class="pr reveal">
+        <div class="big">0 <span>İstisna</span></div>
+        <p>Yazılı hekim onayı ve aydınlatılmış onam olmadan hiçbir program başlamaz.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ===================== 1. KONSEPT ===================== -->
+<section id="prehab">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <div class="eyebrow">Prehab Index</div>
+      <h2>Vücudunuz en zayıf <span class="stroke">halkanız</span> kadar hazırdır.</h2>
+      <p>Beş halka, beş seviye. Puanları toplamıyoruz; hangi halkanın sizi tuttuğunu buluyoruz. Program o halkaya, hekim onay formundaki kısıtlamaların içinde kalarak yazılır; seviye o halka geçince değişir. Altı bölgenin her biri için ayrı kriter tablosu vardır.</p>
+    </div>
+
+    <div class="lab reveal">
+      <div class="dash">
+        <div class="dash-head">
+          <span class="dash-title">ZİNCİR MODELİ · PREHAB BEL</span>
+          <span class="dash-tag">HAFTA 0</span>
+        </div>
+        <div class="chain">
+          <div class="link"><div class="n">3</div><div class="l">Ağrı</div></div>
+          <div class="link"><div class="n">4</div><div class="l">Hareket</div></div>
+          <div class="link"><div class="n">3</div><div class="l">Güç</div></div>
+          <div class="link weak"><div class="n">2</div><div class="l">Kontrol</div></div>
+          <div class="link weak"><div class="n">2</div><div class="l">Dayanıklılık</div></div>
+        </div>
+        <div class="rule">
+          <span class="eq">ortalama <b>2,8</b> · tavan = en zayıf + 1 = <b>3</b></span>
+          <span class="res">Seviye 3 <small>SINIRLAYICI: KONTROL</small></span>
+        </div>
+        <div class="lab-note">HER HALKA 1–5 · SEVİYE = ORTALAMA, EN ZAYIF HALKA + 1'İ GEÇEMEZ · ÖLÇÜMLER STÜDYODA, DEĞERLENDİRME EKİBİ EŞLİĞİNDE · ALTI BÖLGE İÇİN AYRI KRİTER TABLOSU</div>
+      </div>
+    </div>
+
+    <div class="pillars reveal">
+      <div class="card">
+        <div class="k">Nerede</div>
+        <h3>Seviye</h3>
+        <p>1'den 5'e tek bir sayı. Ağrı, hareket, güç, kontrol ve yük toleransı için somut geçiş kriterleri; hepsini sağlamayan üst seviyeye çıkmaz. Yük toleransı yalnızca hekimin serbest bıraktığı hareket gruplarında test edilir.</p>
+      </div>
+      <div class="card">
+        <div class="k">Nereye</div>
+        <h3>İlerleme</h3>
+        <p>Hedef seviye işinize ve sporunuza göre belirlenir. 4. haftada sınırlayıcı halka, 8. haftada tüm halkalar yeniden ölçülür; kapatılan açık yüzde olarak raporlanır.</p>
+      </div>
+      <div class="card">
+        <div class="k">Ne kaçırıyoruz</div>
+        <h3>Risk bayrağı</h3>
+        <p>Asimetri, önceki atak, hareket korkusu. Seviye yükselse bile bayrak düşmeden "hazır" demeyiz. Sevk eden hekime giden raporun ilk satırı budur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 2. 12 HAFTA RAPORU ===================== -->
+<section id="rapor-ornek" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Ölçmediğimizi programlamayız.</h2>
+      <p>Her üyenin dosyasında halka seviyeleri, hekim kısıtlamaları ve kontrol tarihleri yazılı olarak durur. Temsili bir dosya: kronik bel şikayetiyle hekim değerlendirmesinden üçüncü filtre (kısıtlamalı kabul) ile geldi; dört ölçüm, bir seviye atlama, risk bayrağı düştü.</p>
+    </div>
+
+    <div class="lab reveal">
+      <div class="dash">
+        <div class="dash-head">
+          <span class="dash-title">PREHAB BEL · 12. HAFTA RAPORU</span>
+          <span class="dash-tag">ÖRNEK DOSYA · A.K. · 45 · TRİYAJ FİLTRE 3</span>
+        </div>
+        <div class="rep">
+          <div>
+            <div class="hero-num">
+              <div class="pi-big">4<span>/5</span></div>
+              <div class="side">
+                <div class="t">BEL SEVİYESİ</div>
+                <div class="v">↗ 12 haftada 3 → 4</div>
+              </div>
+            </div>
+            <div class="pi-prog">
+              <div class="m-row"><span>SEVİYE 5'E</span><span>%20</span></div>
+              <div class="m-bar"><span style="width:20%"></span></div>
+            </div>
+            <div class="stats">
+              <div class="stat"><div class="t">Hedef</div><div class="v ok">4 ✓</div></div>
+              <div class="stat"><div class="t">Kapatılan açık</div><div class="v">%100</div></div>
+              <div class="stat"><div class="t">Risk</div><div class="v ok">Düşük</div></div>
+            </div>
+            <div class="tl">
+              <div class="t">HALKA SEVİYELERİ · HAFTA 0 → 12 <span style="color:var(--amber)">■ ort.</span> <span style="color:var(--bad)">■ dayanıklılık</span></div>
+              <svg viewBox="0 0 420 110" role="img" aria-label="Ortalama halka seviyesi 2,8'den 4,0'a; dayanıklılık 2'den 3'e">
+                <g stroke="rgba(243,241,235,.12)" stroke-width="1">
+                  <line x1="30" y1="14" x2="410" y2="14"/><line x1="30" y1="38" x2="410" y2="38"/><line x1="30" y1="62" x2="410" y2="62"/><line x1="30" y1="86" x2="410" y2="86"/>
+                </g>
+                <g font-family="IBM Plex Mono, monospace" font-size="9" fill="rgba(243,241,235,.45)">
+                  <text x="8" y="17">5</text><text x="8" y="41">4</text><text x="8" y="65">3</text><text x="8" y="89">2</text>
+                  <text x="30" y="106">H0</text><text x="150" y="106">H4</text><text x="270" y="106">H8</text><text x="392" y="106">H12</text>
+                </g>
+                <polyline points="34,86 154,86 274,62 394,62" fill="none" stroke="#E77D6A" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"/>
+                <polyline points="34,66.8 154,62 274,47.6 394,38" fill="none" stroke="#D9912B" stroke-width="2.5" stroke-linejoin="round"/>
+                <g fill="#D9912B"><circle cx="34" cy="66.8" r="4"/><circle cx="154" cy="62" r="4"/><circle cx="274" cy="47.6" r="4"/><circle cx="394" cy="38" r="4.5"/></g>
+                <g fill="#E77D6A"><circle cx="34" cy="86" r="3"/><circle cx="154" cy="86" r="3"/><circle cx="274" cy="62" r="3"/><circle cx="394" cy="62" r="3"/></g>
+              </svg>
+            </div>
+          </div>
+
+          <div class="halkalar">
+            <div class="row"><span>AĞRI</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span><span class="num">4</span></div>
+            <div class="row"><span>HAREKET</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span><span class="num">5</span></div>
+            <div class="row"><span>GÜÇ</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span><span class="num">4</span></div>
+            <div class="row"><span>KONTROL</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span><span class="num">4</span></div>
+            <div class="row weak"><span>DAYANIKLILIK</span><span class="seg"><i class="w"></i><i class="w"></i><i class="w"></i><i></i><i></i></span><span class="num">3</span></div>
+
+            <div class="tl">
+              <div class="t">ÖLÇÜM ÇİZELGESİ</div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>H0 · TAM DEĞERLENDİRME</span><span>SEVİYE 3 · %20 <span class="chip warn">ORTA</span></span></div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>H4 · SINIRLAYICI HALKA</span><span>KONTROL 2 → 3</span></div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>H8 · TAM DEĞERLENDİRME</span><span>SEVİYE 3 · %60 <span class="chip warn">ORTA</span></span></div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>H12 · TAM DEĞERLENDİRME</span><span>SEVİYE 4 · %20 <span class="chip ok">DÜŞÜK</span></span></div>
+            </div>
+            <div class="tl">
+              <div class="t">RİSK FAKTÖRLERİ</div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>Y-BALANCE ASİMETRİ %18 → %8</span><span style="color:var(--ok)">KAPANDI</span></div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>SORENSEN 45 → 95 SN</span><span style="color:var(--ok)">KAPANDI</span></div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>TSK-11 30 → 21</span><span style="color:var(--ok)">KAPANDI</span></div>
+              <div class="row" style="grid-template-columns:1fr auto"><span>SON 12 AYDA ATAK</span><span style="color:var(--warn)">DEVAM · 1</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="lab-note">SONRAKİ 8 HAFTA: DAYANIKLILIK 3 → 4 · H16 SORENSEN TEKRAR · H20 TAM DEĞERLENDİRME · RAPOR SEVK EDEN HEKİME İLETİLDİ · TEMSİLİ VERİDİR, GERÇEK ÜYE VERİSİ DEĞİLDİR</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3. UYGULAMA ===================== -->
+<section id="uygulama" style="padding-top:0">
+  <div class="wrap">
+    <div class="app-grid reveal">
+      <div class="phone" role="img" aria-label="Locomotion uygulaması ana ekranı: bel seviyesi 4, sınırlayıcı halka dayanıklılık, risk düşük">
+        <div class="screen">
+          <div class="s-top">
+            <div><div class="who">Merhaba Ahmet</div><div class="sub">PREHAB BEL · 12. HAFTA</div></div>
+            <div class="sub">LOCOMOTION</div>
+          </div>
+          <div class="s-lvl">
+            <div class="l">Bel seviyen</div>
+            <div class="n">4<span>/5</span></div>
+            <div class="d">↗ 3'ten 4'e · hedefe ulaştın</div>
+          </div>
+          <div class="s-bar"><div class="r"><span>SEVİYE 5'E</span><span>%20</span></div><div class="b"><i></i></div></div>
+          <div class="s-card">
+            <div class="h"><span>Zincirin</span><span class="chip">SENİ TUTAN: DAYANIKLILIK</span></div>
+            <div class="rings">
+              <div class="ring"><b>4</b>AĞRI</div>
+              <div class="ring"><b>5</b>HAREKET</div>
+              <div class="ring"><b>4</b>GÜÇ</div>
+              <div class="ring"><b>4</b>KONTROL</div>
+              <div class="ring weak"><b>3</b>DAYAN.</div>
+            </div>
+          </div>
+          <div class="s-two">
+            <div class="s-mini"><div class="t">Risk</div><div class="v ok">Düşük</div></div>
+            <div class="s-mini"><div class="t">Yeni hedef</div><div class="v">4 · %60</div></div>
+          </div>
+          <div class="s-card s-list">
+            <div><span>Dayanıklılık seansı</span><span>SAL · PER</span></div>
+            <div><span>Sorensen tekrar ölçümü</span><span>HAFTA 16</span></div>
+            <div><span>Hekim raporu</span><span style="color:#2e7d32">GÖNDERİLDİ</span></div>
+          </div>
+          <div class="s-nav"><span class="on">ANA</span><span>İLERLEME</span><span>SEANSLAR</span><span>PROFİL</span></div>
+        </div>
+      </div>
+
+      <div class="app-copy">
+        <div class="eyebrow">Üye uygulaması</div>
+        <h3>Tek sayı. Tek hedef. Bu haftanın işi.</h3>
+        <p>Üye ekranı klinik dosyanın sadeleştirilmiş hâlidir: seviyeniz, sizi tutan halka, risk bayrağınız ve bu haftaki seanslar. Ham ölçümler ve hekim raporları profil sekmesinde durur.</p>
+        <ul>
+          <li><b>01</b><div><strong>Seviye</strong>Stüdyoda ölçülür, uygulamada görünür. Uzaktan test yok; her sayı değerlendirme ekibi eşliğinde alınır, her seansta VAS kaydı tutulur.</div></li>
+          <li><b>02</b><div><strong>Sınırlayıcı halka</strong>Program neden buna odaklandı, tek cümleyle. 4. haftada yalnızca bu halka tekrar ölçülür.</div></li>
+          <li><b>03</b><div><strong>Hekim raporu</strong>Her tam değerlendirmede sevk eden hekime aynı yapıda rapor gider; üye gönderildiğini görür.</div></li>
+        </ul>
+        <a class="btn amber" href="#iletisim">Değerlendirme randevusu →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===================== 4. DEMO HESAPLAYICI ===================== -->
+<section id="hesapla" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head reveal">
+      <h2>Hesabı kendiniz deneyin.</h2>
+      <p>Bu bir tanı aracı değil, formülün nasıl çalıştığını gösteren bir deneme alanı. Halkaları kaydırın, tek bir zayıf halkanın puanı nasıl tuttuğunu görün. Gerçek ölçüm yalnızca stüdyoda, hekim onayından sonra yapılır; buraya girdiğiniz hiçbir değer kaydedilmez.</p>
+    </div>
+    <div class="lab reveal">
+      <div class="dash">
+        <div class="dash-head">
+          <span class="dash-title">PREHAB INDEX · DENEME HESABI</span>
+          <span class="dash-tag">VERİ KAYDEDİLMEZ</span>
+        </div>
+        <div class="calc" data-calc>
+          <div id="sliders">
+            <div class="sl"><span>AĞRI</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Ağrı halkası seviyesi"><output>3</output></div>
+            <div class="sl"><span>HAREKET</span><input type="range" min="1" max="5" step="1" value="4" aria-label="Hareket halkası seviyesi"><output>4</output></div>
+            <div class="sl"><span>GÜÇ</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Güç halkası seviyesi"><output>3</output></div>
+            <div class="sl"><span>KONTROL</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Kontrol halkası seviyesi"><output>2</output></div>
+            <div class="sl"><span>DAYANIKLILIK</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Dayanıklılık halkası seviyesi"><output>2</output></div>
+          </div>
+          <div class="out" aria-live="polite">
+            <div class="pi-big"><small>PREHAB INDEX</small><span data-o="index">44</span></div>
+            <div class="line" style="margin-top:16px"><span>SEVİYE</span><b data-o="lvl">3 / 5</b></div>
+            <div class="line"><span>SEVİYE İÇİ İLERLEME</span><b data-o="pct">%20</b></div>
+            <div class="line"><span>SINIRLAYICI HALKA</span><b class="bad" data-o="weak">KONTROL</b></div>
+            <div class="line"><span>ORTALAMA / TAVAN</span><b data-o="avg">2,8 / 3</b></div>
+            <div class="formula">seviye = min( ⌊ortalama⌋ , en zayıf + 1 )<br>ilerleme = üst seviyeyi geçen halka / 5<br>index = <em>(seviye − 1) × 20 + ilerleme × 0,2</em></div>
+          </div>
+        </div>
+        <div class="lab-note">RİSK BAYRAĞI PUANA DAHİL DEĞİLDİR · GERÇEK SEVİYE KRİTERLERİ STÜDYO PROTOKOLÜNDE TANIMLIDIR</div>
+      </div>
+    </div>
+    <p class="disc reveal">Gerçek Prehab Index'iniz hekim değerlendirmesi ve klinik triyajdan sonra ölçülür. Ölçüm 45–60 dakika sürer; seviyeniz ve sınırlayıcı halkanız aynı gün dosyanıza yazılır.</p>
+  </div>
+</section>
+
+
+
+<!-- CTA -->
+<section id="iletisim" style="padding-top:0">
+  <div class="wrap">
+    <div class="cta-band reveal">
+      <div>
+        <h2>İlk adım bir antrenman değil, bir değerlendirmedir.</h2>
+        <p>Randevu ve bilgi için bize ulaşın — ekibimiz süreci adım adım anlatır.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
+        <a class="btn amber" href="tel:+900000000000">+90 (000) 000 00 00</a>
+        <a class="btn" style="border-color:var(--bone);color:var(--bone)" href="mailto:info@locomotion.com.tr">info@locomotion.com.tr</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <div class="wordmark">LOCOMOTION<small>ACADEMY &amp; STUDIO</small></div>
+        <p style="margin-top:14px;font-size:13px;color:#596172;max-width:32ch">Hareket bilimine dayalı,
+        hekim değerlendirmeli medikal fitness stüdyosu.</p>
+      </div>
+      <div class="foot-col">
+        <b>Keşfet</b>
+        <a href="#yaklasim">Yaklaşım</a>
+        <a href="#programlar">Programlar</a>
+        <a href="#ilkeler">İlkeler</a>
+        <a href="#prehab">Prehab Index</a>
+        <a href="reaksiyon.html">Reaksiyon Lab ⚡</a>
+      </div>
+      <div class="foot-col">
+        <b>İletişim</b>
+        <a href="mailto:info@locomotion.com.tr">info@locomotion.com.tr</a>
+        <a href="https://locomotion.com.tr">locomotion.com.tr</a>
+        <a href="#">Adres — [salon adresi]</a>
+      </div>
+      <div class="foot-col">
+        <b>Yasal</b>
+        <a href="#">KVKK Aydınlatma Metni</a>
+        <a href="#">Çerez Politikası</a>
+        <a href="#">Kullanım Koşulları</a>
+      </div>
+    </div>
+    <div class="legal">
+      <span>© 2026 Locomotion Academy &amp; Studio</span>
+      <span>Bu site bilgilendirme amaçlıdır; tanı veya tedavi vaadi içermez.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- REAKSİYON MODAL -->
+<div class="rx-overlay" id="rxOverlay" aria-hidden="true" role="dialog" aria-label="Reaksiyon testi">
+  <div class="rx-top">
+    <div class="rx-title">REAKSİYON LAB ⚡</div>
+    <button class="rx-close" id="rxClose" aria-label="Kapat">×</button>
+  </div>
+  <div class="rx-main">
+    <div class="rx-stage" id="rxStage"><div id="rxContent"></div></div>
+  </div>
+  <div class="rx-foot">locomotion.com.tr</div>
+</div>
+<div class="rx-toast" id="rxToast"></div>
 
 <script>
-"use strict";
-/* =====================================================================
-   PROTOKOL SABİTLERİ — 2. katman. Değişirse game_version artar.
-===================================================================== */
-const GAMES = {
-  simsek:{ id:"simsek", version:"1.0.0", name:"Şimşek", desc:"basit reaksiyon · 7 deneme",
-    trials:7, delay_min:1500, delay_max:3500,
-    rt_min:100, rt_max:1000, min_valid:3, score_ref:150, score_k:350 },
-  pusula:{ id:"pusula", version:"1.0.0", name:"Pusula", desc:"seçimli reaksiyon · 10 deneme",
-    trials:10, delay_min:1200, delay_max:2800,
-    rt_min:150, rt_max:1500, min_valid:5, score_ref:280, score_k:420 }
-};
+/* ---------- scroll reveal ---------- */
+(function(){
+  const els=document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('in')); return; }
+  const io=new IntersectionObserver((ents)=>{
+    ents.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} });
+  },{threshold:0.14});
+  els.forEach(e=>io.observe(e));
+})();
 
-/* ---------------------- yardımcılar ---------------------- */
-const $ = id => document.getElementById(id);
-const uuid = () => (crypto.randomUUID ? crypto.randomUUID() :
-  "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{
-    const r=Math.random()*16|0; return (c==="x"?r:(r&3|8)).toString(16); }));
-const nowIso = () => new Date().toISOString();
-const mean = a => a.reduce((x,y)=>x+y,0)/a.length;
-const sd = a => a.length>1 ?
-  Math.sqrt(a.map(x=>(x-mean(a))**2).reduce((p,q)=>p+q,0)/(a.length-1)) : 0;
-function median(a){ const s=[...a].sort((x,y)=>x-y);
-  return s.length%2 ? s[(s.length-1)/2] : (s[s.length/2-1]+s[s.length/2])/2; }
-function verifyCode(id){
-  const ab="23456789ABCDEFGHJKMNPQRSTUVWXYZ"; let h=0;
-  for(let i=0;i<id.length;i++) h=(h*31+id.charCodeAt(i))>>>0;
-  let o=""; for(let i=0;i<6;i++){ o+=ab[h%ab.length]; h=((h/ab.length)>>>0)||((h*7+i+1)>>>0); }
-  return o.slice(0,3)+"-"+o.slice(3);
-}
-const store = {
-  ok: typeof window.storage!=="undefined",
-  async get(k){ if(!this.ok) return null;
-    try{ const r=await window.storage.get(k); return r?JSON.parse(r.value):null; }catch(e){ return null; } },
-  async set(k,v){ if(!this.ok) return;
-    try{ await window.storage.set(k,JSON.stringify(v)); }catch(e){} },
-  async delete(k){ if(!this.ok) return;
-    try{ await window.storage.delete(k); }catch(e){} }
-};
+/* ---------- Reaksiyon Lab modal engine ---------- */
+(function(){
+  const TOTAL_ROUNDS = 7;
+  const overlay = document.getElementById('rxOverlay');
+  const stage = document.getElementById('rxStage');
+  const content = document.getElementById('rxContent');
+  const toast = document.getElementById('rxToast');
+  const closeBtn = document.getElementById('rxClose');
 
-/* ---------------------- cihaz + bağlam ---------------------- */
-function deviceInfo(){
-  const ua=navigator.userAgent||"";
-  const d={ ua, brand:null, model:null, os:null, browser:null, browser_ver:null,
-    in_app_browser:null, screen_w:screen.width, screen_h:screen.height,
-    dpr:window.devicePixelRatio||1,
-    touch:("ontouchstart" in window)||navigator.maxTouchPoints>0 };
-  if(navigator.userAgentData){
-    const b=navigator.userAgentData.brands?.find(x=>!/Not/.test(x.brand));
-    if(b){ d.browser=b.brand; d.browser_ver=b.version; }
-    d.os=navigator.userAgentData.platform||null; d.mobile=navigator.userAgentData.mobile;
+  const CONSENT_KEY='locomotion_kvkk_ok';
+  const raw={
+    get(k){ try { return window.localStorage.getItem(k); } catch(e){ return null; } },
+    set(k,v){ try { window.localStorage.setItem(k,v); } catch(e){} }
+  };
+  let allowStore=false, allowStats=false;
+  const STATS_ENDPOINT=''; // salon istatistik uç noktası; boşsa gönderim yapılmaz
+  function sendStats(payload){ if(!allowStats||!STATS_ENDPOINT) return; try{ fetch(STATS_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(function(){}); }catch(e){} }
+  const store={
+    get(k){ return allowStore ? raw.get(k) : null; },
+    set(k,v){ if(allowStore) raw.set(k,v); }
+  };
+  const CONSENT_HTML=
+    '<b>KVKK Aydınlatma Metni — Reaksiyon Lab</b><br><br>'+
+    'Bu test sırasında ad, soyad, iletişim bilgisi gibi kişisel veriler toplanmaz ve hiçbir bilgi sunucuya gönderilmez.<br><br>'+
+    'Onay vermeniz halinde yalnızca <b>en iyi skorunuz</b>, tekrar oynadığınızda gösterilmek üzere tarayıcınızın yerel depolama alanında — kendi cihazınızda — saklanır. Bu veri bize iletilmez ve tarayıcı site verilerinizi temizleyerek dilediğiniz an silebilirsiniz.<br><br>'+
+    '"Meydan Oku" özelliği yalnızca sizin paylaşmayı seçtiğiniz bir bağlantı oluşturur; otomatik paylaşım yapılmaz.<br><br>'+
+    '<b>Anonim istatistik (isteğe bağlı):</b> Ayrıca onay verirseniz yalnızca tur süreleriniz (milisaniye), erken dokunma sayınız ve test tarihi, hiçbir kimlik, cihaz veya IP bilgisi olmadan Locomotion\u2019a iletilir. Amaç, ziyaretçi ortalamasını hesaplamaktır. Veri kişiyle eşleştirilemediğinden geri çağrılamaz; onayı her testte yeniden verirsiniz, kutuyu işaretlemezseniz hiçbir şey gönderilmez.<br><br>'+
+    'Ayrıntılı bilgi ve veri sorumlusu iletişim bilgileri için: locomotion.com.tr/kvkk<br>'+
+    'Veri Sorumlusu: [Locomotion — ticari unvan/adres]';
+
+  let state='idle', times=[], earlyCount=0, roundsDone=0, goAt=0, timerId=null, rafId=null, cdId=null;
+  let actx=null;
+  function beep(freq,dur,vol){
+    try{
+      if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+      if(actx.state==='suspended') actx.resume();
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.type='sine'; o.frequency.value=freq;
+      g.gain.setValueAtTime(vol||0.15,actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+dur);
+      o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+dur);
+    }catch(e){}
   }
-  if(!d.os){ d.os = /Android/i.test(ua)?"Android" : /iPhone|iPad|iPod/i.test(ua)?"iOS"
-    : /Windows/i.test(ua)?"Windows" : /Mac/i.test(ua)?"macOS" : /Linux/i.test(ua)?"Linux":null; }
-  const am=ua.match(/Android [\d.]+; ([^);]+)/); if(am) d.model=am[1].trim();
-  const im=ua.match(/Instagram|FBAN|FBAV|TikTok|Line\//i); d.in_app_browser=im?im[0]:null;
-  return d;
-}
-const ctxLog={ visibility:[], orientation:[], resize:[], frame_interval_estimate:null };
-document.addEventListener("visibilitychange",()=>{
-  ctxLog.visibility.push({t:performance.now(),state:document.visibilityState});
-  if(document.visibilityState==="hidden") onHidden();
-});
-window.addEventListener("orientationchange",()=>ctxLog.orientation.push(
-  {t:performance.now(),o:(screen.orientation&&screen.orientation.type)||window.orientation}));
-window.addEventListener("resize",()=>ctxLog.resize.push(
-  {t:performance.now(),w:innerWidth,h:innerHeight}));
-(function(){ const ts=[]; let n=0;
-  function f(t){ ts.push(t); if(++n<32) requestAnimationFrame(f);
-    else{ const d=[]; for(let i=1;i<ts.length;i++) d.push(ts[i]-ts[i-1]);
-      d.sort((a,b)=>a-b); ctxLog.frame_interval_estimate=+d[d.length>>1].toFixed(2); } }
-  requestAnimationFrame(f); })();
-function sourceInfo(){
-  const p=new URLSearchParams(location.search);
-  return { utm_source:p.get("utm_source"), utm_medium:p.get("utm_medium"),
-    utm_campaign:p.get("utm_campaign"),
-    referral_type:p.get("duel")?"duel_invite":(p.get("utm_source")?"campaign":"direct"),
-    duel_id:p.get("duel") };
-}
-
-/* =====================================================================
-   OTURUM DURUMU
-===================================================================== */
-const CONSENT_VERSION="1.0";
-let user={ user_id:null, alias:null, birth_year:null, sex:null, visit_no:1,
-  consent_given_at:null, consent_version:null };
-let session=null, attempt=null, current=null;
-const sessionResults={};   // game_id -> metrics (sentez için)
-const orderCounter={ n:0 };
-
-async function initUser(){
-  const s=await store.get("bat-user");
-  if(s){ user=Object.assign(user,s); user.visit_no=(user.visit_no||0)+1; }
-  else user.user_id=uuid();
-  await store.set("bat-user",user);
-  $("alias").value=user.alias||"";
-  $("birthyear").value=user.birth_year||"";
-  $("sex").value=user.sex||"";
-  const consented = !!(user.consent_given_at && user.consent_version===CONSENT_VERSION);
-  $("consentbox").checked=consented;
-  $("savesettings").disabled=!consented;
-  checkAge();
-}
-function checkAge(){
-  const y=parseInt($("birthyear").value,10);
-  const valid=y>=1900&&y<=new Date().getFullYear();
-  const age=valid?(new Date().getFullYear()-y):null;
-  $("agewarn").hidden = !(valid && age<18);
-}
-function newSession(){
-  session={ session_id:uuid(), user_id:user.user_id, started_at_utc:nowIso(),
-    tz_offset_min:-new Date().getTimezoneOffset(), visit_no:user.visit_no,
-    device:deviceInfo(), source:sourceInfo(), attempts:[] };
-}
-function newAttempt(g){
-  current=g;
-  attempt={ attempt_id:uuid(), session_id:session.session_id, game_id:g.id,
-    game_version:g.version, order_in_session:++orderCounter.n,
-    attempt_no:1, started_at:nowIso(), status:"in_progress", invalid_reason:null,
-    metrics:null, score_0_100:null, raw:{}, events:[] };
-}
-function commitAttempt(){ session.attempts.push(attempt); }
-
-/* ---------------------- sahne yönetimi ---------------------- */
-const stages={ hub:$("hub"), settings:$("settings"), simsek:$("simsek"),
-  pusula:$("pusula"), results:$("results") };
-function show(n){ Object.values(stages).forEach(s=>s.classList.remove("active"));
-  stages[n].classList.add("active"); }
-function buildRuler(el,seg){
-  el.innerHTML="";
-  for(let i=0;i<seg;i++){ const m=document.createElement("i"); m.className="major";
-    el.appendChild(m); for(let j=0;j<3;j++) el.appendChild(document.createElement("i")); }
-  const e=document.createElement("i"); e.className="major"; el.appendChild(e);
-}
-function paintRuler(el,done){
-  [...el.querySelectorAll("i.major")].forEach((m,i)=>m.classList.toggle("done",i<done));
-}
-function onHidden(){
-  if(current&&(current.id==="simsek"||current.id==="pusula")) abortRtTrial();
-}
-
-/* =====================================================================
-   ŞİMŞEK + PUSULA — ortak reaksiyon motoru
-===================================================================== */
-let phase="idle", trialNo=0, curTrial=null, stimT=0, delayTimer=null;
-const DIRS=["up","down","left","right"];
-const ARROWS={up:"▲",down:"▼",left:"◀",right:"▶"};
-
-function startRt(g){
-  newAttempt(g); trialNo=0;
-  const rul = g.id==="simsek" ? $("simsekruler") : $("pusularuler");
-  buildRuler(rul,g.trials); paintRuler(rul,0);
-  attempt.raw.touch_log=[]; attempt.raw.context_log=ctxLog;
-  (g.id==="simsek"?$("simsekfeed"):$("pusulafeed")).textContent="";
-  show(g.id); nextRtTrial();
-}
-function nextRtTrial(){
-  const g=current;
-  if(trialNo>=g.trials) return finishRt();
-  phase="armed";
-  if(g.id==="simsek"){
-    const z=$("tapzone"); z.className="";
-    $("tapword").textContent="bekle"; $("tapword").classList.add("pulse");
-    $("tapsub").textContent="deneme "+(trialNo+1)+" / "+g.trials;
-  }else{
-    $("compasszone").className="";
-    const a=$("arrow"); a.className=""; a.textContent="·";
+  function buzz(p){ try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+  function clearAll(){ clearTimeout(timerId); clearTimeout(cdId); cancelAnimationFrame(rafId); }
+  function countdown(){
+    state='countdown'; stage.className='rx-stage';
+    let n=3;
+    function step(){
+      if(n===0){ startRound(); return; }
+      content.innerHTML=
+        '<div class="rx-eyebrow">Hazır ol</div>'+
+        '<div class="rx-count">'+n+'</div>'+dots();
+      n--; cdId=setTimeout(step,1000);
+    }
+    step();
   }
-  curTrial={ trial_no:trialNo+1,
-    planned_delay_ms:Math.round(g.delay_min+Math.random()*(g.delay_max-g.delay_min)),
-    stimulus_type: g.id==="pusula" ? DIRS[Math.floor(Math.random()*4)] : "go",
-    stimulus_drawn_at:null, pointerdown:null, tapped_zone:null,
-    premature_taps:[], rt_ms:null, correct:null, valid:null, exclusion_reason:null };
-  delayTimer=setTimeout(fireStim,curTrial.planned_delay_ms);
-}
-function fireStim(){
-  if(phase!=="armed") return;
-  phase="pending";
-  if(current.id==="simsek"){
-    $("tapzone").classList.add("go");
-    $("tapword").classList.remove("pulse");
-    $("tapword").textContent="dokun"; $("tapsub").textContent="";
-  }else{
-    const a=$("arrow"); a.className="live"; a.textContent=ARROWS[curTrial.stimulus_type];
+  function fmt(ms){ return (ms/1000).toFixed(3); }
+  function counter(ms){ return '<div class="rx-ms rx-live" id="rxLive">'+fmt(ms)+'<i> sn</i></div>'; }
+  function tick(){
+    const el=document.getElementById('rxLive');
+    if(el) el.firstChild.nodeValue=fmt(performance.now()-goAt);
+    rafId=requestAnimationFrame(tick);
   }
-  requestAnimationFrame(()=>requestAnimationFrame(t=>{
-    stimT=t; curTrial.stimulus_drawn_at=t;
-    if(phase==="pending") phase="stimulus";
-  }));
-}
-function registerTap(t,zone,ev){
-  const g=current;
-  if(phase==="armed"||phase==="pending"){
-    curTrial.premature_taps.push({t,zone,pointerType:ev?ev.pointerType:null});
-    return badTrial("false_start","erken","uyaranı bekle — deneme tekrarlanıyor");
-  }
-  if(phase!=="stimulus") return;
-  phase="feedback";
-  const rt=t-stimT;
-  curTrial.rt_ms=+rt.toFixed(1); curTrial.tapped_zone=zone;
-  if(ev) curTrial.pointerdown={t,x:ev.clientX,y:ev.clientY,pointerType:ev.pointerType};
-  curTrial.correct = g.id==="pusula" ? (zone===curTrial.stimulus_type) : true;
 
-  if(rt<g.rt_min){
-    curTrial.valid=false; curTrial.exclusion_reason="anticipation";
-    attempt.raw.touch_log.push(curTrial);
-    return retryTrial("çok erken","refleks değil tahmin — tekrar");
+  function shareUrl(avg){
+    const dir = window.location.pathname.replace(/[^/]*$/, '');
+    return window.location.origin + dir + 'reaksiyon.html?hedef=' + avg;
   }
-  if(!curTrial.correct){
-    curTrial.valid=false; curTrial.exclusion_reason="wrong_direction";
-  } else if(rt>g.rt_max){
-    curTrial.valid=false; curTrial.exclusion_reason="lapse";
-  } else curTrial.valid=true;
-
-  attempt.raw.touch_log.push(curTrial);
-  trialNo++;
-  const rul=g.id==="simsek"?$("simsekruler"):$("pusularuler");
-  paintRuler(rul,trialNo);
-  const feed=g.id==="simsek"?$("simsekfeed"):$("pusulafeed");
-  feed.innerHTML = !curTrial.correct ? "<b>yanlış yön</b>"
-    : curTrial.valid ? "<b>"+Math.round(rt)+" ms</b>"
-    : "<b>"+Math.round(rt)+" ms</b> · dalgınlık";
-  if(g.id==="simsek"){
-    $("tapword").textContent=Math.round(rt); $("tapsub").textContent="ms";
-  }else{
-    const a=$("arrow");
-    if(!curTrial.correct){ $("compasszone").className="bad"; a.textContent="✕"; }
-    else a.textContent=Math.round(rt);
+  function dots(){
+    let h='<div class="rx-rounds">';
+    for(let i=0;i<TOTAL_ROUNDS;i++) h+='<span class="rx-dot'+(i<roundsDone?' rx-done':'')+'"></span>';
+    return h+'</div>';
   }
-  setTimeout(nextRtTrial,850);
-}
-function badTrial(reason,word,sub){
-  clearTimeout(delayTimer); phase="feedback";
-  curTrial.valid=false; curTrial.exclusion_reason=reason;
-  attempt.raw.touch_log.push(curTrial);
-  if(current.id==="simsek"){
-    $("tapzone").className="bad"; $("tapword").classList.remove("pulse");
-    $("tapword").textContent=word; $("tapsub").textContent=sub;
-  }else{
-    $("compasszone").className="bad"; $("arrow").textContent="✕";
-    $("pusulafeed").innerHTML="<b>"+word+"</b> · "+sub;
-  }
-  setTimeout(nextRtTrial,1150);
-}
-function retryTrial(word,sub){
-  clearTimeout(delayTimer);
-  if(current.id==="simsek"){
-    $("tapzone").className="bad"; $("tapword").classList.remove("pulse");
-    $("tapword").textContent=word; $("tapsub").textContent=sub;
-  }else{ $("compasszone").className="bad"; $("arrow").textContent="✕"; }
-  setTimeout(nextRtTrial,1150);
-}
-function abortRtTrial(){
-  if(phase==="armed"||phase==="pending"||phase==="stimulus"){
-    clearTimeout(delayTimer); phase="feedback";
-    if(curTrial){ curTrial.valid=false; curTrial.exclusion_reason="tab_hidden";
-      attempt.raw.touch_log.push(curTrial); }
-    setTimeout(nextRtTrial,400);
-  }
-}
-$("tapzone").addEventListener("pointerdown",e=>{
-  if(e.isPrimary) registerTap(performance.now(),"center",e); });
-$("tapzone").addEventListener("contextmenu",e=>e.preventDefault());
-document.querySelectorAll(".pad").forEach(p=>{
-  p.addEventListener("pointerdown",e=>{
-    if(e.isPrimary) registerTap(performance.now(),p.dataset.dir,e); });
-  p.addEventListener("contextmenu",e=>e.preventDefault());
-});
-
-function finishRt(){
-  const g=current, all=attempt.raw.touch_log;
-  const good=all.filter(x=>x.valid).map(x=>x.rt_ms);
-  const fs=all.filter(x=>x.exclusion_reason==="false_start").length;
-  const ant=all.filter(x=>x.exclusion_reason==="anticipation").length;
-  const lap=all.filter(x=>x.exclusion_reason==="lapse").length;
-  const wrong=all.filter(x=>x.exclusion_reason==="wrong_direction").length;
-  const answered=all.filter(x=>x.rt_ms!==null&&x.exclusion_reason!=="anticipation").length;
-  if(good.length<g.min_valid){
-    attempt.status="invalid"; attempt.invalid_reason="too_few_valid_trials";
-    commitAttempt(); alert("Yeterli geçerli deneme yok. Tekrar dene."); return goHub();
-  }
-  const mu=mean(good), s=sd(good);
-  const m={ trials_planned:g.trials, trials_valid:good.length,
-    rt_list_ms:good.map(x=>+x.toFixed(1)),
-    rt_mean_ms:+mu.toFixed(1), rt_median_ms:+median(good).toFixed(1),
-    rt_sd_ms:+s.toFixed(1), rt_cv_pct:+(mu?100*s/mu:0).toFixed(1),
-    best_rt_ms:+Math.min(...good).toFixed(1),
-    false_starts:fs, anticipations:ant, lapses:lap };
-  if(g.id==="pusula"){
-    m.errors=wrong;
-    m.error_rate_pct=answered?+(100*wrong/answered).toFixed(1):0;
-    m.per_direction={};
-    DIRS.forEach(d=>{
-      const v=all.filter(x=>x.valid&&x.stimulus_type===d).map(x=>x.rt_ms);
-      m.per_direction[d]=v.length?+mean(v).toFixed(1):null;
+  function showIntro(){
+    state='intro'; stage.className='rx-stage';
+    const best=store.get('locomotion_best_ms');
+    const consented=raw.get(CONSENT_KEY)==='1';
+    content.innerHTML=
+      '<div class="rx-intro">'+
+      '<div class="rx-eyebrow" style="text-align:center">Reaksiyon Testi</div>'+
+      '<h3>Ne kadar hızlısın?</h3>'+
+      '<p class="rx-sub">7 tur, yaklaşık 40 saniye. Ekran kırmızıdan ambere geçer geçmez dokun.</p>'+
+      (best?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">EN İYİN: '+best+' ms</p>':'')+
+      '<ul class="rx-steps">'+
+        '<li><b>01</b><span>Kırmızı ekranda sayaç 0.000\u2019da bekler. Ne zaman ambere döneceği rastgeledir; tahmin etmeye çalışma.</span></li>'+
+        '<li><b>02</b><span>Ekran kırmızıdan ambere geçer geçmez dokun. Sayaç durur; o turun süren budur.</span></li>'+
+        '<li><b>03</b><span>Turlar kendiliğinden akar, aralarda dokunmana gerek yok.</span></li>'+
+        '<li><b>04</b><span>Amber gelmeden dokunursan tur \u201cerken\u201d sayılır ve ortalamana girmez. Ceza değil, veri: kaç kez erken bastığın sonucunda görünür.</span></li>'+
+      '</ul>'+
+      '<div class="rx-key"><span class="k-red">KIRMIZI \u2192 BEKLE</span><span class="k-amb">AMBER \u2192 DOKUN</span></div>'+
+      '<div class="rx-why">'+
+        '<b>Neden ölçüyoruz?</b> Basit reaksiyon süresi, sinir sistemi ile kas arasındaki iletişim hızının en eski ölçümlerinden biridir. Prehab Index\u2019te kontrol halkasının bir parçasıdır: vücudun bir uyarana ne kadar çabuk cevap verdiği.'+
+        '<details><summary>DAHA FAZLA OKU \u2193</summary>'+
+        '<p>Araştırmalarda reaksiyon süresi yaşla yavaşlama, uykusuzluk, yorgunluk ve alkolün etkisi, sporcularda sakatlık sonrası toparlanma takibi ve ileri yaşta düşme riskiyle ilişkisi açısından incelenir. Ortalama yetişkin basit görsel uyaranda yaklaşık 250\u2013270 ms civarındadır; bu kaba bir referanstır, kesin bir norm değildir.</p>'+
+        '<p>Bu test eğlence ve merak amaçlıdır; tanı koymaz, klinik bir değerlendirmenin yerini tutmaz.</p>'+
+        '</details>'+
+      '</div>'+
+      '<div class="rx-checks">'+
+        '<label><input type="checkbox" id="rxCk1"'+(consented?' checked':'')+'><span>Aydınlatma metnini okudum; testin tanı amaçlı olmadığını anladım. <small>En iyi skorum yalnızca kendi cihazımda saklanır. <a href="#" id="rxKvkkLink">Aydınlatma metnini aç</a></small></span></label>'+
+        '<div class="rx-consent" id="rxKvkkBox" style="display:none;margin-top:0">'+CONSENT_HTML+'</div>'+
+        '<label><input type="checkbox" id="rxCk2"><span>Sonucumu anonim olarak salon istatistiklerine ekle. <small>İsteğe bağlı. Yalnızca tur süreleri ve tarih; kimlik veya cihaz bilgisi gönderilmez.</small></span></label>'+
+      '</div>'+
+      '<button class="rx-cta" id="rxStartBtn" disabled>Anladım, başla \u2192<small>7 TUR \u00b7 YAKLAŞIK 40 SANİYE</small></button>'+
+      '</div>';
+    const ck1=document.getElementById('rxCk1'), ck2=document.getElementById('rxCk2'), btn=document.getElementById('rxStartBtn');
+    function sync(){ btn.disabled=!ck1.checked; }
+    sync();
+    ck1.addEventListener('change',sync);
+    content.querySelector('.rx-intro').addEventListener('pointerdown',function(e){e.stopPropagation();});
+    document.getElementById('rxKvkkLink').addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      const b=document.getElementById('rxKvkkBox'); b.style.display=b.style.display==='none'?'block':'none';
+    });
+    btn.addEventListener('click',function(e){
+      e.stopPropagation(); if(!ck1.checked) return;
+      allowStore=true; raw.set(CONSENT_KEY,'1'); allowStats=ck2.checked;
+      beep(1,0.01,0.001); times=[]; earlyCount=0; roundsDone=0; countdown();
     });
   }
-  attempt.status="completed"; attempt.metrics=m;
-  attempt.score_0_100=Math.max(1,Math.min(100,
-    Math.round(100*Math.exp(-(mu-g.score_ref)/g.score_k))));
-  commitAttempt(); sessionResults[g.id]=m;
-  finishAndShow(g,m);
-}
 
-/* =====================================================================
-   SONUÇ + KART + GRAFİK
-===================================================================== */
-async function finishAndShow(g,m){
-  const key="bat-best-"+g.id, hkey="bat-hist-"+g.id;
-  const prim = m.rt_mean_ms;
-  const best=await store.get(key);
-  const isRecord = !best || prim<best.value;
-  if(isRecord) await store.set(key,{value:prim,date:nowIso()});
-  const hist=(await store.get(hkey))||[];
-  hist.push({ at:attempt.started_at, value:prim, score:attempt.score_0_100 });
-  const trimmed=hist.slice(-10);
-  await store.set(hkey,trimmed);
-  renderResults(g,m,isRecord);
-  renderChart(g,trimmed);
-  drawCard(cardData(g,m,isRecord));
-}
-function renderResults(g,m,isRecord){
-  $("resultgame").textContent=g.name;
-  $("resultsub").textContent=new Date().toLocaleDateString("tr-TR",
-    {day:"numeric",month:"long",year:"numeric"});
-  $("newrecord").hidden=!isRecord;
-  $("scoreval").textContent=attempt.score_0_100;
-  const row=$("metricrow"); row.innerHTML="";
-  const add=(v,l)=>{ const d=document.createElement("div"); d.className="metric";
-    d.innerHTML='<div class="v">'+v+'</div><div class="l">'+l+'</div>'; row.appendChild(d); };
-  $("heroval").textContent=Math.round(m.rt_mean_ms);
-  $("herounit").textContent="ms";
-  $("herolabel").textContent="ortalama reaksiyon";
-  add("%"+m.rt_cv_pct.toFixed(1),"tutarlılık (CV)");
-  add(Math.round(m.best_rt_ms)+" ms","en iyi deneme");
-  if(g.id==="pusula") add("%"+m.error_rate_pct.toFixed(0),"yön hatası");
-  else add(m.false_starts+m.anticipations,"erken çıkış");
-  show("results");
-}
-function renderChart(g,hist){
-  const box=$("chartbox");
-  if(!store.ok||!hist||!hist.length){ box.hidden=true; return; }
-  box.hidden=false;
-  $("charttitle").textContent="ortalama reaksiyon · geçmiş oturumlar";
-  $("chartcap").textContent="yukarı = daha iyi";
-  const W=600,H=140,pL=48,pR=16,pT=14,pB=26,plotW=W-pL-pR,plotH=H-pT-pB;
-  const copper="#C9855A",steel="#8CA3B8",dim="#5F6E7C",line="#2A3340";
-  const fmt=v=>Math.round(v)+" ms";
-  if(hist.length===1){
-    $("chartsvg").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="ilk ölçüm">'+
-      '<line x1="'+pL+'" y1="'+(H/2)+'" x2="'+(W-pR)+'" y2="'+(H/2)+'" stroke="'+line+'"/>'+
-      '<circle cx="'+(W/2)+'" cy="'+(H/2)+'" r="5" fill="'+copper+'"/>'+
-      '<text x="'+(W/2)+'" y="'+(H/2-14)+'" text-anchor="middle" fill="'+copper+'" font-size="15">'+fmt(hist[0].value)+'</text>'+
-      '<text x="'+(W/2)+'" y="'+(H/2+22)+'" text-anchor="middle" fill="'+dim+'" font-size="11">ilk ölçüm</text></svg>';
-    return;
+  function startRound(){
+    state='waiting'; stage.className='rx-stage rx-waiting';
+    content.innerHTML=
+      '<div class="rx-eyebrow">Tur '+(roundsDone+1)+' / '+TOTAL_ROUNDS+'</div>'+
+      counter(0)+
+      '<p style="font-family:var(--mono);font-size:11px;letter-spacing:.16em">KIRMIZI \u2192 BEKLE &nbsp;\u00b7&nbsp; AMBER \u2192 DOKUN</p>'+dots();
+    clearAll();
+    timerId=setTimeout(function(){
+      state='go'; stage.className='rx-stage rx-go'; goAt=performance.now(); beep(1040,0.18,0.18); buzz(120);
+      content.innerHTML='<div class="rx-eyebrow">Şimdi — dokun</div>'+counter(0)+dots();
+      rafId=requestAnimationFrame(tick);
+    }, Math.random()<0.2 ? 4500+Math.random()*1500 : 1000+Math.random()*3000);
   }
-  const vals=hist.map(h=>h.value), mn=Math.min(...vals), mx=Math.max(...vals), rg=(mx-mn)||1;
-  const n=hist.length, xs=plotW/(n-1);
-  const pts=hist.map((h,i)=>({ x:pL+i*xs,
-    y: pT + (h.value-mn)/rg * plotH,
-    v:h.value, at:h.at }));
-  const path=pts.map((p,i)=>(i?"L":"M")+p.x.toFixed(1)+","+p.y.toFixed(1)).join(" ");
-  const dots=pts.map((p,i)=>{
-    const last=i===n-1;
-    return '<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+(last?5:3)+
-      '" fill="'+(last?copper:steel)+'"/>'+(last?
-      '<text x="'+p.x.toFixed(1)+'" y="'+(p.y-12).toFixed(1)+'" text-anchor="end" fill="'+
-      copper+'" font-size="14">'+fmt(p.v)+'</text>':"");
-  }).join("");
-  const df=iso=>{ const d=new Date(iso); return d.getDate()+"."+(d.getMonth()+1); };
-  $("chartsvg").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="son '+n+' oturum">'+
-    '<text x="'+(pL-8)+'" y="'+(pT+4)+'" text-anchor="end" fill="'+dim+'" font-size="11">'+fmt(mn)+'</text>'+
-    '<text x="'+(pL-8)+'" y="'+(pT+plotH)+'" text-anchor="end" fill="'+dim+'" font-size="11">'+fmt(mx)+'</text>'+
-    '<line x1="'+pL+'" y1="'+(pT+plotH)+'" x2="'+(W-pR)+'" y2="'+(pT+plotH)+'" stroke="'+line+'"/>'+
-    '<path d="'+path+'" fill="none" stroke="'+steel+'" stroke-width="2" opacity="0.7"/>'+dots+
-    '<text x="'+pL+'" y="'+(H-4)+'" fill="'+dim+'" font-size="10">'+df(pts[0].at)+'</text>'+
-    '<text x="'+(W-pR)+'" y="'+(H-4)+'" text-anchor="end" fill="'+dim+'" font-size="10">'+df(pts[n-1].at)+'</text></svg>';
-}
-function cardData(g,m,isRecord){
-  const d={ card_type:"solo", game_id:g.id, alias:user.alias||"isimsiz",
-    verify_code:verifyCode(attempt.attempt_id),
-    date:new Date().toLocaleDateString("tr-TR"),
-    context: isRecord?{type:"record",value:"yeni rekor"}
-                     :{type:"score",value:attempt.score_0_100} };
-  d.hero={ value:Math.round(m.rt_mean_ms), unit:"ms", label:"ortalama reaksiyon" };
-  d.subs=[{value:"CV %"+m.rt_cv_pct.toFixed(1)},
-          {value: g.id==="pusula" ? ("hata %"+m.error_rate_pct.toFixed(0))
-                                  : ("en iyi "+Math.round(m.best_rt_ms)+" ms")}];
-  return d;
-}
-function rr(c,x,y,w,h,r){
-  if(c.roundRect) return c.roundRect(x,y,w,h,r);
-  c.moveTo(x+r,y); c.arcTo(x+w,y,x+w,y+h,r); c.arcTo(x+w,y+h,x,y+h,r);
-  c.arcTo(x,y+h,x,y,r); c.arcTo(x,y,x+w,y,r); c.closePath();
-}
-function drawCard(d){
-  const cv=$("cardcanvas"), c=cv.getContext("2d");
-  const W=1080,H=1920,ink="#12161C",ivory="#ECE7DC",copper="#C9855A",
-        steel="#8CA3B8",dim="#5F6E7C",line="#2A3340";
-  c.fillStyle=ink; c.fillRect(0,0,W,H);
-  const ruler=y=>{ c.strokeStyle=line; c.lineWidth=3;
-    for(let i=0;i<=36;i++){ const x=90+i*(W-180)/36,h=i%6===0?26:13;
-      c.beginPath(); c.moveTo(x,y); c.lineTo(x,y-h); c.stroke(); } };
-  ruler(150); c.textBaseline="alphabetic"; c.textAlign="left";
-  c.fillStyle=copper; c.font="500 40px system-ui,sans-serif";
-  const nm=GAMES[d.game_id].name.toUpperCase();
-  c.save(); c.translate(90,235);
-  nm.split("").forEach((ch,i)=>c.fillText(ch,i*52,0)); c.restore();
-  c.fillStyle=steel; c.font="400 34px system-ui,sans-serif";
-  c.textAlign="right"; c.fillText(d.date,W-90,235); c.textAlign="left";
-  c.fillStyle=ivory; c.font="400 46px system-ui,sans-serif"; c.fillText(d.alias,90,380);
-  c.font="500 280px system-ui,sans-serif";
-  c.fillText(String(d.hero.value),82,720);
-  const hw=c.measureText(String(d.hero.value)).width;
-  c.fillStyle=steel; c.font="400 60px system-ui,sans-serif";
-  c.fillText(d.hero.unit,82+hw+18,720);
-  c.font="400 40px system-ui,sans-serif"; c.fillText(d.hero.label,90,800);
-  c.fillStyle=ivory; c.font="400 42px system-ui,sans-serif";
-  c.fillText(d.subs.map(s=>s.value).join("   ·   "),90,920);
-  c.strokeStyle=copper; c.lineWidth=3;
-  c.beginPath(); rr(c,90,1020,W-180,170,22); c.stroke();
-  if(d.context.type==="record"){
-    c.fillStyle=copper; c.font="500 66px system-ui,sans-serif";
-    c.fillText("yeni rekor",130,1130);
-  }else{
-    c.fillStyle=copper; c.font="500 90px system-ui,sans-serif";
-    c.fillText(String(d.context.value),130,1140);
-    c.fillStyle=steel; c.font="400 34px system-ui,sans-serif";
-    c.textAlign="right"; c.fillText("geçici skor · 0–100",W-130,1120); c.textAlign="left";
+  function earlyTap(){
+    clearAll(); beep(220,0.25,0.15); buzz([80,60,80]);
+    earlyCount++; roundsDone++;
+    if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,1200); state='early'; stage.className='rx-stage rx-early';
+      content.innerHTML='<div class="rx-eyebrow">Erken</div><h3>Amber gelmeden dokundun.</h3>'+dots(); return; } state='early'; stage.className='rx-stage rx-early';
+    content.innerHTML=
+      '<div class="rx-eyebrow">Erken!</div>'+
+      '<h3>Amber gelmeden dokundun.</h3>'+
+      '<p>Bu tur erken olarak kaydedildi; ortalamaya girmez.</p>'+dots();
+    cdId=setTimeout(startRound,1200);
   }
-  c.fillStyle=ivory; c.font="400 46px system-ui,sans-serif";
-  c.fillText("beni geçebilir misin?",90,1560);
-  c.fillStyle=copper; c.fillText("→ link bio'da",90,1630);
-  c.fillStyle=steel; c.font="400 36px system-ui,sans-serif";
-  c.fillText("@locomotion",90,1750);
-  c.textAlign="right"; c.fillText(d.verify_code,W-90,1750); c.textAlign="left";
-  c.fillStyle=dim; c.font="400 28px system-ui,sans-serif";
-  c.fillText("performans oyunudur, tıbbi ölçüm değildir",90,1806);
-  ruler(1870);
-}
-
-/* =====================================================================
-   HUB + SENTEZ
-===================================================================== */
-async function renderHub(){
-  const list=$("gamelist"); list.innerHTML="";
-  for(const k of ["simsek","pusula"]){
-    const g=GAMES[k], m=sessionResults[k];
-    const b=document.createElement("button");
-    b.className="gamecard"+(m?" done":"");
-    const val = m ? Math.round(m.rt_mean_ms)+"<small>ms</small>" : "";
-    b.innerHTML='<span class="gi">'+g.name.toUpperCase()+'</span>'+
-      '<span class="gt"><span class="n">'+(m?"tekrar oyna":"başla")+'</span>'+
-      '<span class="d">'+g.desc+'</span></span><span class="gs">'+val+'</span>';
-    b.addEventListener("click",()=>launch(k));
-    list.appendChild(b);
+  function recordTap(){
+    cancelAnimationFrame(rafId);
+    const live=document.getElementById('rxLive');
+    const ms=Math.round(performance.now()-goAt);
+    if(live) live.firstChild.nodeValue=fmt(ms);
+    times.push(ms); roundsDone++;
+    if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,900); state='roundResult'; stage.className='rx-stage';
+      content.innerHTML='<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div><div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+dots(); return; }
+    state='roundResult'; stage.className='rx-stage';
+    content.innerHTML=
+      '<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div>'+
+      '<div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+
+      '<p style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">'+ms+' MS</p>'+dots()+
+      '<p>Sonraki tur birazdan.</p>';
+    beep(880,0.08,0.1); buzz(40);
+    cdId=setTimeout(startRound,1200);
   }
-  const s=sessionResults.simsek, p=sessionResults.pusula;
-  if(s&&p){
-    const dec=p.rt_mean_ms-s.rt_mean_ms;
-    $("synthbox").hidden=false;
-    $("synthlabel").textContent="karar süresi";
-    $("synthval").textContent=Math.round(dec)+" ms";
-    $("synthdesc").textContent="Pusula ile Şimşek farkı: motor hız çıkarıldığında geriye kalan "+
-      "saf karar verme süresi. Tek oyunla ölçülemez.";
-  } else $("synthbox").hidden=true;
-}
-function launch(k){
-  if(!session) newSession();
-  startRt(GAMES[k]);
-}
-function goHub(){ current=null; renderHub(); show("hub"); }
-
-/* ---------------------- dışa aktarım ---------------------- */
-function download(name,blob){
-  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=name;
-  document.body.appendChild(a); a.click();
-  setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); },500);
-}
-$("exportbtn").addEventListener("click",()=>{
-  if(!session) return alert("Önce bir oyun oyna.");
-  download("batarya-"+session.session_id.slice(0,8)+".json",
-    new Blob([JSON.stringify({profile:{birth_year:user.birth_year,sex:user.sex},
-      session},null,2)],{type:"application/json"}));
-});
-$("dlcard").addEventListener("click",()=>
-  $("cardcanvas").toBlob(b=>download("kart.png",b),"image/png"));
-function isMobile(){
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent||"");
-}
-$("sharebtn").addEventListener("click",()=>{
-  $("cardcanvas").toBlob(async b=>{
-    const f=new File([b],"kart.png",{type:"image/png"});
-    if(isMobile()&&navigator.canShare&&navigator.canShare({files:[f]})){
-      try{
-        await navigator.share({files:[f],title:"Locomotion",text:"Skorumu geçebilir misin?"});
-        return;
-      }catch(e){ if(e.name==="AbortError") return; }
+  function rating(avg){
+    if(avg<200) return 'REFLEKS MAKİNESİ ⚡';
+    if(avg<250) return 'SPORCU SEVİYESİ';
+    if(avg<300) return 'ORTALAMA ÜSTÜ';
+    if(avg<350) return 'ORTALAMA';
+    return 'ISINMAN LAZIM 🙂';
+  }
+  function showFinal(){
+    state='finished'; stage.className='rx-stage';
+    if(!times.length){
+      content.innerHTML='<div class="rx-eyebrow">Sonuç</div><h3>Hepsi erken.</h3><p>Amber gelene kadar bekle, sayaç akınca dokun.</p>'+
+        '<div class="rx-btnrow"><button class="rx-btn" id="rxAgainBtn">Tekrar</button></div>';
+      document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;countdown();});
+      return;
     }
-    // native share desteklenmiyorsa: indir + Instagram'a yönlendirmeyi dene
-    download("kart.png",b);
-    alert("Kart galerine kaydedildi. Instagram'ı aç → Hikaye oluştur → galeriden seç.");
-  },"image/png");
-});
-$("againbtn").addEventListener("click",()=>{ if(current) launch(current.id); });
-$("hubbtn").addEventListener("click",goHub);
-$("settingsbtn").addEventListener("click",()=>show("settings"));
-$("birthyear").addEventListener("input",checkAge);
-$("consentbox").addEventListener("change",()=>{
-  $("savesettings").disabled=!$("consentbox").checked;
-});
-$("savesettings").addEventListener("click",async()=>{
-  if(!$("consentbox").checked) return;
-  user.alias=$("alias").value.trim()||null;
-  const y=parseInt($("birthyear").value,10);
-  user.birth_year=(y>=1900&&y<=new Date().getFullYear())?y:null;
-  user.sex=$("sex").value||null;
-  user.consent_given_at=nowIso();
-  user.consent_version=CONSENT_VERSION;
-  await store.set("bat-user",user);
-  goHub();
-});
-$("deletedatabtn").addEventListener("click",async()=>{
-  if(!confirm("Tüm kayıtlı verilerin (takma ad, doğum yılı, cinsiyet, rekor ve geçmiş) "+
-    "bu cihazdan silinsin mi? Bu işlem geri alınamaz.")) return;
-  await store.delete("bat-user");
-  await store.delete("bat-best-simsek");
-  await store.delete("bat-best-pusula");
-  await store.delete("bat-hist-simsek");
-  await store.delete("bat-hist-pusula");
-  user={ user_id:uuid(), alias:null, birth_year:null, sex:null, visit_no:1,
-    consent_given_at:null, consent_version:null };
-  session=null; attempt=null; current=null;
-  Object.keys(sessionResults).forEach(k=>delete sessionResults[k]);
-  await store.set("bat-user",user);
-  $("alias").value=""; $("birthyear").value=""; $("sex").value="";
-  $("consentbox").checked=false; $("savesettings").disabled=true;
-  $("agewarn").hidden=true;
-  alert("Verilerin silindi.");
-  goHub();
-});
+    const avg=Math.round(times.reduce(function(a,b){return a+b;},0)/times.length);
+    const best=Math.min.apply(null,times);
+    const prev=parseInt(store.get('locomotion_best_ms')||'99999',10);
+    if(avg<prev) store.set('locomotion_best_ms',String(avg));
+    sendStats({times:times.slice(),early:earlyCount,date:new Date().toISOString().slice(0,10)});
+    content.innerHTML=
+      '<div class="rx-eyebrow">Sonuç</div>'+
+      '<div class="rx-ms">'+avg+'<i> ms</i></div>'+
+      '<div class="rx-resgrid">'+
+        '<div class="rx-rescell"><div class="rx-lbl">En Hızlı Tur</div><div class="rx-val">'+best+'<i> ms</i></div></div>'+
+        '<div class="rx-rescell"><div class="rx-lbl">Geçerli / Erken</div><div class="rx-val">'+times.length+' <i>/</i> '+earlyCount+'</div></div>'+
+      '</div>'+
+      '<div class="rx-rating">'+rating(avg)+'</div>'+
+      '<p style="margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:rgba(243,241,235,.55)">REAKSİYON, PREHAB INDEX\u2019İN KONTROL HALKASININ PARÇASIDIR</p>'+
+      '<button class="rx-cta" id="rxBridge">Prehab Index\u2019i dene \u2192<small>VÜCUDUN NE KADAR HAZIR?</small></button>'+
+      '<div class="rx-btnrow">'+
+        '<button class="rx-btn" id="rxShareBtn">Meydan Oku 🔗</button>'+
+        '<button class="rx-btn rx-ghost" id="rxAgainBtn">Tekrar</button>'+
+      '</div>';
+    document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;countdown();});
+    document.getElementById('rxBridge').addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation(); closeModal();
+      const tab=document.querySelector('.hg-tab[data-pane="hgIndex"]'); if(tab) tab.click();
+      const t=document.getElementById('heroGame'); if(t) t.scrollIntoView({behavior:'smooth',block:'center'});
+    });
+    document.getElementById('rxShareBtn').addEventListener('click',function(e){
+      e.stopPropagation();
+      const url=shareUrl(avg);
+      const text='Locomotion Reaksiyon Lab\u2019da ortalamam '+avg+' ms. Ge\u00e7ebilir misin? \u26a1';
+      if(navigator.share){ navigator.share({title:'Locomotion Reaksiyon Lab',text:text,url:url}).catch(function(){}); }
+      else if(navigator.clipboard){ navigator.clipboard.writeText(text+' '+url).then(function(){ showToast('Link kopyalandı — arkadaşına gönder!'); }); }
+      else { showToast(url); }
+    });
+  }
+  function showToast(msg){
+    toast.textContent=msg; toast.classList.add('rx-show');
+    setTimeout(function(){toast.classList.remove('rx-show');},2600);
+  }
 
-buildRuler($("hubruler"),6);
-[...$("hubruler").querySelectorAll("i.major")].forEach(m=>m.classList.add("done"));
-initUser().then(renderHub);
+  stage.addEventListener('pointerdown',function(){
+    if(state==='waiting') earlyTap();
+    else if(state==='go') recordTap();
+    else if(state==='finished' && actx && actx.state==='suspended') actx.resume();
+  });
+
+  function openModal(e){
+    if(e) e.preventDefault();
+    times=[]; clearTimeout(timerId);
+    overlay.classList.add('open');
+    overlay.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+    showIntro();
+  }
+  function closeModal(){
+    clearAll();
+    overlay.classList.remove('open');
+    overlay.setAttribute('aria-hidden','true');
+    document.body.style.overflow='';
+  }
+  closeBtn.addEventListener('click',closeModal);
+  document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&overlay.classList.contains('open')) closeModal(); });
+
+  // triggers: nav link + game-band button open the modal (fallback: navigate to reaksiyon.html if JS off)
+  document.querySelectorAll('a[href="reaksiyon.html"]').forEach(function(a){
+    if(a.closest('footer')) return; // footer link stays as standalone page navigation
+    a.addEventListener('click',openModal);
+  });
+  // hero panel: whole surface opens the modal (except the anchor, which handles itself)
+  const hg=document.getElementById('heroGame');
+  if(hg){
+    hg.addEventListener('click',function(ev){
+      if(ev.target.closest('a')||ev.target.closest('.hg-tabs')||ev.target.closest('#hgIndex')) return;
+      openModal();
+    });
+    const tabs=hg.querySelectorAll('.hg-tab');
+    tabs.forEach(function(t){
+      t.addEventListener('click',function(){
+        tabs.forEach(function(x){x.classList.remove('on');x.setAttribute('aria-selected','false');});
+        t.classList.add('on'); t.setAttribute('aria-selected','true');
+        hg.querySelectorAll('.hg-pane').forEach(function(pn){pn.classList.toggle('on',pn.id===t.dataset.pane);});
+        document.getElementById('hgTag').textContent=t.dataset.pane==='hgIndex'?'DENEME HESABI':'CANLI TEST';
+        hg.style.cursor=t.dataset.pane==='hgIndex'?'default':'pointer';
+      });
+    });
+  }
+})();
+
+/* ---------- prehab demo calculator (all instances) ---------- */
+(function(){
+  const names=['AĞRI','HAREKET','GÜÇ','KONTROL','DAYANIKLILIK'];
+  document.querySelectorAll('[data-calc]').forEach(function(box){
+    const rows=[...box.querySelectorAll('.sl')];
+    const out=function(k){return box.querySelector('[data-o="'+k+'"]');};
+    function calc(){
+      const v=rows.map(r=>+r.querySelector('input').value);
+      rows.forEach((r,i)=>r.querySelector('output').textContent=v[i]);
+      const avg=v.reduce((a,b)=>a+b,0)/5;
+      const mn=Math.min(...v);
+      const lvl=Math.min(Math.floor(avg),mn+1);
+      const above=v.filter(x=>x>lvl).length;
+      const pct=lvl>=5?100:Math.round(above/5*100);
+      const idx=Math.round((lvl-1)*20+pct*0.2);
+      const weakIdx=v.indexOf(mn);
+      rows.forEach((r,i)=>r.classList.toggle('weak',v[i]===mn && lvl<5));
+      if(out('index')) out('index').textContent=idx;
+      if(out('lvl')) out('lvl').textContent=lvl+' / 5';
+      if(out('pct')) out('pct').textContent='%'+pct;
+      if(out('weak')) out('weak').textContent=lvl>=5?'—':names[weakIdx];
+      if(out('avg')) out('avg').textContent=avg.toFixed(1).replace('.',',')+' / '+(mn+1);
+    }
+    rows.forEach(r=>r.querySelector('input').addEventListener('input',calc));
+    calc();
+  });
+})();
 </script>
 </body>
 </html>
