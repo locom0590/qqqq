@@ -198,8 +198,8 @@
   .rx-title{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--amber)}
   .rx-close{background:transparent;border:1.5px solid rgba(243,241,235,.35);color:var(--bone);width:42px;height:42px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;transition:all .15s}
   .rx-close:hover{border-color:var(--amber);color:var(--amber)}
-  .rx-main{flex:1;display:flex;align-items:center;justify-content:center;padding:16px 20px;position:relative;z-index:2;overflow-y:auto}
-  .rx-stage{width:min(560px,100%);border-radius:26px;min-height:min(62vh,500px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 24px;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border:1px solid rgba(243,241,235,.14);background:rgba(243,241,235,.04);transition:background .12s;color:var(--bone)}
+  .rx-main{flex:1;display:block;padding:16px 20px 32px;position:relative;z-index:2;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .rx-stage{width:min(560px,100%);margin:0 auto;border-radius:26px;min-height:min(62vh,500px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 24px;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;border:1px solid rgba(243,241,235,.14);background:rgba(243,241,235,.04);transition:background .12s;color:var(--bone)}
   .rx-stage.rx-waiting{background:rgba(224,102,102,.10);border-color:rgba(224,102,102,.4)}
   .rx-stage.rx-go{background:var(--amber);border-color:var(--amber);color:var(--deep)}
   .rx-stage.rx-early{background:rgba(224,102,102,.2);border-color:#E06666}
@@ -1081,10 +1081,10 @@
     document.getElementById('rxShareBtn').addEventListener('click',function(e){
       e.stopPropagation();
       const url=shareUrl(avg);
-      const text='Locomotion Reaksiyon Lab\u2019da ortalamam '+avg+' ms. Ge\u00e7ebilir misin? \u26a1';
-      if(navigator.share){ navigator.share({title:'Locomotion Reaksiyon Lab',text:text,url:url}).catch(function(){}); }
-      else if(navigator.clipboard){ navigator.clipboard.writeText(text+' '+url).then(function(){ showToast('Link kopyalandı — arkadaşına gönder!'); }); }
-      else { showToast(url); }
+      const text='Locomotion Reaksiyon Lab\u2019da ortalamam '+avg+' ms. Geçebilir misin? ⚡';
+      if(navigator.clipboard){ navigator.clipboard.writeText(text+' '+url).catch(function(){}); }
+      showToast('Link kopyalandı — test açılıyor');
+      window.open(url,'_blank','noopener');
     });
   }
   function showToast(msg){
