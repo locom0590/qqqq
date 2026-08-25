@@ -237,10 +237,10 @@
   .rx-steps{list-style:none;margin:18px 0 0;display:grid;gap:10px}
   .rx-steps li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:14px;color:var(--bone);line-height:1.5}
   .rx-steps li b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--amber);padding-top:3px;font-weight:500}
-  .rx-key{margin-top:16px;display:flex;gap:10px;justify-content:center}
-  .rx-key span{font-family:var(--mono);font-size:11px;letter-spacing:.16em;padding:8px 14px;border-radius:10px;border:1px solid rgba(243,241,235,.16)}
-  .rx-key .k-red{background:rgba(224,102,102,.14);color:#F0A0A0}
-  .rx-key .k-amb{background:var(--amber);color:var(--deep);border-color:var(--amber)}
+  .rx-key{margin-top:14px;text-align:center;font-size:13px;line-height:1.6;color:var(--steel)}
+  .rx-key b{font-weight:500}
+  .rx-key .c-red{color:#E88A8A}
+  .rx-key .c-amb{color:var(--amber)}
   .rx-why{margin-top:16px;font-size:13px;line-height:1.6;color:var(--steel)}
   .rx-why b{color:var(--bone);font-weight:500}
   .rx-why details{margin-top:8px}
@@ -879,6 +879,7 @@
 /* ---------- Reaksiyon Lab modal engine ---------- */
 (function(){
   const TOTAL_ROUNDS = 7;
+  const TOTAL_PRACTICE = 2;
   const overlay = document.getElementById('rxOverlay');
   const stage = document.getElementById('rxStage');
   const content = document.getElementById('rxContent');
@@ -907,6 +908,7 @@
     'Veri Sorumlusu: [Locomotion — ticari unvan/adres]';
 
   let state='idle', times=[], earlyCount=0, roundsDone=0, goAt=0, timerId=null, rafId=null, cdId=null;
+  let practiceMode=false, practiceIndex=0;
   let actx=null;
   function beep(freq,dur,vol){
     try{
@@ -926,9 +928,10 @@
     let n=3;
     function step(){
       if(n===0){ startRound(); return; }
+      const lbl = practiceMode ? 'Deneme başlıyor' : (roundsDone===0 ? 'Gerçek ölçüm başlıyor' : 'Hazır ol');
       content.innerHTML=
-        '<div class="rx-eyebrow">Hazır ol</div>'+
-        '<div class="rx-count">'+n+'</div>'+dots();
+        '<div class="rx-eyebrow">'+lbl+'</div>'+
+        '<div class="rx-count">'+n+'</div>';
       n--; cdId=setTimeout(step,1000);
     }
     step();
@@ -946,6 +949,7 @@
     return window.location.origin + dir + 'reaksiyon.html?hedef=' + avg;
   }
   function dots(){
+    if(practiceMode) return '';
     let h='<div class="rx-rounds">';
     for(let i=0;i<TOTAL_ROUNDS;i++) h+='<span class="rx-dot'+(i<roundsDone?' rx-done':'')+'"></span>';
     return h+'</div>';
@@ -958,15 +962,16 @@
       '<div class="rx-intro">'+
       '<div class="rx-eyebrow" style="text-align:center">Reaksiyon Testi</div>'+
       '<h3>Ne kadar hızlısın?</h3>'+
-      '<p class="rx-sub">7 tur, yaklaşık 40 saniye. Ekran kırmızıdan ambere geçer geçmez dokun.</p>'+
+      '<p class="rx-sub">Önce 2 deneme, ardından 7 ölçüm turu \u2014 toplam yaklaşık 45 saniye.</p>'+
       (best?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">EN İYİN: '+best+' ms</p>':'')+
       '<ul class="rx-steps">'+
-        '<li><b>01</b><span>Kırmızı ekranda sayaç 0.000\u2019da bekler. Ne zaman ambere döneceği rastgeledir; tahmin etmeye çalışma.</span></li>'+
-        '<li><b>02</b><span>Ekran kırmızıdan ambere geçer geçmez dokun. Sayaç durur; o turun süren budur.</span></li>'+
-        '<li><b>03</b><span>Turlar kendiliğinden akar, aralarda dokunmana gerek yok.</span></li>'+
-        '<li><b>04</b><span>Amber gelmeden dokunursan tur \u201cerken\u201d sayılır ve ortalamana girmez. Ceza değil, veri: kaç kez erken bastığın sonucunda görünür.</span></li>'+
+        '<li><b>01</b><span>Önce 2 deneme turu yaparsın; bu turlar ölçülmez, sadece alışman içindir.</span></li>'+
+        '<li><b>02</b><span>Kırmızı ekranda sayaç 0.000\u2019da bekler. Ne zaman ambere döneceği rastgeledir; tahmin etmeye çalışma.</span></li>'+
+        '<li><b>03</b><span>Ekran kırmızıdan ambere geçer geçmez dokun. Sayaç durur; o turun süren budur.</span></li>'+
+        '<li><b>04</b><span>Denemelerden sonra 7 ölçüm turu kendiliğinden akar, aralarda dokunmana gerek yok.</span></li>'+
+        '<li><b>05</b><span>Amber gelmeden dokunursan tur \u201cerken\u201d sayılır ve ortalamana girmez. Ceza değil, veri: kaç kez erken bastığın sonucunda görünür.</span></li>'+
       '</ul>'+
-      '<div class="rx-key"><span class="k-red">KIRMIZI \u2192 BEKLE</span><span class="k-amb">AMBER \u2192 DOKUN</span></div>'+
+      '<p class="rx-key">Ekran <b class="c-red">kırmızıyken</b> bekle; <b class="c-amb">amber</b> renge döndüğü an dokun.</p>'+
       '<div class="rx-why">'+
         '<b>Neden ölçüyoruz?</b> Basit reaksiyon süresi, sinir sistemi ile kas arasındaki iletişim hızının en eski ölçümlerinden biridir. Prehab Index\u2019te kontrol halkasının bir parçasıdır: vücudun bir uyarana ne kadar çabuk cevap verdiği.'+
         '<details><summary>DAHA FAZLA OKU \u2193</summary>'+
@@ -979,7 +984,7 @@
         '<div class="rx-consent" id="rxKvkkBox" style="display:none;margin-top:0">'+CONSENT_HTML+'</div>'+
         '<label><input type="checkbox" id="rxCk2"><span>Sonucumu anonim olarak salon istatistiklerine ekle. <small>İsteğe bağlı. Yalnızca tur süreleri ve tarih; kimlik veya cihaz bilgisi gönderilmez.</small></span></label>'+
       '</div>'+
-      '<button class="rx-cta" id="rxStartBtn" disabled>Anladım, başla \u2192<small>7 TUR \u00b7 YAKLAŞIK 40 SANİYE</small></button>'+
+      '<button class="rx-cta" id="rxStartBtn" disabled>Anladım, başla \u2192<small>2 DENEME + 7 TUR \u00b7 YAKLAŞIK 45 SANİYE</small></button>'+
       '</div>';
     const ck1=document.getElementById('rxCk1'), ck2=document.getElementById('rxCk2'), btn=document.getElementById('rxStartBtn');
     function sync(){ btn.disabled=!ck1.checked; }
@@ -993,14 +998,14 @@
     btn.addEventListener('click',function(e){
       e.stopPropagation(); if(!ck1.checked) return;
       allowStore=true; raw.set(CONSENT_KEY,'1'); allowStats=ck2.checked;
-      beep(1,0.01,0.001); times=[]; earlyCount=0; roundsDone=0; countdown();
+      beep(1,0.01,0.001); times=[]; earlyCount=0; roundsDone=0; practiceMode=true; practiceIndex=0; countdown();
     });
   }
 
   function startRound(){
     state='waiting'; stage.className='rx-stage rx-waiting';
     content.innerHTML=
-      '<div class="rx-eyebrow">Tur '+(roundsDone+1)+' / '+TOTAL_ROUNDS+'</div>'+
+      '<div class="rx-eyebrow">'+(practiceMode?('Deneme '+(practiceIndex+1)+' / '+TOTAL_PRACTICE+' \u00b7 sayılmaz'):('Tur '+(roundsDone+1)+' / '+TOTAL_ROUNDS))+'</div>'+
       counter(0)+
       '<p style="font-family:var(--mono);font-size:11px;letter-spacing:.16em">KIRMIZI \u2192 BEKLE &nbsp;\u00b7&nbsp; AMBER \u2192 DOKUN</p>'+dots();
     clearAll();
@@ -1012,9 +1017,18 @@
   }
   function earlyTap(){
     clearAll(); beep(220,0.25,0.15); buzz([80,60,80]);
+    state='early'; stage.className='rx-stage rx-early';
+    if(practiceMode){
+      content.innerHTML=
+        '<div class="rx-eyebrow">Erken!</div>'+
+        '<h3>Amber gelmeden dokundun.</h3>'+
+        '<p>Bu bir deneme; aynı deneme birazdan yeniden başlıyor.</p>';
+      cdId=setTimeout(startRound,1200);
+      return;
+    }
     earlyCount++; roundsDone++;
-    if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,1200); state='early'; stage.className='rx-stage rx-early';
-      content.innerHTML='<div class="rx-eyebrow">Erken</div><h3>Amber gelmeden dokundun.</h3>'+dots(); return; } state='early'; stage.className='rx-stage rx-early';
+    if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,1200);
+      content.innerHTML='<div class="rx-eyebrow">Erken</div><h3>Amber gelmeden dokundun.</h3>'+dots(); return; }
     content.innerHTML=
       '<div class="rx-eyebrow">Erken!</div>'+
       '<h3>Amber gelmeden dokundun.</h3>'+
@@ -1026,10 +1040,22 @@
     const live=document.getElementById('rxLive');
     const ms=Math.round(performance.now()-goAt);
     if(live) live.firstChild.nodeValue=fmt(ms);
-    times.push(ms); roundsDone++;
-    if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,900); state='roundResult'; stage.className='rx-stage';
-      content.innerHTML='<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div><div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+dots(); return; }
     state='roundResult'; stage.className='rx-stage';
+    if(practiceMode){
+      practiceIndex++;
+      const donePractice = practiceIndex>=TOTAL_PRACTICE;
+      content.innerHTML=
+        '<div class="rx-eyebrow">Deneme '+practiceIndex+' / '+TOTAL_PRACTICE+' \u00b7 sayılmaz</div>'+
+        '<div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+
+        '<p>'+(donePractice?'Denemeler bitti; gerçek ölçüm birazdan başlıyor.':'Sıradaki deneme birazdan.')+'</p>';
+      beep(880,0.08,0.1); buzz(40);
+      if(donePractice){ cdId=setTimeout(function(){ practiceMode=false; countdown(); },1400); }
+      else { cdId=setTimeout(startRound,1200); }
+      return;
+    }
+    times.push(ms); roundsDone++;
+    if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,900);
+      content.innerHTML='<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div><div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+dots(); return; }
     content.innerHTML=
       '<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div>'+
       '<div class="rx-ms">'+fmt(ms)+'<i> sn</i></div>'+
@@ -1050,7 +1076,7 @@
     if(!times.length){
       content.innerHTML='<div class="rx-eyebrow">Sonuç</div><h3>Hepsi erken.</h3><p>Amber gelene kadar bekle, sayaç akınca dokun.</p>'+
         '<div class="rx-btnrow"><button class="rx-btn" id="rxAgainBtn">Tekrar</button></div>';
-      document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;countdown();});
+      document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
       return;
     }
     const avg=Math.round(times.reduce(function(a,b){return a+b;},0)/times.length);
@@ -1072,7 +1098,7 @@
         '<button class="rx-btn" id="rxShareBtn">Meydan Oku 🔗</button>'+
         '<button class="rx-btn rx-ghost" id="rxAgainBtn">Tekrar</button>'+
       '</div>';
-    document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;countdown();});
+    document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
     document.getElementById('rxBridge').addEventListener('click',function(e){
       e.preventDefault(); e.stopPropagation(); closeModal();
       const tab=document.querySelector('.hg-tab[data-pane="hgIndex"]'); if(tab) tab.click();
