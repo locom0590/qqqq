@@ -241,6 +241,7 @@
   .rx-cta{display:block;width:100%;max-width:340px;margin:18px auto 0;background:var(--amber);color:var(--deep);font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:-.01em;padding:18px 20px;border-radius:18px;border:none;cursor:pointer;text-align:center;transition:transform .12s}
   .rx-cta:active{transform:scale(.98)}
   .rx-cta small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.2em;margin-top:4px;opacity:.75}
+  .rx-cardimg{display:block;width:100%;max-width:230px;margin:16px auto 0;border-radius:14px;border:1px solid rgba(243,241,235,.18)}
   .rx-raw{margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(243,241,235,.4);line-height:1.7;max-width:340px}
   .rx-raw span{color:rgba(243,241,235,.3)}
   .rx-name{max-width:340px;margin:12px auto 0}
@@ -990,6 +991,83 @@
     rafId=requestAnimationFrame(tick);
   }
 
+  /* ---- Meydan okuma kartı (paylaşımda görselin kendisi gitsin) ---- */
+  let cardFile=null, cardUrl=null;
+  function drawCard(score, band, name, avgScore, valid, early, url){
+    const W=1080,H=1350,c=document.createElement('canvas');
+    c.width=W; c.height=H;
+    const x=c.getContext('2d');
+    const g=x.createLinearGradient(0,0,W*0.6,H);
+    g.addColorStop(0,'#14213C'); g.addColorStop(.55,'#0F1A30'); g.addColorStop(1,'#182B50');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+    x.fillStyle='rgba(243,241,235,0.055)';
+    for(let yy=40;yy<H;yy+=44){ for(let xx=40;xx<W;xx+=44){ x.beginPath(); x.arc(xx,yy,2.2,0,6.2832); x.fill(); } }
+    function sp(v){ try{ x.letterSpacing=v; }catch(e){} }
+    x.textAlign='center';
+
+    sp('6px');
+    x.font='600 26px Archivo, sans-serif'; x.fillStyle='rgba(243,241,235,0.5)';
+    x.fillText('LOCOMOTION  \u00b7  REACTO', W/2, 108);
+
+    sp('7px');
+    x.font='500 30px "IBM Plex Mono", monospace'; x.fillStyle='#D9912B';
+    x.fillText(name? name.toUpperCase()+' \u2014 TAHTTAKİ SKOR' : 'TAHTTAKİ SKOR', W/2, 300);
+
+    sp('-10px');
+    x.font='900 300px Archivo, sans-serif'; x.fillStyle='#F3F1EB';
+    x.fillText(String(score), W/2, 560);
+
+    sp('4px');
+    x.font='900 56px Archivo, sans-serif'; x.fillStyle='#D9912B';
+    x.fillText(band, W/2, 648);
+
+    x.strokeStyle='rgba(243,241,235,0.18)'; x.lineWidth=2;
+    x.beginPath(); x.moveTo(180,724); x.lineTo(W-180,724); x.stroke();
+
+    sp('4px');
+    x.font='400 26px "IBM Plex Mono", monospace'; x.fillStyle='rgba(243,241,235,0.55)';
+    x.fillText(valid+' GEÇERLİ TUR  \u00b7  ORT. '+avgScore+(early?('  \u00b7  '+early+' ERKEN'):''), W/2, 782);
+
+    sp('0px');
+    x.font='900 62px Archivo, sans-serif'; x.fillStyle='#F3F1EB';
+    x.fillText('Beni geçebilir misin?', W/2, 920);
+    x.font='500 38px "IBM Plex Sans", sans-serif'; x.fillStyle='rgba(243,241,235,0.7)';
+    x.fillText('7 tur, 45 saniye, tarayıcıda.', W/2, 984);
+
+    // amber alt blok: adres
+    x.fillStyle='#D9912B'; x.fillRect(0,H-190,W,190);
+    sp('5px');
+    x.font='900 46px Archivo, sans-serif'; x.fillStyle='#111D33';
+    x.fillText(url.replace(/^https?:\/\//,'').split('?')[0], W/2, H-108);
+    sp('4px');
+    x.font='500 24px "IBM Plex Mono", monospace'; x.fillStyle='rgba(17,29,51,0.72)';
+    x.fillText('MESAJDAKİ LİNKE DOKUN, SEN DE ÖLÇ', W/2, H-58);
+    sp('0px');
+    return c;
+  }
+  function buildCard(score, band, name, avgScore, valid, early, url){
+    // Kart, kullanıcı paylaş'a basmadan ÖNCE hazırlanır; iOS'ta paylaşım
+    // jesti async beklemeyi sevmiyor, dosya hazır olmalı.
+    try{
+      const go=function(){
+        const c=drawCard(score, band, name, avgScore, valid, early, url);
+        if(cardUrl) URL.revokeObjectURL(cardUrl);
+        c.toBlob(function(blob){
+          if(!blob) return;
+          cardFile=new File([blob],'reacto-'+score+'.png',{type:'image/png'});
+          cardUrl=URL.createObjectURL(blob);
+          const im=document.getElementById('rxCardImg');
+          if(im){ im.src=cardUrl; im.style.display='block'; }
+        },'image/png');
+      };
+      if(document.fonts && document.fonts.ready) document.fonts.ready.then(go).catch(go);
+      else go();
+    }catch(e){}
+  }
+  function canShareCard(){
+    try{ return !!(cardFile && navigator.canShare && navigator.canShare({files:[cardFile]})); }catch(e){ return false; }
+  }
+
   function shareUrl(best, opponentBest, round, name){
     let u = window.location.origin + window.location.pathname + '?meydan=' + best;
     if(round) u += '&tur=' + round;
@@ -1213,15 +1291,33 @@
           ? (duelWin?'SONUCU GERİ GÖNDER \u2014 RAKİBİN HABERSİZ':'SONUCU GERİ GÖNDER, RÖVANŞ İSTE')
           : 'REACTO SKORUN <b style="color:var(--amber)">'+scoreBest+'</b> \u2014 GEÇEBİLECEK Mİ?')+
       '</p>'+
+      '<img id="rxCardImg" class="rx-cardimg" alt="Meydan okuma kartın" style="display:none" />'+
       '<div class="rx-name"><input id="rxName" type="text" maxlength="20" placeholder="Takma adın (isteğe bağlı)" aria-label="Takma adın" /><small>Linkte görünür. Gerçek adın olması gerekmez; boş bırakırsan \u201cbir rakip\u201d yazar.</small></div>'+
       '<div class="rx-share">'+
         '<button class="rx-share-btn wa" id="rxShareWa" aria-label="WhatsApp\u2019ta meydan oku"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i>WhatsApp\u2019ta meydan oku</button>'+
         '<button class="rx-share-btn ig" id="rxShareIg" aria-label="Instagram\u2019da meydan oku"><i class="ti ti-brand-instagram" aria-hidden="true"></i>Instagram\u2019da meydan oku</button>'+
         (navigator.share?'<button class="rx-share-btn" id="rxShareMore" aria-label="Diğer uygulamada meydan oku"><i class="ti ti-share-2" aria-hidden="true"></i>Diğer</button>':'')+
         '<button class="rx-share-btn" id="rxShareCopy" aria-label="Bağlantıyı kopyala"><i class="ti ti-link" aria-hidden="true"></i>Linki kopyala</button>'+
+        '<button class="rx-share-btn" id="rxCardDl" aria-label="Kartı indir"><i class="ti ti-download" aria-hidden="true"></i>Kartı indir</button>'+
       '</div>';
+    (function(){
+      const nm0=cleanName((document.getElementById('rxName')||{}).value||'');
+      buildCard(scoreBest, rating(scoreBest), nm0, scoreAvg, times.length, earlyCount,
+                shareUrl(scoreBest, challengeTarget||null, challengeTarget?duelRound+1:1, nm0||null));
+    })();
     const nameEl=document.getElementById('rxName');
-    if(nameEl){ ['click','pointerdown','keydown'].forEach(function(ev){ nameEl.addEventListener(ev,function(e){e.stopPropagation();}); }); }
+    if(nameEl){
+      ['click','pointerdown','keydown'].forEach(function(ev){ nameEl.addEventListener(ev,function(e){e.stopPropagation();}); });
+      let nameTimer=null;
+      nameEl.addEventListener('input',function(){
+        clearTimeout(nameTimer);
+        nameTimer=setTimeout(function(){
+          const nm=cleanName(nameEl.value);
+          buildCard(scoreBest, rating(scoreBest), nm, scoreAvg, times.length, earlyCount,
+                    shareUrl(scoreBest, challengeTarget||null, challengeTarget?duelRound+1:1, nm||null));
+        },350);
+      });
+    }
     const againBtn=document.getElementById('rxAgainBtn');
     if(againBtn) againBtn.addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
     const rematchBtn=document.getElementById('rxRematchBtn');
@@ -1251,24 +1347,46 @@
         return {text:text, url:url};
       }
       function copy(){ const p=payload(); if(navigator.clipboard) return navigator.clipboard.writeText(p.text+'\n'+p.url).catch(function(){}); }
+      function shareWithCard(fallback){
+        const p=payload();
+        if(canShareCard()){
+          navigator.share({files:[cardFile], text:p.text+'\n'+p.url})
+            .catch(function(){ fallback(p); });
+        } else { fallback(p); }
+      }
       const wa=document.getElementById('rxShareWa');
       if(wa) wa.addEventListener('click',function(e){
         e.stopPropagation();
-        const p=payload();
-        window.open('https://wa.me/?text='+encodeURIComponent(p.text+'\n'+p.url),'_blank','noopener');
+        shareWithCard(function(p){
+          window.open('https://wa.me/?text='+encodeURIComponent(p.text+'\n'+p.url),'_blank','noopener');
+        });
       });
       const ig=document.getElementById('rxShareIg');
       if(ig) ig.addEventListener('click',function(e){
         e.stopPropagation();
-        const p=payload();
-        if(navigator.share){ navigator.share({title:'Locomotion REACTO',text:p.text,url:p.url}).catch(function(){}); }
-        else { copy(); showToast('Link kopyalandı — Instagram\u2019da hikayene veya DM\u2019e yapıştır'); }
+        shareWithCard(function(p){
+          if(cardUrl){ downloadCard(); showToast('Kart indirildi \u2014 Instagram hikayene ekle'); }
+          else { copy(); showToast('Link kopyalandı \u2014 Instagram\u2019da paylaş'); }
+        });
       });
       const more=document.getElementById('rxShareMore');
       if(more) more.addEventListener('click',function(e){
         e.stopPropagation();
-        const p=payload();
-        navigator.share({title:'Locomotion REACTO',text:p.text,url:p.url}).catch(function(){});
+        shareWithCard(function(p){
+          navigator.share({title:'Locomotion REACTO',text:p.text,url:p.url}).catch(function(){});
+        });
+      });
+      function downloadCard(){
+        if(!cardUrl) return;
+        const a=document.createElement('a');
+        a.href=cardUrl; a.download='reacto-'+scoreBest+'.png';
+        document.body.appendChild(a); a.click(); a.remove();
+      }
+      const dl=document.getElementById('rxCardDl');
+      if(dl) dl.addEventListener('click',function(e){
+        e.stopPropagation();
+        if(cardUrl){ downloadCard(); showToast('Kart indirildi'); }
+        else showToast('Kart hazırlanıyor, bir saniye');
       });
       const cp=document.getElementById('rxShareCopy');
       if(cp) cp.addEventListener('click',function(e){
