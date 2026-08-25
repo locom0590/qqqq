@@ -5,6 +5,20 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Locomotion — Academy &amp; Studio</title>
 <meta name="description" content="Hekim değerlendirmesiyle başlayan, bilimsel triyaj protokolüne dayalı medikal fitness. Locomotion Academy & Studio." />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Locomotion Academy &amp; Studio" />
+<meta property="og:url" content="https://locomotion.com.tr/" />
+<meta property="og:title" content="Reaksiyon Testi ⚡ Ne kadar hızlısın?" />
+<meta property="og:description" content="7 tur, 45 saniye, tarayıcıda. Rekorunu ölç, arkadaşına meydan oku. Locomotion Academy &amp; Studio." />
+<meta property="og:image" content="https://locomotion.com.tr/og-reaksiyon.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Locomotion Reaksiyon Testi" />
+<meta property="og:locale" content="tr_TR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Reaksiyon Testi ⚡ Ne kadar hızlısın?" />
+<meta name="twitter:description" content="7 tur, 45 saniye, tarayıcıda. Rekorunu ölç, arkadaşına meydan oku." />
+<meta name="twitter:image" content="https://locomotion.com.tr/og-reaksiyon.png" />
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
@@ -224,6 +238,10 @@
   .rx-cta{display:block;width:100%;max-width:340px;margin:18px auto 0;background:var(--amber);color:var(--deep);font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:-.01em;padding:18px 20px;border-radius:18px;border:none;cursor:pointer;text-align:center;transition:transform .12s}
   .rx-cta:active{transform:scale(.98)}
   .rx-cta small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.2em;margin-top:4px;opacity:.75}
+  .rx-verdict{margin:0 auto 14px;max-width:340px;border-radius:14px;padding:11px 14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;line-height:1.5}
+  .rx-verdict span{display:block;margin-top:5px;font-size:9.5px;letter-spacing:.14em;opacity:.7}
+  .rx-verdict.win{background:rgba(46,125,50,.18);border:1px solid rgba(143,212,155,.45);color:#8FD49B}
+  .rx-verdict.lose{background:rgba(231,125,106,.12);border:1px solid rgba(231,125,106,.45);color:#E77D6A}
   .rx-share{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
   .rx-share-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--disp);font-weight:600;font-size:12.5px;padding:9px 14px;border-radius:999px;border:1.5px solid rgba(243,241,235,.25);color:var(--bone);background:transparent;cursor:pointer;transition:all .15s}
   .rx-share-btn:hover{border-color:var(--amber);color:var(--amber)}
@@ -914,7 +932,7 @@
     'Veri Sorumlusu: [Locomotion — ticari unvan/adres]';
 
   let state='idle', times=[], earlyCount=0, roundsDone=0, goAt=0, timerId=null, rafId=null, cdId=null;
-  let practiceMode=false, practiceIndex=0, challengeTarget=null;
+  let practiceMode=false, practiceIndex=0, challengeTarget=null, duelRound=1, myLastScore=null;
   let actx=null;
   function beep(freq,dur,vol){
     try{
@@ -950,8 +968,11 @@
     rafId=requestAnimationFrame(tick);
   }
 
-  function shareUrl(avg){
-    return window.location.origin + window.location.pathname + '?meydan=' + avg;
+  function shareUrl(best, opponentBest, round){
+    let u = window.location.origin + window.location.pathname + '?meydan=' + best;
+    if(round) u += '&tur=' + round;
+    if(opponentBest) u += '&skor=' + opponentBest; // rakibin bir önceki skoru: geri dönen linkte karşılaştırma için
+    return u;
   }
   function dots(){
     if(practiceMode) return '';
@@ -968,7 +989,13 @@
       '<div class="rx-eyebrow" style="text-align:center">Reaksiyon Testi</div>'+
       '<h3>Ne kadar hızlısın?</h3>'+
       '<p class="rx-sub">Önce 2 deneme, ardından 7 ölçüm turu \u2014 toplam yaklaşık 45 saniye.</p>'+
-      (challengeTarget?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--amber)">MEYDAN OKUMA: '+challengeTarget+' ms\u2019yi geçmen gerekiyor</p>':(best?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">EN İYİN: '+best+' ms</p>':''))+
+      (challengeTarget?
+        '<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--amber)">'+
+          (duelRound>1?'RÖVANŞ \u00b7 '+duelRound+'. RAUND<br>':'SANA MEYDAN OKUNDU<br>')+
+          'GEÇMEN GEREKEN REKOR: '+challengeTarget+' MS'+
+          (myLastScore?'<br><span style="color:rgba(243,241,235,.55)">GEÇEN SEFERKİ REKORUN: '+myLastScore+' MS</span>':'')+
+        '</p>'
+        :(best?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">REKORUN: '+best+' ms</p>':''))+
       '<ul class="rx-steps">'+
         '<li><b>01</b><span>Önce 2 deneme turu yaparsın; bu turlar ölçülmez, sadece alışman içindir.</span></li>'+
         '<li><b>02</b><span>Kırmızı ekranda sayaç 0.000\u2019da bekler. Ne zaman ambere döneceği rastgeledir; tahmin etmeye çalışma.</span></li>'+
@@ -1091,8 +1118,19 @@
     const prev=parseInt(store.get('locomotion_best_ms')||'99999',10);
     if(avg<prev) store.set('locomotion_best_ms',String(avg));
     sendStats({times:times.slice(),early:earlyCount,date:new Date().toISOString().slice(0,10)});
+    let verdict='', duelWin=null;
+    if(challengeTarget){
+      duelWin = best < challengeTarget;
+      const diff = Math.abs(challengeTarget - best);
+      verdict='<div class="rx-verdict '+(duelWin?'win':'lose')+'">'+
+        (duelWin? 'KAZANDIN \u2014 '+diff+' MS DAHA HIZLISIN' : 'KAYBETTİN \u2014 SADECE '+diff+' MS GERİDESİN')+
+        '<span>RAKİBİN REKORU: '+challengeTarget+' MS &nbsp;\u00b7&nbsp; SENİN REKORUN: '+best+' MS</span>'+
+        (duelWin?'':'<span style="opacity:1;color:var(--bone);margin-top:7px">'+(diff<=40?'Çok az kaldı. Bir tur daha at.':'Bir tur daha at, ısındıkça hızlanırsın.')+'</span>')+
+      '</div>';
+    }
     content.innerHTML=
       '<div class="rx-eyebrow">Sonuç</div>'+
+      verdict+
       '<div class="rx-ms">'+avg+'<i> ms</i></div>'+
       '<div class="rx-resgrid">'+
         '<div class="rx-rescell"><div class="rx-lbl">En Hızlı Tur</div><div class="rx-val">'+best+'<i> ms</i></div></div>'+
@@ -1100,26 +1138,44 @@
       '</div>'+
       '<div class="rx-rating">'+rating(avg)+'</div>'+
       '<p style="margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:rgba(243,241,235,.55)">REAKSİYON, PREHAB INDEX\u2019İN KONTROL HALKASININ PARÇASIDIR</p>'+
-      '<button class="rx-cta" id="rxBridge">Prehab Index\u2019i dene \u2192<small>VÜCUDUN NE KADAR HAZIR?</small></button>'+
-      '<div class="rx-btnrow">'+
-        '<button class="rx-btn rx-ghost" id="rxAgainBtn">Tekrar</button>'+
-      '</div>'+
-      '<p style="margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(243,241,235,.5)">\u26a1 '+avg+' MS \u2014 GEÇEBİLECEK Mİ?</p>'+
+      (duelWin===false
+        ? '<button class="rx-cta" id="rxRematchBtn">Rövanş \u2192<small>'+challengeTarget+' MS\u2019NİN ALTINA İN</small></button>'+
+          '<div class="rx-btnrow"><button class="rx-btn rx-ghost" id="rxBridge">Prehab Index\u2019i dene</button></div>'
+        : '<button class="rx-cta" id="rxBridge">Prehab Index\u2019i dene \u2192<small>VÜCUDUN NE KADAR HAZIR?</small></button>'+
+          '<div class="rx-btnrow"><button class="rx-btn rx-ghost" id="rxAgainBtn">Tekrar</button></div>')+
+      '<p style="margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(243,241,235,.5)">'+
+        (challengeTarget
+          ? (duelWin?'SONUCU GERİ GÖNDER \u2014 RAKİBİN HABERSİZ':'SONUCU GERİ GÖNDER, RÖVANŞ İSTE')
+          : 'REKORUN <b style="color:var(--amber)">'+best+' MS</b> \u2014 GEÇEBİLECEK Mİ?')+
+      '</p>'+
       '<div class="rx-share">'+
         '<button class="rx-share-btn wa" id="rxShareWa" aria-label="WhatsApp\u2019ta meydan oku"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i>WhatsApp\u2019ta meydan oku</button>'+
         '<button class="rx-share-btn ig" id="rxShareIg" aria-label="Instagram\u2019da meydan oku"><i class="ti ti-brand-instagram" aria-hidden="true"></i>Instagram\u2019da meydan oku</button>'+
         (navigator.share?'<button class="rx-share-btn" id="rxShareMore" aria-label="Diğer uygulamada meydan oku"><i class="ti ti-share-2" aria-hidden="true"></i>Diğer</button>':'')+
         '<button class="rx-share-btn" id="rxShareCopy" aria-label="Bağlantıyı kopyala"><i class="ti ti-link" aria-hidden="true"></i>Linki kopyala</button>'+
       '</div>';
-    document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
+    const againBtn=document.getElementById('rxAgainBtn');
+    if(againBtn) againBtn.addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
+    const rematchBtn=document.getElementById('rxRematchBtn');
+    if(rematchBtn) rematchBtn.addEventListener('click',function(e){
+      e.stopPropagation(); times=[]; earlyCount=0; roundsDone=0; practiceMode=false; countdown();
+    });
     document.getElementById('rxBridge').addEventListener('click',function(e){
       e.preventDefault(); e.stopPropagation(); closeModal();
       const tab=document.querySelector('.hg-tab[data-pane="hgIndex"]'); if(tab) tab.click();
       const t=document.getElementById('heroGame'); if(t) t.scrollIntoView({behavior:'smooth',block:'center'});
     });
     (function(){
-      const url=shareUrl(avg);
-      const text='🥊 Sana meydan okuyorum: Locomotion Reaksiyon Lab\u2019da ortalamam '+avg+' ms. Beni geçebilir misin? ⚡';
+      const url=shareUrl(best, challengeTarget||null, challengeTarget?duelRound+1:1);
+      const stats='('+times.length+' geçerli tur, ortalama '+avg+' ms'+(earlyCount?', '+earlyCount+' erken':'')+')';
+      let text;
+      if(challengeTarget && duelWin){
+        text='⚡ Geçtim: '+best+' ms. Senin rekorun '+challengeTarget+' ms\u2019ydi.\n'+stats+'\nRövanş?';
+      } else if(challengeTarget){
+        text='⚡ '+best+' ms yaptım, '+Math.abs(challengeTarget-best)+' ms geride kaldım. Rövanş istiyorum.\n'+stats;
+      } else {
+        text='⚡ Rekorum '+best+' ms. Sıra sende.\n'+stats+'\nLocomotion Reaksiyon Testi \u2014 7 tur, 45 saniye:';
+      }
       function copy(){ if(navigator.clipboard) return navigator.clipboard.writeText(text+' '+url).catch(function(){}); }
       const wa=document.getElementById('rxShareWa');
       if(wa) wa.addEventListener('click',function(e){
@@ -1176,11 +1232,14 @@
     a.addEventListener('click',openModal);
   });
 
-  // arrival via a shared challenge link (?meydan=avgMs): auto-open the test
+  // arrival via a shared challenge link: ?meydan=<rakibin rekoru>&tur=<kaçıncı raund>&skor=<benim önceki skorum>
   (function(){
-    const target = new URLSearchParams(window.location.search).get('meydan');
+    const q = new URLSearchParams(window.location.search);
+    const target = q.get('meydan');
     if(!target) return;
     challengeTarget = parseInt(target,10) || null;
+    duelRound = parseInt(q.get('tur'),10) || 1;
+    myLastScore = parseInt(q.get('skor'),10) || null;
     setTimeout(function(){ openModal(); },300);
   })();
   // hero panel: whole surface opens the modal (except the anchor, which handles itself)
