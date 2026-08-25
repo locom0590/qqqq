@@ -1048,21 +1048,34 @@
   function buildCard(score, band, name, avgScore, valid, early, url){
     // Kart, kullanıcı paylaş'a basmadan ÖNCE hazırlanır; iOS'ta paylaşım
     // jesti async beklemeyi sevmiyor, dosya hazır olmalı.
-    try{
-      const go=function(){
+    const go=function(){
+      try{
         const c=drawCard(score, band, name, avgScore, valid, early, url);
-        if(cardUrl) URL.revokeObjectURL(cardUrl);
+        const prev=cardUrl;
         c.toBlob(function(blob){
-          if(!blob) return;
-          cardFile=new File([blob],'reacto-'+score+'.png',{type:'image/png'});
+          if(!blob){ console.warn('REACTO: kart üretilemedi (toBlob boş)'); return; }
+          try{ cardFile=new File([blob],'reacto-'+score+'.png',{type:'image/png'}); }
+          catch(e){ cardFile=null; }
           cardUrl=URL.createObjectURL(blob);
           const im=document.getElementById('rxCardImg');
           if(im){ im.src=cardUrl; im.style.display='block'; }
+          if(prev) URL.revokeObjectURL(prev);   // yeni URL atandıktan SONRA bırak
         },'image/png');
-      };
-      if(document.fonts && document.fonts.ready) document.fonts.ready.then(go).catch(go);
-      else go();
-    }catch(e){}
+      }catch(e){ console.warn('REACTO: kart çizilemedi',e); }
+    };
+    // Marka fontlarını açıkça yükle; gelmezse 600 ms sonra yine de çiz
+    let done=false;
+    const once=function(){ if(!done){ done=true; go(); } };
+    setTimeout(once,600);
+    try{
+      if(document.fonts && document.fonts.load){
+        Promise.all([
+          document.fonts.load('900 300px Archivo'),
+          document.fonts.load('500 30px "IBM Plex Mono"'),
+          document.fonts.load('500 38px "IBM Plex Sans"')
+        ]).then(once).catch(once);
+      } else once();
+    }catch(e){ once(); }
   }
   function canShareCard(){
     try{ return !!(cardFile && navigator.canShare && navigator.canShare({files:[cardFile]})); }catch(e){ return false; }
@@ -1347,17 +1360,28 @@
         return {text:text, url:url};
       }
       function copy(){ const p=payload(); if(navigator.clipboard) return navigator.clipboard.writeText(p.text+'\n'+p.url).catch(function(){}); }
+      function downloadCard(){
+        if(!cardUrl) return;
+        const a=document.createElement('a');
+        a.href=cardUrl; a.download='reacto-'+scoreBest+'.png';
+        document.body.appendChild(a); a.click(); a.remove();
+      }
       function shareWithCard(fallback){
         const p=payload();
         if(canShareCard()){
           navigator.share({files:[cardFile], text:p.text+'\n'+p.url})
-            .catch(function(){ fallback(p); });
-        } else { fallback(p); }
+            .catch(function(err){ if(err && err.name==='AbortError') return; fallback(p); });
+          return;
+        }
+        fallback(p);
       }
       const wa=document.getElementById('rxShareWa');
       if(wa) wa.addEventListener('click',function(e){
         e.stopPropagation();
         shareWithCard(function(p){
+          // Cihaz dosya paylaşımını desteklemiyor (ör. masaüstü tarayıcı):
+          // kartı indir, WhatsApp'ı metinle aç, kullanıcı kartı ekte göndersin.
+          if(cardUrl){ downloadCard(); showToast('Kart indirildi \u2014 WhatsApp\u2019ta ekleyip gönder'); }
           window.open('https://wa.me/?text='+encodeURIComponent(p.text+'\n'+p.url),'_blank','noopener');
         });
       });
@@ -1376,12 +1400,6 @@
           navigator.share({title:'Locomotion REACTO',text:p.text,url:p.url}).catch(function(){});
         });
       });
-      function downloadCard(){
-        if(!cardUrl) return;
-        const a=document.createElement('a');
-        a.href=cardUrl; a.download='reacto-'+scoreBest+'.png';
-        document.body.appendChild(a); a.click(); a.remove();
-      }
       const dl=document.getElementById('rxCardDl');
       if(dl) dl.addEventListener('click',function(e){
         e.stopPropagation();
