@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>REACTO ⚡ Ne kadar hızlısın? — Locomotion</title>
+<meta name="description" content="Görsel reaksiyon testi. 7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
+<meta name="theme-color" content="#0F1A30" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Locomotion Academy &amp; Studio" />
+<meta property="og:url" content="https://locomotion.com.tr/reacto/" />
+<meta property="og:title" content="REACTO ⚡ Ne kadar hızlısın?" />
+<meta property="og:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
+<meta property="og:image" content="https://locomotion.com.tr/og-reacto.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content="tr_TR" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="REACTO ⚡ Ne kadar hızlısın?" />
+<meta name="twitter:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
+<meta name="twitter:image" content="https://locomotion.com.tr/og-reacto.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bone:#F3F1EB;--navy:#1F3864;--deep:#111D33;--amber:#D9912B;--steel:#7C8698;
+    --disp:'Archivo',system-ui,sans-serif;--body:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace;
+    --radius:22px;--ok:#8FD49B;--warn:#E8B15E;--bad:#E77D6A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html,body{height:100%}
+  body{background:linear-gradient(160deg,#14213C 0%,#0F1A30 60%,#182B50 100%);font-family:var(--body);color:var(--bone);-webkit-font-smoothing:antialiased}
+  /* Tek sayfa sürüm: test her zaman açık, kapatma yok (bkz. openModal betiği) */
+  .rx-overlay{position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;background:linear-gradient(160deg,#14213C 0%,#0F1A30 60%,#182B50 100%)}
+  .rx-overlay::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(243,241,235,.06) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
+  .rx-top{display:flex;justify-content:space-between;align-items:center;padding:calc(18px + env(safe-area-inset-top)) calc(22px + env(safe-area-inset-right)) 18px calc(22px + env(safe-area-inset-left));position:relative;z-index:2}
+  .rx-title{font-family:var(--mono);font-size:12px;letter-spacing:.22em;color:var(--amber)}
+  .rx-mute{background:transparent;border:1.5px solid rgba(243,241,235,.35);color:var(--bone);width:38px;height:38px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;flex:none}
+  .rx-mute:hover{border-color:var(--amber);color:var(--amber)}
+  .rx-mute[aria-pressed="true"]{color:var(--amber);border-color:var(--amber)}
+  .rx-main{flex:1;display:block;padding:16px calc(20px + env(safe-area-inset-right)) 32px calc(20px + env(safe-area-inset-left));position:relative;z-index:2;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .rx-stage{width:min(560px,100%);margin:0 auto;border-radius:26px;min-height:min(62vh,500px);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:36px 24px;cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation;border:1px solid rgba(243,241,235,.14);background:rgba(243,241,235,.04);transition:background .12s;color:var(--bone);will-change:background-color}
+  .rx-stage.rx-waiting{background:rgba(224,102,102,.10);border-color:rgba(224,102,102,.4)}
+  .rx-stage.rx-go{background:var(--amber);border-color:var(--amber);color:var(--deep);transition:none}
+  .rx-stage.rx-early{background:rgba(224,102,102,.2);border-color:#E06666}
+  .rx-eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.26em;color:var(--amber);text-transform:uppercase;margin-bottom:14px}
+  .rx-stage.rx-go .rx-eyebrow{color:var(--deep)}
+  .rx-stage h3{font-family:var(--disp);font-weight:900;font-size:clamp(24px,6vw,38px);line-height:1.1;letter-spacing:-.01em;color:inherit}
+  .rx-stage p{margin-top:14px;font-size:15px;color:var(--steel);max-width:36ch}
+  .rx-stage.rx-go p{color:rgba(20,33,60,.75)}
+  .rx-ms{font-family:var(--disp);font-weight:900;font-size:clamp(64px,16vw,110px);line-height:1;letter-spacing:-.02em}
+  .rx-ms.rx-live{font-variant-numeric:tabular-nums;color:rgba(243,241,235,.45)}
+  .rx-stage.rx-go .rx-ms.rx-live{color:var(--deep)}
+  .rx-ms.rx-live i{color:inherit;opacity:.7}
+  .rx-ms i{font-style:normal;font-size:.32em;color:var(--amber);font-weight:800}
+  .rx-stage.rx-go .rx-ms i{color:var(--deep)}
+  .rx-rounds{display:flex;gap:10px;margin-top:22px}
+  .rx-dot{width:12px;height:12px;border-radius:50%;background:rgba(243,241,235,.18)}
+  .rx-dot.rx-done{background:var(--amber)}
+  .rx-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--disp);font-weight:800;font-size:15px;padding:13px 26px;border-radius:999px;border:none;cursor:pointer;background:var(--amber);color:var(--deep);margin-top:24px;transition:transform .12s}
+  .rx-btn:active{transform:scale(.97)}
+  .rx-btn.rx-ghost{background:transparent;border:1.5px solid rgba(243,241,235,.4);color:var(--bone)}
+  .rx-word{font-family:var(--disp);font-weight:900;font-size:clamp(30px,9vw,46px);letter-spacing:.06em;line-height:1;margin-top:14px}
+  .rx-word.wait{color:rgba(243,241,235,.55)}
+  .rx-word.now{color:var(--deep)}
+  .rx-pulse{display:inline-block;width:8px;height:8px;margin-left:10px;border-radius:50%;background:currentColor;vertical-align:middle;animation:rxPulse 1.1s ease-in-out infinite}
+  @keyframes rxPulse{0%,100%{opacity:.25;transform:scale(.85)}50%{opacity:1;transform:scale(1)}}
+  .rx-count{font-family:var(--disp);font-weight:900;font-size:clamp(110px,28vw,180px);line-height:1;color:var(--bone);letter-spacing:-.03em}
+  .rx-cta{display:block;width:100%;max-width:340px;margin:18px auto 0;background:var(--amber);color:var(--deep);font-family:var(--disp);font-weight:900;font-size:18px;letter-spacing:-.01em;padding:18px 20px;border-radius:18px;border:none;cursor:pointer;text-align:center;transition:transform .12s}
+  .rx-cta:active{transform:scale(.98)}
+  .rx-cta small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.2em;margin-top:4px;opacity:.75}
+  .rx-cardimg{display:block;width:100%;max-width:230px;margin:16px auto 0;border-radius:14px;border:1px solid rgba(243,241,235,.18)}
+  .rx-raw{margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:rgba(243,241,235,.4);line-height:1.7;max-width:340px}
+  .rx-raw span{color:rgba(243,241,235,.3)}
+  .rx-name{max-width:340px;margin:12px auto 0}
+  .rx-name input{width:100%;background:rgba(243,241,235,.06);border:1px solid rgba(243,241,235,.2);border-radius:12px;padding:11px 14px;color:var(--bone);font-family:var(--body);font-size:14px;text-align:center}
+  .rx-name input::placeholder{color:rgba(243,241,235,.4)}
+  .rx-name input:focus{outline:none;border-color:var(--amber)}
+  .rx-name small{display:block;margin-top:6px;font-size:11px;color:rgba(243,241,235,.45);line-height:1.5}
+  .rx-verdict{margin:0 auto 14px;max-width:340px;border-radius:14px;padding:11px 14px;font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;line-height:1.5}
+  .rx-verdict span{display:block;margin-top:5px;font-size:9.5px;letter-spacing:.14em;opacity:.7}
+  .rx-verdict.win{background:rgba(46,125,50,.18);border:1px solid rgba(143,212,155,.45);color:#8FD49B}
+  .rx-verdict.lose{background:rgba(231,125,106,.12);border:1px solid rgba(231,125,106,.45);color:#E77D6A}
+  .rx-share{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+  .rx-share-btn{display:inline-flex;align-items:center;gap:7px;font-family:var(--disp);font-weight:600;font-size:12.5px;padding:9px 14px;border-radius:999px;border:1.5px solid rgba(243,241,235,.25);color:var(--bone);background:transparent;cursor:pointer;transition:all .15s}
+  .rx-share-btn:hover{border-color:var(--amber);color:var(--amber)}
+  .rx-share-btn svg{width:16px;height:16px;flex:0 0 auto}
+  .rx-share-btn.wa:hover{border-color:#25D366;color:#25D366}
+  .rx-share-btn.ig:hover{border-color:#E1306C;color:#E1306C}
+  .rx-btnrow{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+  .rx-resgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%;max-width:340px;margin-top:22px}
+  .rx-rescell{border:1px solid rgba(243,241,235,.14);border-radius:14px;padding:12px}
+  .rx-rescell .rx-lbl{font-family:var(--mono);font-size:9.5px;letter-spacing:.2em;color:var(--steel);text-transform:uppercase}
+  .rx-rescell .rx-val{font-family:var(--disp);font-weight:900;font-size:24px;margin-top:4px}
+  .rx-rescell .rx-val i{font-style:normal;font-size:12px;color:var(--amber)}
+  .rx-rating{margin-top:16px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:#8FD49B;border:1px solid rgba(143,212,155,.4);border-radius:10px;padding:8px 14px;display:inline-block}
+  .rx-intro{width:100%;max-width:460px;text-align:left}
+  .rx-intro h3{text-align:center}
+  .rx-intro .rx-sub{text-align:center;margin-top:8px}
+  .rx-steps{list-style:none;margin:18px 0 0;display:grid;gap:10px}
+  .rx-steps li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:14px;color:var(--bone);line-height:1.5}
+  .rx-steps li b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--amber);padding-top:3px;font-weight:500}
+  .rx-key{margin-top:14px;text-align:center;font-size:13px;line-height:1.6;color:var(--steel)}
+  .rx-key b{font-weight:500}
+  .rx-key .c-red{color:#E88A8A}
+  .rx-key .c-amb{color:var(--amber)}
+  .rx-why{margin-top:16px;font-size:13px;line-height:1.6;color:var(--steel)}
+  .rx-why b{color:var(--bone);font-weight:500}
+  .rx-why details{margin-top:8px}
+  .rx-why summary{cursor:pointer;color:var(--amber);font-family:var(--mono);font-size:11px;letter-spacing:.14em;list-style:none}
+  .rx-why summary::-webkit-details-marker{display:none}
+  .rx-why details p{margin-top:8px}
+  .rx-rules{margin-top:16px}
+  .rx-rules summary{cursor:pointer;color:var(--amber);font-family:var(--mono);font-size:11px;letter-spacing:.14em;list-style:none;text-align:center}
+  .rx-rules summary::-webkit-details-marker{display:none}
+  .rx-rules .rx-steps{margin-top:14px}
+  .rx-cta-hint{margin-top:12px;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.08em;color:var(--amber);opacity:.85}
+  .rx-checks{margin-top:18px;display:grid;gap:10px;border-top:1px solid rgba(243,241,235,.12);padding-top:16px}
+  .rx-checks label{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:13px;line-height:1.5;color:var(--bone);cursor:pointer}
+  .rx-checks input{width:18px;height:18px;margin-top:2px;accent-color:var(--amber)}
+  .rx-checks small{display:block;font-size:11.5px;color:var(--steel)}
+  .rx-checks a{color:var(--amber);text-decoration:underline}
+  .rx-cta[disabled]{opacity:.4;cursor:not-allowed;transform:none}
+  .rx-consent{max-height:170px;overflow-y:auto;text-align:left;font-size:12.5px;line-height:1.6;color:var(--steel);border:1px solid rgba(243,241,235,.16);border-radius:12px;padding:14px 16px;margin-top:16px;width:100%;max-width:430px}
+  .rx-consent b{color:var(--bone)}
+  .rx-foot{padding:14px calc(22px + env(safe-area-inset-right)) calc(14px + env(safe-area-inset-bottom)) calc(22px + env(safe-area-inset-left));text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--steel);position:relative;z-index:2}
+  .rx-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--bone);color:var(--deep);font-family:var(--mono);font-size:12.5px;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120}
+  .rx-toast.rx-show{opacity:1}
+</style>
+</head>
+<body>
+
+<div class="rx-overlay" id="rxOverlay" aria-hidden="false" role="dialog" aria-label="Reaksiyon testi">
+  <div class="rx-top">
+    <div class="rx-title">REACTO ⚡</div>
+    <button class="rx-mute" id="rxMute" type="button" aria-pressed="false" aria-label="Ses ve titreşimi kapat"></button>
+  </div>
+  <div class="rx-main">
+    <div class="rx-stage" id="rxStage"><div id="rxContent" aria-live="polite" aria-atomic="true"></div></div>
+  </div>
+  <div class="rx-foot">locomotion.com.tr</div>
+</div>
+<div class="rx-toast" id="rxToast"></div>
+
+<script>
+/* ---------- Reaksiyon Lab modal engine ---------- */
+(function(){
+  const TOTAL_ROUNDS = 7;
+  const TOTAL_PRACTICE = 2;
+  const overlay = document.getElementById('rxOverlay');
+  const stage = document.getElementById('rxStage');
+  const content = document.getElementById('rxContent');
+  const toast = document.getElementById('rxToast');
+
+  const CONSENT_KEY='locomotion_kvkk_ok';
+  const raw={
+    get(k){ try { return window.localStorage.getItem(k); } catch(e){ return null; } },
+    set(k,v){ try { window.localStorage.setItem(k,v); } catch(e){} }
+  };
+  let allowStore=(raw.get(CONSENT_KEY)==='1'), allowStats=false; // önceki onay localStorage'da varsa en iyi skor geri okunabilsin
+  const STATS_ENDPOINT=''; // salon istatistik uç noktası; boşsa gönderim yapılmaz
+  function sendStats(payload){ if(!allowStats||!STATS_ENDPOINT) return; try{ fetch(STATS_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload),keepalive:true}).catch(function(){}); }catch(e){} }
+  const store={
+    get(k){ return allowStore ? raw.get(k) : null; },
+    set(k,v){ if(allowStore) raw.set(k,v); }
+  };
+  const CONSENT_HTML=
+    '<b>KVKK Aydınlatma Metni — Reaksiyon Lab</b><br><br>'+
+    'Bu test sırasında ad, soyad, iletişim bilgisi gibi kişisel veriler toplanmaz. Test motorunun kendisi hiçbir bilgiyi Locomotion sunucusuna göndermez.<br><br>'+
+    'Sayfa, yazı tiplerini yüklemek için Google’ın sunucularına (fonts.googleapis.com, fonts.gstatic.com) bağlanır; bu bağlantı sayfa her açıldığında, onayınızdan bağımsız olarak gerçekleşir ve tarayıcınızın IP adresini Google’a iletir. Bu, kişisel veri toplama amaçlı değildir; yalnızca yazı tipi dosyalarının indirilmesinden kaynaklanan teknik bir bağlantıdır.<br><br>'+
+    'Onay vermeniz halinde yalnızca <b>en iyi skorunuz</b>, tekrar oynadığınızda gösterilmek üzere tarayıcınızın yerel depolama alanında — kendi cihazınızda — saklanır. Bu veri bize iletilmez ve tarayıcı site verilerinizi temizleyerek dilediğiniz an silebilirsiniz.<br><br>'+
+    '"Meydan Oku" özelliği yalnızca sizin paylaşmayı seçtiğiniz bir bağlantı oluşturur; otomatik paylaşım yapılmaz.<br><br>'+
+    '<b>Meydan okuma bağlantısı:</b> Oluşturduğunuz bağlantıda yalnızca yazdığınız takma ad, skorunuz ve tarih taşınır. Bu bilgiler Locomotion\u2019a iletilmez ve saklanmaz; bağlantı sizin cihazınızda üretilir, kiminle paylaşacağınıza siz karar verirsiniz. Takma ad zorunlu değildir ve gerçek adınız olmak zorunda değildir.<br><br>'+
+    '<b>Anonim istatistik (isteğe bağlı):</b> Ayrıca onay verirseniz yalnızca tur süreleriniz (milisaniye), erken dokunma sayınız ve test tarihi, hiçbir kimlik, cihaz veya IP bilgisi olmadan Locomotion\u2019a iletilir. Amaç, ziyaretçi ortalamasını hesaplamaktır. Veri kişiyle eşleştirilemediğinden geri çağrılamaz; onayı her testte yeniden verirsiniz, kutuyu işaretlemezseniz hiçbir şey gönderilmez.<br><br>'+
+    'Ayrıntılı bilgi ve veri sorumlusu iletişim bilgileri için: locomotion.com.tr/kvkk<br>'+
+    'Veri Sorumlusu: [Locomotion — ticari unvan/adres]';
+
+  let state='idle', times=[], earlyCount=0, roundsDone=0, goAt=0, timerId=null, rafId=null, cdId=null;
+  let practiceMode=false, practiceIndex=0, challengeTarget=null, duelRound=1, myLastScore=null;
+  let leaderName=null, leaderAt=null;
+  function esc(t){ return String(t).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function cleanName(t){ return String(t||'').replace(/[^\p{L}\p{N} ._-]/gu,'').trim().slice(0,20); }
+
+  /* Paylaşım ikonları: harici ikon fontu/CDN yerine satır içi SVG — ekstra ağ isteği yok, marka rengi hover ile zaten geliyor. */
+  const ICON_WA='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5.1-1.3A10 10 0 1 0 12 2Z"/><path fill="currentColor" d="M8.7 8.3c.3-.7.6-.7.9-.7h.6c.2 0 .5 0 .7.5.3.6.9 2 1 2.1.1.2.1.4 0 .6-.1.2-.2.3-.4.5-.2.2-.4.4-.2.7.2.4 1 1.6 2.2 2.5 1.5 1.1 2 1 2.3.9.3-.1 1.1-1.2 1.4-1.6.3-.4.6-.3.9-.2.4.1 2.2 1.1 2.5 1.3.4.2.6.3.7.5.1.2.1 1.1-.3 2.1-.4 1-2.1 1.9-2.9 2-.8.1-1.7.2-5.6-1.4-4.7-2-7.6-6.9-7.9-7.2-.2-.3-1.9-2.6-1.9-5 0-2.3 1.2-3.5 1.7-3.9Z"/></svg>';
+  const ICON_IG='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><rect x="3" y="3" width="18" height="18" rx="5.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="17.3" cy="6.7" r="1.15" fill="currentColor"/></svg>';
+  const ICON_SHARE='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><circle cx="18" cy="5" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="6" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="18" cy="19" r="2.6" fill="none" stroke="currentColor" stroke-width="1.8"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M8.3 10.7 15.7 6.3M8.3 13.3l7.4 4.4"/></svg>';
+  const ICON_LINK='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M9.5 14.5 14.5 9.5"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M11 6.5 12.8 4.7a3.6 3.6 0 0 1 5.1 5.1L16 11.6"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M13 17.5 11.2 19.3a3.6 3.6 0 0 1-5.1-5.1L8 12.4"/></svg>';
+  const ICON_DL='<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M7.5 10.5 12 15l4.5-4.5"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M4 17.5v1.8A2.7 2.7 0 0 0 6.7 22h10.6a2.7 2.7 0 0 0 2.7-2.7v-1.8"/></svg>';
+  const ICON_SOUND_ON='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4Z"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+  const ICON_SOUND_OFF='<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false"><path fill="currentColor" d="M4 9v6h4l5 5V4L8 9H4Z"/><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="M16 9.5 20.5 14M20.5 9.5 16 14"/></svg>';
+  function agoText(ts){
+    if(!ts) return '';
+    const d=Math.floor((Date.now()-ts)/86400000);
+    const h=Math.floor((Date.now()-ts)/3600000);
+    if(d>=1) return d+' gün önce';
+    if(h>=1) return h+' saat önce';
+    return 'az önce';
+  }
+  const muteBtn=document.getElementById('rxMute');
+  let soundOn=true;
+  function syncMuteBtn(){
+    if(!muteBtn) return;
+    muteBtn.innerHTML = soundOn?ICON_SOUND_ON:ICON_SOUND_OFF;
+    muteBtn.setAttribute('aria-pressed', String(!soundOn));
+    muteBtn.setAttribute('aria-label', soundOn?'Ses ve titreşimi kapat':'Ses ve titreşimi aç');
+  }
+  syncMuteBtn();
+  if(muteBtn) muteBtn.addEventListener('click',function(){ soundOn=!soundOn; syncMuteBtn(); });
+
+  let actx=null;
+  function beep(freq,dur,vol){
+    if(!soundOn) return;
+    try{
+      if(!actx) actx=new (window.AudioContext||window.webkitAudioContext)();
+      if(actx.state==='suspended') actx.resume();
+      const o=actx.createOscillator(), g=actx.createGain();
+      o.type='sine'; o.frequency.value=freq;
+      g.gain.setValueAtTime(vol||0.15,actx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+dur);
+      o.connect(g); g.connect(actx.destination); o.start(); o.stop(actx.currentTime+dur);
+    }catch(e){}
+  }
+  function buzz(p){ if(!soundOn) return; try{ if(navigator.vibrate) navigator.vibrate(p); }catch(e){} }
+  function clearAll(){ clearTimeout(timerId); clearTimeout(cdId); cancelAnimationFrame(rafId); }
+  function countdown(){
+    state='countdown'; stage.className='rx-stage';
+    let n=3;
+    function step(){
+      if(n===0){ startRound(); return; }
+      const lbl = practiceMode ? 'Deneme başlıyor' : (roundsDone===0 ? 'Gerçek ölçüm başlıyor' : 'Hazır ol');
+      content.innerHTML=
+        '<div class="rx-eyebrow">'+lbl+'</div>'+
+        '<div class="rx-count">'+n+'</div>';
+      n--; cdId=setTimeout(step,1000);
+    }
+    step();
+  }
+  function fmt(ms){ return String(Math.max(0,Math.round(ms))); }
+  function counter(ms){ return '<div class="rx-ms rx-live">'+fmt(ms)+'<i> ms</i></div>'; }
+  let liveEl=null;             // amber ekranındaki canlı sayaç düğümü
+  function tick(){
+    if(liveEl) liveEl.firstChild.nodeValue=fmt(performance.now()-goAt);
+    rafId=requestAnimationFrame(tick);
+  }
+
+  /* ---- Meydan okuma kartı (paylaşımda görselin kendisi gitsin) ---- */
+  let cardFile=null, cardUrl=null;     // 4:5 \u2014 WhatsApp / DM
+  let storyFile=null, storyUrl=null;   // 9:16 \u2014 Instagram hikaye
+  function drawCard(score, band, name, avgScore, valid, early, url, tall){
+    const W=1080,H=tall?1920:1350,c=document.createElement('canvas');
+    c.width=W; c.height=H;
+    const x=c.getContext('2d');
+    const g=x.createLinearGradient(0,0,W*0.6,H);
+    g.addColorStop(0,'#14213C'); g.addColorStop(.55,'#0F1A30'); g.addColorStop(1,'#182B50');
+    x.fillStyle=g; x.fillRect(0,0,W,H);
+    x.fillStyle='rgba(243,241,235,0.055)';
+    for(let yy=40;yy<H;yy+=44){ for(let xx=40;xx<W;xx+=44){ x.beginPath(); x.arc(xx,yy,2.2,0,6.2832); x.fill(); } }
+    function sp(v){ try{ x.letterSpacing=v; }catch(e){} }
+    x.textAlign='center';
+
+    sp('6px');
+    x.font='600 26px Archivo, sans-serif'; x.fillStyle='rgba(243,241,235,0.5)';
+    x.fillText('LOCOMOTION  \u00b7  REACTO', W/2, H*0.080);
+
+    sp('7px');
+    x.font='500 30px "IBM Plex Mono", monospace'; x.fillStyle='#D9912B';
+    x.fillText(name? name.toUpperCase()+' \u2014 TAHTTAKİ SKOR' : 'TAHTTAKİ SKOR', W/2, H*0.222);
+
+    sp('-10px');
+    x.font='900 300px Archivo, sans-serif'; x.fillStyle='#F3F1EB';
+    x.fillText(String(score), W/2, H*0.415);
+
+    sp('4px');
+    x.font='900 56px Archivo, sans-serif'; x.fillStyle='#D9912B';
+    x.fillText(band, W/2, H*0.480);
+
+    x.strokeStyle='rgba(243,241,235,0.18)'; x.lineWidth=2;
+    x.beginPath(); x.moveTo(180,H*0.536); x.lineTo(W-180,H*0.536); x.stroke();
+
+    sp('4px');
+    x.font='400 26px "IBM Plex Mono", monospace'; x.fillStyle='rgba(243,241,235,0.55)';
+    x.fillText(valid+' GEÇERLİ TUR  \u00b7  ORT. '+avgScore+(early?('  \u00b7  '+early+' ERKEN'):''), W/2, H*0.579);
+
+    sp('0px');
+    x.font='900 62px Archivo, sans-serif'; x.fillStyle='#F3F1EB';
+    x.fillText('Beni geçebilir misin?', W/2, H*0.681);
+    x.font='500 38px "IBM Plex Sans", sans-serif'; x.fillStyle='rgba(243,241,235,0.7)';
+    x.fillText('7 tur, 45 saniye, tarayıcıda.', W/2, H*0.729);
+
+    // amber alt blok: adres
+    const band0=tall?260:190;
+    x.fillStyle='#D9912B'; x.fillRect(0,H-band0,W,band0);
+    sp('5px');
+    x.font='900 46px Archivo, sans-serif'; x.fillStyle='#111D33';
+    x.fillText(url.replace(/^https?:\/\//,'').split('?')[0], W/2, H-band0+(tall?150:82));
+    sp('4px');
+    x.font='500 24px "IBM Plex Mono", monospace'; x.fillStyle='rgba(17,29,51,0.72)';
+    x.fillText(tall?'PROFİLDEKİ LİNKE DOKUN, SEN DE ÖLÇ':'MESAJDAKİ LİNKE DOKUN, SEN DE ÖLÇ', W/2, H-band0+(tall?200:132));
+    sp('0px');
+    return c;
+  }
+  function buildCard(score, band, name, avgScore, valid, early, url){
+    // Kart, kullanıcı paylaş'a basmadan ÖNCE hazırlanır; iOS'ta paylaşım
+    // jesti async beklemeyi sevmiyor, dosya hazır olmalı.
+    const go=function(){
+      try{
+        const prev=cardUrl, prevS=storyUrl;
+        drawCard(score, band, name, avgScore, valid, early, url, false).toBlob(function(blob){
+          if(!blob){ console.warn('REACTO: kart üretilemedi (toBlob boş)'); return; }
+          try{ cardFile=new File([blob],'reacto-'+score+'.png',{type:'image/png'}); }
+          catch(e){ cardFile=null; }
+          cardUrl=URL.createObjectURL(blob);
+          const im=document.getElementById('rxCardImg');
+          if(im){ im.src=cardUrl; im.style.display='block'; }
+          if(prev) URL.revokeObjectURL(prev);   // yeni URL atandıktan SONRA bırak
+        },'image/png');
+        drawCard(score, band, name, avgScore, valid, early, url, true).toBlob(function(blob){
+          if(!blob) return;
+          try{ storyFile=new File([blob],'reacto-hikaye-'+score+'.png',{type:'image/png'}); }
+          catch(e){ storyFile=null; }
+          storyUrl=URL.createObjectURL(blob);
+          if(prevS) URL.revokeObjectURL(prevS);
+        },'image/png');
+      }catch(e){ console.warn('REACTO: kart çizilemedi',e); }
+    };
+    // Marka fontlarını açıkça yükle; gelmezse 600 ms sonra yine de çiz
+    let done=false;
+    const once=function(){ if(!done){ done=true; go(); } };
+    setTimeout(once,600);
+    try{
+      if(document.fonts && document.fonts.load){
+        Promise.all([
+          document.fonts.load('900 300px Archivo'),
+          document.fonts.load('500 30px "IBM Plex Mono"'),
+          document.fonts.load('500 38px "IBM Plex Sans"')
+        ]).then(once).catch(once);
+      } else once();
+    }catch(e){ once(); }
+  }
+  function canShareFile(f){
+    try{ return !!(f && navigator.canShare && navigator.canShare({files:[f]})); }catch(e){ return false; }
+  }
+  function canShareCard(){ return canShareFile(cardFile); }
+
+  function shareUrl(best, opponentBest, round, name){
+    let u = window.location.origin + window.location.pathname + '?meydan=' + best;
+    if(round) u += '&tur=' + round;
+    if(opponentBest) u += '&skor=' + opponentBest;
+    if(name) u += '&ad=' + encodeURIComponent(name);
+    u += '&t=' + Date.now();
+    return u;
+  }
+  function dots(){
+    if(practiceMode) return '';
+    let h='<div class="rx-rounds">';
+    for(let i=0;i<TOTAL_ROUNDS;i++) h+='<span class="rx-dot'+(i<roundsDone?' rx-done':'')+'"></span>';
+    return h+'</div>';
+  }
+  function showIntro(){
+    state='intro'; stage.className='rx-stage';
+    const best=store.get('locomotion_best_ms');
+    const consented=raw.get(CONSENT_KEY)==='1';
+    content.innerHTML=
+      '<div class="rx-intro">'+
+      '<div class="rx-eyebrow" style="text-align:center">REACTO \u00b7 Görsel Reaksiyon Testi</div>'+
+      '<h3>Ne kadar hızlısın?</h3>'+
+      '<p class="rx-sub">Görsel reaksiyon testi. Önce 2 deneme, ardından 7 ölçüm turu \u2014 toplam yaklaşık 45 saniye.</p>'+
+      (challengeTarget?
+        '<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.14em;color:var(--amber)">'+
+          (duelRound>1?'RÖVANŞ \u00b7 '+duelRound+'. RAUND<br>':'TAHTTAKİ REKOR<br>')+
+          (leaderName?esc(leaderName).toUpperCase()+' \u2014 ':'')+'REACTO '+challengeTarget+
+          (leaderAt?' <span style="color:rgba(243,241,235,.45)">('+agoText(leaderAt)+')</span>':'')+
+          '<br><span style="color:rgba(243,241,235,.6)">GEÇERSEN TAHT SENİN</span>'+
+          (myLastScore?'<br><span style="color:rgba(243,241,235,.45)">GEÇEN SEFERKİ SKORUN: '+myLastScore+'</span>':'')+
+        '</p>'
+        :(best?'<p class="rx-sub" style="font-family:var(--mono);font-size:12px;letter-spacing:.12em;color:var(--bone)">EN İYİ REACTO SKORUN: '+best+'</p>':''))+
+      '<p class="rx-key">Ekran <b class="c-red">kırmızıyken</b> bekle; <b class="c-amb">amber</b> renge döndüğü an dokun.</p>'+
+      '<details class="rx-rules"'+(consented?'':' open')+'>'+
+        '<summary>NASIL OYNANIR \u2193</summary>'+
+        '<ul class="rx-steps">'+
+          '<li><b>01</b><span>Önce 2 deneme turu yaparsın; bu turlar ölçülmez, sadece alışman içindir.</span></li>'+
+          '<li><b>02</b><span>Kırmızı ekranda sayaç 0.000\u2019da bekler. Ne zaman ambere döneceği rastgeledir; tahmin etmeye çalışma.</span></li>'+
+          '<li><b>03</b><span>Ekran kırmızıdan ambere geçer geçmez dokun. Sayaç durur; o turun süren budur.</span></li>'+
+          '<li><b>04</b><span>Ses ve titreşim yalnızca geri bildirimdir; telefonda ikisi de görüntüden sonra ulaşır, o yüzden rengi bekle.</span></li>'+
+          '<li><b>05</b><span>Denemelerden sonra 7 ölçüm turu kendiliğinden akar, aralarda dokunmana gerek yok.</span></li>'+
+          '<li><b>06</b><span>Amber gelmeden dokunursan tur \u201cerken\u201d sayılır ve ortalamana girmez. Ceza değil, veri: kaç kez erken bastığın sonucunda görünür.</span></li>'+
+        '</ul>'+
+      '</details>'+
+      '<div class="rx-why">'+
+        '<b>Neden ölçüyoruz?</b> Basit görsel reaksiyon süresi, sinir sistemi ile kas arasındaki iletişim hızının en eski ölçümlerinden biridir. Prehab Index\u2019te kontrol halkasının bir parçasıdır: vücudun bir uyarana ne kadar çabuk cevap verdiği.'+
+        '<details><summary>DAHA FAZLA OKU \u2193</summary>'+
+        '<p>Araştırmalarda reaksiyon süresi yaşla yavaşlama, uykusuzluk, yorgunluk ve alkolün etkisi, sporcularda sakatlık sonrası toparlanma takibi ve ileri yaşta düşme riskiyle ilişkisi açısından incelenir. Laboratuvar koşullarında ortalama yetişkin görsel uyaranda yaklaşık 250\u2013270 ms civarındadır. Telefonda ölçülen süre bundan yüksek çıkar: ekranın tazeleme hızı, dokunmatik örnekleme ve tarayıcı gecikmesi toplamda 40\u2013100 ms ekler. Bu yüzden buradaki sayıyı literatürdeki değerlerle değil, kendi önceki denemelerinle kıyasla.</p>'+
+        '<p>Bu test eğlence ve merak amaçlıdır; tanı koymaz, klinik bir değerlendirmenin yerini tutmaz.</p>'+
+        '</details>'+
+      '</div>'+
+      '<div class="rx-checks">'+
+        '<label><input type="checkbox" id="rxCk1"'+(consented?' checked':'')+'><span>Aydınlatma metnini okudum; testin tanı amaçlı olmadığını anladım. <small>En iyi skorum yalnızca kendi cihazımda saklanır. <a href="#" id="rxKvkkLink">Aydınlatma metnini aç</a></small></span></label>'+
+        '<div class="rx-consent" id="rxKvkkBox" style="display:none;margin-top:0">'+CONSENT_HTML+'</div>'+
+        '<label><input type="checkbox" id="rxCk2"><span>Sonucumu anonim olarak salon istatistiklerine ekle. <small>İsteğe bağlı. Yalnızca tur süreleri ve tarih; kimlik veya cihaz bilgisi gönderilmez.</small></span></label>'+
+      '</div>'+
+      '<p class="rx-cta-hint" id="rxCtaHint">\u2191 Devam etmek için yukarıdaki ilk kutuyu işaretle.</p>'+
+      '<button class="rx-cta" id="rxStartBtn" disabled>Anladım, başla \u2192<small>2 DENEME + 7 TUR \u00b7 YAKLAŞIK 45 SANİYE</small></button>'+
+      '</div>';
+    const ck1=document.getElementById('rxCk1'), ck2=document.getElementById('rxCk2'), btn=document.getElementById('rxStartBtn'), ctaHint=document.getElementById('rxCtaHint');
+    function sync(){ btn.disabled=!ck1.checked; if(ctaHint) ctaHint.style.display=ck1.checked?'none':'block'; }
+    sync();
+    ck1.addEventListener('change',sync);
+    content.querySelector('.rx-intro').addEventListener('pointerdown',function(e){e.stopPropagation();});
+    document.getElementById('rxKvkkLink').addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      const b=document.getElementById('rxKvkkBox');
+      const willShow=b.style.display==='none';
+      b.style.display=willShow?'block':'none';
+      if(willShow) b.scrollIntoView({behavior:'smooth', block:'nearest'});
+    });
+    btn.addEventListener('click',function(e){
+      e.stopPropagation(); if(!ck1.checked) return;
+      allowStore=true; raw.set(CONSENT_KEY,'1'); allowStats=ck2.checked;
+      beep(1,0.01,0.001); times=[]; earlyCount=0; roundsDone=0; practiceMode=true; practiceIndex=0; countdown();
+    });
+  }
+
+  function startRound(){
+    state='waiting'; stage.className='rx-stage rx-waiting'; goAt=0;
+    content.innerHTML=
+      '<div class="rx-eyebrow">'+(practiceMode?('Deneme '+(practiceIndex+1)+' / '+TOTAL_PRACTICE+' \u00b7 sayılmaz'):('Tur '+(roundsDone+1)+' / '+TOTAL_ROUNDS))+'</div>'+
+      counter(0)+
+      '<div class="rx-word wait">BEKLE<span class="rx-pulse" aria-hidden="true"></span></div>'+dots();
+    clearAll();
+    // Amber ekranı önceden kur, gizli tut: 'go' karesinde DOM yeniden kurulmasın
+    const goHTML='<div class="rx-eyebrow">Dokun</div>'+counter(0)+'<div class="rx-word now">ŞİMDİ</div>'+dots();
+    const goBox=document.createElement('div');
+    goBox.style.display='none'; goBox.innerHTML=goHTML; content.appendChild(goBox);
+    liveEl=goBox.querySelector('.rx-live');
+    timerId=setTimeout(function(){
+      state='go'; stage.className='rx-stage rx-go';
+      // görünür kıl: bekleyen içerik gizlenir, amber içerik açılır (yeniden parse yok)
+      Array.prototype.forEach.call(content.children,function(el){ el.style.display = (el===goBox)?'':'none'; });
+      goBox.style.display='';
+      // Zaman damgası boyamadan SONRA: bu rAF geri çağrısı, amber karesi ekrana verildikten sonra çalışır
+      requestAnimationFrame(function(){
+        goAt=performance.now();
+        beep(1040,0.18,0.18); buzz(120);   // ses/titreşim damgadan sonra: boyamayı geciktirmesin
+        rafId=requestAnimationFrame(tick);
+      });
+    }, Math.random()<0.2 ? 4500+Math.random()*1500 : 1000+Math.random()*3000);
+  }
+  function earlyTap(){
+    clearAll(); beep(220,0.25,0.15); buzz([80,60,80]);
+    state='early'; stage.className='rx-stage rx-early';
+    if(practiceMode){
+      content.innerHTML=
+        '<div class="rx-eyebrow">Erken!</div>'+
+        '<h3>Amber gelmeden dokundun.</h3>'+
+        '<p class="rx-key">Ekran <b class="c-red">kırmızıyken</b> bekle; <b class="c-amb">amber</b> renge döndüğü an dokun.</p>'+
+        '<p>Bu bir deneme; aynı deneme birazdan yeniden başlıyor.</p>';
+      cdId=setTimeout(startRound,2200);
+      return;
+    }
+    earlyCount++; roundsDone++;
+    const isLastRound=roundsDone>=TOTAL_ROUNDS;
+    content.innerHTML=
+      '<div class="rx-eyebrow">Erken!</div>'+
+      '<h3>Amber gelmeden dokundun.</h3>'+
+      '<p class="rx-key">Ekran <b class="c-red">kırmızıyken</b> bekle; <b class="c-amb">amber</b> renge döndüğü an dokun.</p>'+
+      '<p>Bu tur erken olarak kaydedildi; ortalamaya girmez.</p>'+dots();
+    cdId=setTimeout(isLastRound?showFinal:startRound,2200);
+  }
+  function recordTap(){
+    if(!goAt) return; // amber karesi henüz boyanmadı: ölçüm başlamadı
+    if(performance.now()-goAt < 150){ earlyTap(); return; } // 150 ms altı: gerçek bir tepki için fizyolojik olarak imkansız, tahmin sayılır
+    cancelAnimationFrame(rafId);
+    const ms=Math.round(performance.now()-goAt);
+    if(liveEl) liveEl.firstChild.nodeValue=fmt(ms);
+    state='roundResult'; stage.className='rx-stage';
+    if(practiceMode){
+      practiceIndex++;
+      const donePractice = practiceIndex>=TOTAL_PRACTICE;
+      content.innerHTML=
+        '<div class="rx-eyebrow">Deneme '+practiceIndex+' / '+TOTAL_PRACTICE+' \u00b7 sayılmaz</div>'+
+        '<div class="rx-ms">'+fmt(ms)+'<i> ms</i></div>'+
+        '<p>'+(donePractice?'Denemeler bitti; gerçek ölçüm birazdan başlıyor.':'Sıradaki deneme birazdan.')+'</p>';
+      beep(880,0.08,0.1); buzz(40);
+      if(donePractice){ cdId=setTimeout(function(){ practiceMode=false; countdown(); },1400); }
+      else { cdId=setTimeout(startRound,1200); }
+      return;
+    }
+    times.push(ms); roundsDone++;
+    if(roundsDone>=TOTAL_ROUNDS){ cdId=setTimeout(showFinal,900);
+      content.innerHTML='<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div><div class="rx-ms">'+fmt(ms)+'<i> ms</i></div>'+dots(); return; }
+    content.innerHTML=
+      '<div class="rx-eyebrow">Tur '+roundsDone+' / '+TOTAL_ROUNDS+'</div>'+
+      '<div class="rx-ms">'+fmt(ms)+'<i> ms</i></div>'+dots()+
+      '<p>Sonraki tur birazdan.</p>';
+    beep(880,0.08,0.1); buzz(40);
+    cdId=setTimeout(startRound,1200);
+  }
+  /* ---- REACTO skoru ----
+     Ekranda ölçülen süre, cihazın kendi gecikmesini de içerir. Bu gecikmeyi düşüp
+     saniyedeki tepki sayısına çeviriyoruz: yüksek skor = hızlı.
+     skor = 100000 / (ölçülen - cihaz gecikmesi), payda 120 ms'nin altına inemez. */
+  let frameMs = 16.7;                       // cihazın kare süresi, ölçülerek güncellenir
+  function probeRefresh(){
+    let n=0, first=0, last=0;
+    function step(t){
+      if(!n){ first=t; } else { last=t; }
+      if(++n<25){ requestAnimationFrame(step); }
+      else if(last>first){ frameMs=(last-first)/(n-2); }
+    }
+    requestAnimationFrame(step);
+  }
+  function deviceLag(){
+    // taban gecikme (dokunmatik örnekleme + OS/tarayıcı iletimi) + kare kuantumunun yarısı
+    return 45 + frameMs/2;
+  }
+  function reacto(ms){
+    const adj = Math.max(120, ms - deviceLag());
+    return Math.round(100000/adj);
+  }
+  /* Derece eşikleri, varsayılan cihaz gecikmesiyle (deviceLag() ~53ms) kaba karşılıkları:
+     450+ ≈ ham <230ms · 400+ ≈ <280ms · 350+ ≈ <330ms · 300+ ≈ <390ms · 260+ ≈ <440ms.
+     Bunlar tahmini değerlerdir; gerçek ziyaretçilerle birkaç oturum sonra dağılımı gözlemleyip
+     (ör. üst derece çok sık/çok nadir çıkıyorsa) bu beş sayıyı yukarı/aşağı ayarlayın. */
+  function rating(score){
+    if(score>=450) return 'YILDIRIM';
+    if(score>=400) return 'KEDİ REFLEKSİ';
+    if(score>=350) return 'KALECİ ELİ';
+    if(score>=300) return 'UYANIK';
+    if(score>=260) return 'SABAH KAHVESİ SONRASI';
+    return 'HENÜZ ISINMADIN';
+  }
+  function showFinal(){
+    state='finished'; stage.className='rx-stage';
+    if(!times.length){
+      content.innerHTML='<div class="rx-eyebrow">Sonuç</div><h3>Hepsi erken.</h3><p>Amber gelene kadar bekle, sayaç akınca dokun.</p>'+
+        '<div class="rx-btnrow"><button class="rx-btn" id="rxAgainBtn">Tekrar</button></div>';
+      document.getElementById('rxAgainBtn').addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
+      return;
+    }
+    const avg=Math.round(times.reduce(function(a,b){return a+b;},0)/times.length);
+    const best=Math.min.apply(null,times);
+    const scoreBest=reacto(best), scoreAvg=reacto(avg);
+    const prevBest=parseInt(store.get('locomotion_best_ms')||'0',10);
+    if(scoreBest>prevBest) store.set('locomotion_best_ms',String(scoreBest));
+    sendStats({times:times.slice(),early:earlyCount,date:new Date().toISOString().slice(0,10)});
+    let verdict='', duelWin=null;
+    if(challengeTarget){
+      duelWin = scoreBest > challengeTarget;
+      const diff = Math.abs(challengeTarget - scoreBest);
+      verdict='<div class="rx-verdict '+(duelWin?'win':'lose')+'">'+
+        (duelWin? 'TAHT SENİN \u2014 '+diff+' PUAN ÖNDESİN' : 'TAHT HÂLÂ '+(leaderName?esc(leaderName).toUpperCase()+'\u2019DA':'RAKİBİNDE')+' \u2014 SADECE '+diff+' PUAN GERİDESİN')+
+        '<span>'+(leaderName?esc(leaderName).toUpperCase():'RAKİBİN')+': '+challengeTarget+' &nbsp;\u00b7&nbsp; SEN: '+scoreBest+'</span>'+
+        '<span style="opacity:1;color:var(--bone);margin-top:7px">'+(duelWin?'Yani: rakibinin skorunu geçtin.':(diff<=25?'Çok az kaldı. Bir tur daha at.':'Bir tur daha at, ısındıkça hızlanırsın.'))+'</span>'+
+      '</div>';
+    }
+    content.innerHTML=
+      '<div class="rx-eyebrow">REACTO Skorun</div>'+
+      verdict+
+      '<div class="rx-ms">'+scoreBest+'</div>'+
+      '<div class="rx-rating">'+rating(scoreBest)+'</div>'+
+      '<div class="rx-resgrid">'+
+        '<div class="rx-rescell"><div class="rx-lbl">Ortalama Skor</div><div class="rx-val">'+scoreAvg+'</div></div>'+
+        '<div class="rx-rescell"><div class="rx-lbl">Geçerli / Erken</div><div class="rx-val">'+times.length+' <i>/</i> '+earlyCount+'</div></div>'+
+      '</div>'+
+      '<p style="margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:rgba(243,241,235,.55)">REAKSİYON, PREHAB INDEX\u2019İN KONTROL HALKASININ PARÇASIDIR</p>'+
+      (duelWin===false
+        ? '<button class="rx-cta" id="rxRematchBtn">Rövanş \u2192<small>'+challengeTarget+' PUANI GEÇ</small></button>'+
+          '<div class="rx-btnrow"><button class="rx-btn rx-ghost" id="rxBridge">Prehab Index\u2019i dene</button></div>'
+        : '<button class="rx-cta" id="rxBridge">Prehab Index\u2019i dene \u2192<small>VÜCUDUN NE KADAR HAZIR?</small></button>'+
+          '<div class="rx-btnrow"><button class="rx-btn rx-ghost" id="rxAgainBtn">Tekrar</button></div>')+
+      '<details class="rx-rules" style="margin-top:20px;text-align:center">'+
+        '<summary>PAYLAŞ VE MEYDAN OKU \u2193</summary>'+
+        '<p style="margin-top:12px;font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(243,241,235,.5)">'+
+          (challengeTarget
+            ? (duelWin?'SONUCU GERİ GÖNDER \u2014 RAKİBİN HABERSİZ':'SONUCU GERİ GÖNDER, RÖVANŞ İSTE')
+            : 'REACTO SKORUN <b style="color:var(--amber)">'+scoreBest+'</b> \u2014 GEÇEBİLECEK Mİ?')+
+        '</p>'+
+        '<img id="rxCardImg" class="rx-cardimg" alt="Meydan okuma kartın" style="display:none" />'+
+        '<div class="rx-name"><input id="rxName" type="text" maxlength="20" placeholder="Takma adın (isteğe bağlı)" aria-label="Takma adın" /><small>Linkte görünür. Gerçek adın olması gerekmez; boş bırakırsan \u201cbir rakip\u201d yazar.</small></div>'+
+        '<div class="rx-share">'+
+          '<button class="rx-share-btn wa" id="rxShareWa" aria-label="WhatsApp\u2019ta meydan oku">'+ICON_WA+'WhatsApp\u2019ta meydan oku</button>'+
+          '<button class="rx-share-btn ig" id="rxShareIg" aria-label="Instagram\u2019da meydan oku">'+ICON_IG+'Hikaye kartı</button>'+
+          (navigator.share?'<button class="rx-share-btn" id="rxShareMore" aria-label="Diğer uygulamada meydan oku">'+ICON_SHARE+'Diğer</button>':'')+
+          '<button class="rx-share-btn" id="rxShareCopy" aria-label="Bağlantıyı kopyala">'+ICON_LINK+'Linki kopyala</button>'+
+          '<button class="rx-share-btn" id="rxCardDl" aria-label="Kartı indir">'+ICON_DL+'Kartı indir</button>'+
+        '</div>'+
+      '</details>'+
+      '<details class="rx-rules" style="margin-top:12px;text-align:center">'+
+        '<summary>HAM VERİLER \u2193</summary>'+
+        '<p class="rx-raw" style="margin-top:12px">ham ölçüm: en hızlı tur '+best+' ms \u00b7 ortalama '+avg+' ms<br>'+
+          '<span>REACTO skoru, cihazının gecikmesi (~'+Math.round(deviceLag())+' ms) düşülerek hesaplanır. Yüksek skor = hızlı.</span></p>'+
+      '</details>';
+    (function(){
+      const nm0=cleanName((document.getElementById('rxName')||{}).value||'');
+      buildCard(scoreBest, rating(scoreBest), nm0, scoreAvg, times.length, earlyCount,
+                shareUrl(scoreBest, challengeTarget||null, challengeTarget?duelRound+1:1, nm0||null));
+    })();
+    const nameEl=document.getElementById('rxName');
+    if(nameEl){
+      ['click','pointerdown','keydown'].forEach(function(ev){ nameEl.addEventListener(ev,function(e){e.stopPropagation();}); });
+      let nameTimer=null;
+      nameEl.addEventListener('input',function(){
+        clearTimeout(nameTimer);
+        nameTimer=setTimeout(function(){
+          const nm=cleanName(nameEl.value);
+          buildCard(scoreBest, rating(scoreBest), nm, scoreAvg, times.length, earlyCount,
+                    shareUrl(scoreBest, challengeTarget||null, challengeTarget?duelRound+1:1, nm||null));
+        },350);
+      });
+    }
+    const againBtn=document.getElementById('rxAgainBtn');
+    if(againBtn) againBtn.addEventListener('click',function(e){e.stopPropagation();times=[];earlyCount=0;roundsDone=0;practiceMode=false;countdown();});
+    const rematchBtn=document.getElementById('rxRematchBtn');
+    if(rematchBtn) rematchBtn.addEventListener('click',function(e){
+      e.stopPropagation(); times=[]; earlyCount=0; roundsDone=0; practiceMode=false; countdown();
+    });
+    document.getElementById('rxBridge').addEventListener('click',function(e){
+      e.preventDefault(); e.stopPropagation();
+      window.location.href='/#prehab';
+    });
+    (function(){
+      const stats='('+times.length+' geçerli tur, ortalama skor '+scoreAvg+(earlyCount?', '+earlyCount+' erken':'')+')';
+      function myName(){ const el=document.getElementById('rxName'); return cleanName(el?el.value:''); }
+      function payload(){
+        const nm=myName();
+        const url=shareUrl(scoreBest, challengeTarget||null, challengeTarget?duelRound+1:1, nm||null);
+        const who=nm?nm+' \u2014 ':'';
+        let text;
+        if(challengeTarget && duelWin){
+          text='\u265b Taht bende: '+who+'REACTO '+scoreBest+'.\n'+(leaderName?leaderName+'\u2019ın skoru '+challengeTarget+'\u2019di.':'Önceki skor '+challengeTarget+'\u2019di.')+'\n'+stats+'\nGeçen olursa taht onun:';
+        } else if(challengeTarget){
+          text='⚡ '+who+'REACTO '+scoreBest+'. Tahtı alamadım, '+Math.abs(challengeTarget-scoreBest)+' puan kaldı.\n'+stats+'\nDeneyen var mı?';
+        } else {
+          text='\u265b Taht bende: '+who+'REACTO '+scoreBest+'.\n'+stats+'\nGeçen olursa taht onun \u2014 7 tur, 45 saniye:';
+        }
+        return {text:text, url:url};
+      }
+      function copy(){ const p=payload(); if(navigator.clipboard) return navigator.clipboard.writeText(p.text+'\n'+p.url).catch(function(){}); }
+      function saveAs(url,fname){
+        if(!url) return;
+        const a=document.createElement('a');
+        a.href=url; a.download=fname;
+        document.body.appendChild(a); a.click(); a.remove();
+      }
+      function downloadCard(){ saveAs(cardUrl,'reacto-'+scoreBest+'.png'); }
+      function downloadStory(){ saveAs(storyUrl,'reacto-hikaye-'+scoreBest+'.png'); }
+      function shareWithCard(fallback){
+        const p=payload();
+        if(canShareCard()){
+          navigator.share({files:[cardFile], text:p.text+'\n'+p.url})
+            .catch(function(err){ if(err && err.name==='AbortError') return; fallback(p); });
+          return;
+        }
+        fallback(p);
+      }
+      const wa=document.getElementById('rxShareWa');
+      if(wa) wa.addEventListener('click',function(e){
+        e.stopPropagation();
+        shareWithCard(function(p){
+          // Cihaz dosya paylaşımını desteklemiyor (ör. masaüstü tarayıcı):
+          // kartı indir, WhatsApp'ı metinle aç, kullanıcı kartı ekte göndersin.
+          if(cardUrl){ downloadCard(); showToast('Kart indirildi \u2014 WhatsApp\u2019ta ekleyip gönder'); }
+          window.open('https://wa.me/?text='+encodeURIComponent(p.text+'\n'+p.url),'_blank','noopener');
+        });
+      });
+      const ig=document.getElementById('rxShareIg');
+      if(ig) ig.addEventListener('click',function(e){
+        e.stopPropagation();
+        // Instagram metin/link almaz; yalnızca görsel kabul eder. 9:16 hikaye kartı gönderilir.
+        if(canShareFile(storyFile)){
+          navigator.share({files:[storyFile]})
+            .catch(function(err){
+              if(err && err.name==='AbortError') return;
+              if(storyUrl){ downloadStory(); showToast('Hikaye kartı indirildi \u2014 Instagram\u2019dan ekle'); }
+            });
+          return;
+        }
+        if(storyUrl){ downloadStory(); showToast('Hikaye kartı indirildi \u2014 Instagram\u2019dan hikayene ekle'); }
+        else { copy(); showToast('Kart hazırlanıyor, bir saniye'); }
+      });
+      const more=document.getElementById('rxShareMore');
+      if(more) more.addEventListener('click',function(e){
+        e.stopPropagation();
+        shareWithCard(function(p){
+          navigator.share({title:'Locomotion REACTO',text:p.text,url:p.url}).catch(function(){});
+        });
+      });
+      const dl=document.getElementById('rxCardDl');
+      if(dl) dl.addEventListener('click',function(e){
+        e.stopPropagation();
+        if(cardUrl){ downloadCard(); showToast('Kart indirildi'); }
+        else showToast('Kart hazırlanıyor, bir saniye');
+      });
+      const cp=document.getElementById('rxShareCopy');
+      if(cp) cp.addEventListener('click',function(e){
+        e.stopPropagation(); copy(); showToast('Link kopyalandı');
+      });
+    })();
+  }
+  function showToast(msg){
+    toast.textContent=msg; toast.classList.add('rx-show');
+    setTimeout(function(){toast.classList.remove('rx-show');},2600);
+  }
+
+  stage.addEventListener('pointerdown',function(e){
+    if(e.isPrimary===false) return; // ikinci/üçüncü parmak: çoklu dokunmada yalnızca ilk temas sayılır
+    if(state==='waiting') earlyTap();
+    else if(state==='go') recordTap();
+    else if(state==='finished' && actx && actx.state==='suspended') actx.resume();
+  });
+
+  // Sekme arka plana alınırsa (bildirim, uygulama değişimi vb.) o anki turu iptal edip
+  // geri dönüldüğünde aynı tur numarasıyla yeniden başlat; kullanıcı görmediği bir
+  // 'şimdi' karesini kaçırıp yanlışlıkla erken/geç sayılmasın.
+  let resumePending=false;
+  document.addEventListener('visibilitychange',function(){
+    if(document.hidden){
+      if(state==='waiting'||state==='go'||state==='countdown'){ resumePending=true; clearAll(); }
+    } else if(resumePending){
+      resumePending=false; countdown();
+    }
+  });
+
+  function openModal(){
+    times=[]; clearTimeout(timerId);
+    document.body.style.overflow='hidden';
+    probeRefresh();
+    showIntro();
+  }
+
+  // Tek sayfa sürüm: test doğrudan açılır, kapatma yok.
+  openModal();
+
+  // arrival via a shared challenge link: ?meydan=<rakibin rekoru>&tur=<kaçıncı raund>&skor=<benim önceki skorum>
+  (function(){
+    const q = new URLSearchParams(window.location.search);
+    const target = q.get('meydan');
+    if(!target) return;
+    challengeTarget = parseInt(target,10) || null;
+    duelRound = parseInt(q.get('tur'),10) || 1;
+    myLastScore = parseInt(q.get('skor'),10) || null;
+    leaderName = cleanName(q.get('ad')) || null;
+    leaderAt = parseInt(q.get('t'),10) || null;
+    /* tek sayfa sürümde modal zaten açık */
+  })();
+  // (Ana sayfadaki hero paneli bu tek sayfa sürümde yok.)
+})();
+</script>
+</body>
+</html>
