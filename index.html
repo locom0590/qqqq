@@ -2,209 +2,39 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Locomotion — Academy &amp; Studio</title>
-<meta name="description" content="Hekim değerlendirmesiyle başlayan, bilimsel triyaj protokolüne dayalı medikal fitness. Locomotion Academy & Studio." />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>REACTO ⚡ Ne kadar hızlısın? — Locomotion</title>
+<meta name="description" content="Görsel reaksiyon testi. 7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
+<meta name="theme-color" content="#0F1A30" />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="Locomotion Academy &amp; Studio" />
-<meta property="og:url" content="https://locomotion.com.tr/" />
+<meta property="og:url" content="https://locomotion.com.tr/reacto/" />
 <meta property="og:title" content="REACTO ⚡ Ne kadar hızlısın?" />
-<meta property="og:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku. Locomotion Academy &amp; Studio." />
+<meta property="og:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
 <meta property="og:image" content="https://locomotion.com.tr/og-reacto.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Locomotion Reaksiyon Testi" />
 <meta property="og:locale" content="tr_TR" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="REACTO ⚡ Ne kadar hızlısın?" />
 <meta name="twitter:description" content="7 tur, 45 saniye, tarayıcıda. REACTO skorunu ölç, arkadaşına meydan oku." />
 <meta name="twitter:image" content="https://locomotion.com.tr/og-reacto.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;800;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
-
   :root{
-    --bone:#F3F1EB;
-    --bone-2:#EAE7DE;
-    --navy:#1F3864;
-    --deep:#111D33;
-    --deep-2:#1A2A4A;
-    --amber:#D9912B;
-    --steel:#7C8698;
-    --ink:#171E2B;
-    --line:rgba(23,30,43,.12);
+    --bone:#F3F1EB;--navy:#1F3864;--deep:#111D33;--amber:#D9912B;--steel:#7C8698;
+    --disp:'Archivo',system-ui,sans-serif;--body:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace;
     --radius:22px;--ok:#8FD49B;--warn:#E8B15E;--bad:#E77D6A;
-    --disp:'Archivo',system-ui,sans-serif;
-    --body:'IBM Plex Sans',system-ui,sans-serif;
-    --mono:'IBM Plex Mono',ui-monospace,monospace;
   }
   *{margin:0;padding:0;box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{background:var(--bone);color:var(--ink);font-family:var(--body);line-height:1.6;-webkit-font-smoothing:antialiased}
-  a{color:inherit;text-decoration:none}
-  img{max-width:100%}
-  ::selection{background:var(--amber);color:var(--deep)}
+  html,body{height:100%}
+  body{background:linear-gradient(160deg,#14213C 0%,#0F1A30 60%,#182B50 100%);font-family:var(--body);color:var(--bone);-webkit-font-smoothing:antialiased}
+  /* Tek sayfa sürüm: test her zaman açık, kapatma düğmesi gizli */
+  .rx-overlay{display:flex !important;position:fixed;inset:0;z-index:1;flex-direction:column}
+  .rx-close{display:none}
 
-  .wrap{max-width:1120px;margin:0 auto;padding:0 24px}
-
-  /* ---------- NAV ---------- */
-  nav{position:sticky;top:0;z-index:50;background:rgba(243,241,235,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  .nav-in{display:flex;align-items:center;justify-content:space-between;height:68px}
-  .wordmark{font-family:var(--disp);font-weight:900;font-size:20px;letter-spacing:.14em;color:var(--navy)}
-  .wordmark small{display:block;font-family:var(--mono);font-weight:400;font-size:9.5px;letter-spacing:.32em;color:var(--steel);margin-top:1px}
-  .nav-links{display:flex;gap:28px;align-items:center;font-size:14px;font-weight:500}
-  .nav-links a{color:#3a4252;transition:color .15s}
-  .nav-links a:hover{color:var(--navy)}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:600;font-size:14px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--navy);color:var(--navy);transition:all .18s;cursor:pointer;background:transparent}
-  .btn:hover{background:var(--navy);color:var(--bone)}
-  .btn.solid{background:var(--navy);color:var(--bone)}
-  .btn.solid:hover{background:var(--deep)}
-  .btn.amber{background:var(--amber);border-color:var(--amber);color:var(--deep)}
-  .btn.amber:hover{background:#c07f21;border-color:#c07f21}
-  @media(max-width:760px){.nav-links a:not(.btn){display:none}}
-
-  /* ---------- HERO ---------- */
-  .hero{padding:72px 0 40px}
-  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
-  @media(max-width:900px){.hero-grid{grid-template-columns:1fr}}
-  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.3em;color:var(--amber);text-transform:uppercase;font-weight:500;margin-bottom:18px}
-  h1{font-family:var(--disp);font-weight:900;font-size:clamp(38px,5.4vw,62px);line-height:1.04;letter-spacing:-.015em;color:var(--navy)}
-  h1 .stroke{color:transparent;-webkit-text-stroke:1.6px var(--navy)}
-  .hero p.lead{margin:22px 0 30px;font-size:17px;color:#454e60;max-width:46ch}
-  .hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
-  .hero-note{margin-top:26px;font-family:var(--mono);font-size:12px;color:var(--steel);letter-spacing:.04em}
-
-  /* assessment dashboard panel */
-  .lab{position:relative;background:linear-gradient(160deg,#14213C 0%,#0F1A30 55%,#182B50 100%);border-radius:28px;padding:28px;box-shadow:0 30px 60px -30px rgba(17,29,51,.55);overflow:hidden}
-  .lab::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(243,241,235,.06) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
-  .dash{position:relative}
-  .dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-  .dash-title{font-family:var(--mono);font-size:12px;letter-spacing:.24em;color:rgba(243,241,235,.85);font-weight:500}
-  .dash-tag{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:var(--amber);border:1px solid rgba(217,145,43,.5);border-radius:999px;padding:4px 10px}
-  .dash-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:center}
-  @media(max-width:460px){.dash-grid{grid-template-columns:1fr}}
-  .radar-wrap svg{display:block;width:100%;height:auto}
-  .metrics{display:flex;flex-direction:column;gap:16px}
-  .metric .m-row{display:flex;justify-content:space-between;align-items:baseline;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:rgba(243,241,235,.6);margin-bottom:6px}
-  .metric .m-row b{font-size:15px;color:var(--bone);font-weight:500;letter-spacing:0}
-  .metric .m-row i{font-style:normal;font-size:10px;color:rgba(243,241,235,.45)}
-  .m-bar{height:6px;border-radius:99px;background:rgba(243,241,235,.12);overflow:hidden}
-  .m-bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D9912B,#E8B15E)}
-  .dash-foot{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(243,241,235,.12);flex-wrap:wrap}
-  .spark{flex:1;min-width:170px}
-  .spark-label{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:rgba(243,241,235,.55);margin-bottom:8px}
-  .spark-label b{color:var(--amber);font-weight:500}
-  .spark svg{width:100%;max-width:200px;height:44px;display:block}
-  .triage-chip{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:#8FD49B;border:1px solid rgba(143,212,155,.45);background:rgba(46,125,50,.16);border-radius:10px;padding:9px 13px}
-  .dash-note{margin-top:16px;font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:rgba(243,241,235,.35)}
-
-  /* hero game launcher */
-  .lab-game{display:flex;flex-direction:column;cursor:pointer}
-  .hg-body{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 10px 14px;position:relative;z-index:1}
-  .hg-q{font-family:var(--disp);font-weight:900;font-size:clamp(88px,10vw,130px);line-height:1;color:var(--bone);letter-spacing:-.02em}
-  .hg-q i{font-style:normal;font-size:.3em;color:var(--amber);font-weight:800}
-  .hg-body h3{font-family:var(--disp);font-weight:900;font-size:clamp(22px,2.6vw,30px);color:var(--bone);margin-top:14px}
-  .hg-body p{font-family:var(--mono);font-size:12px;letter-spacing:.1em;color:var(--steel);margin-top:10px}
-  .hg-avg{font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:rgba(243,241,235,.5);margin-top:16px;border-top:1px solid rgba(243,241,235,.12);padding-top:14px;width:100%;max-width:280px}
-  .lab-game .btn{margin-top:20px}
-  .hg-tabs{display:flex;gap:6px;background:rgba(243,241,235,.06);border:1px solid rgba(243,241,235,.12);border-radius:999px;padding:4px}
-  .hg-tab{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:rgba(243,241,235,.6);background:transparent;border:none;border-radius:999px;padding:7px 12px;cursor:pointer;transition:all .15s}
-  .hg-tab.on{background:var(--amber);color:var(--deep)}
-  .hg-pane{display:none}
-  .hg-pane.on{display:block}
-  .hg-mini{position:relative;z-index:1;padding:14px 4px 6px;cursor:default}
-  .hg-mini .sl{grid-template-columns:96px 1fr 22px;padding:7px 0;font-size:10px}
-  .hg-mini .hg-res{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:14px;padding-top:14px;border-top:1px solid rgba(243,241,235,.12)}
-  .hg-mini .hg-num{font-family:var(--disp);font-weight:900;font-size:64px;line-height:.9;color:var(--amber);letter-spacing:-.03em}
-  .hg-mini .hg-num small{display:block;font-family:var(--mono);font-weight:400;font-size:10px;letter-spacing:.2em;color:rgba(243,241,235,.55);margin-bottom:6px}
-  .hg-mini .hg-meta{text-align:right;font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;color:rgba(243,241,235,.65);line-height:1.9}
-  .hg-mini .hg-meta b{color:var(--bone);font-weight:500}
-  .hg-mini .hg-meta b.bad{color:var(--bad)}
-  .hg-mini .hg-link{display:block;margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--amber);text-decoration:none}
-  @media(max-width:900px){
-    .hero{padding:26px 0 34px}
-    .lab-game{order:-1}
-  }
-
-  /* ---------- GAIT STRIP ---------- */
-  .gait{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--bone-2)}
-  .gait-in{display:grid;grid-template-columns:repeat(4,1fr)}
-  @media(max-width:820px){.gait-in{grid-template-columns:repeat(2,1fr)}}
-  .phase{padding:26px 22px;border-left:1px solid var(--line)}
-  .phase:first-child{border-left:none}
-  @media(max-width:820px){.phase:nth-child(3){border-left:none}.phase{border-top:1px solid var(--line)}.phase:nth-child(-n+2){border-top:none}}
-  .phase .ph{font-family:var(--mono);font-size:11px;letter-spacing:.22em;color:var(--amber);text-transform:uppercase}
-  .phase h3{font-family:var(--disp);font-weight:800;font-size:17px;color:var(--navy);margin:6px 0 4px}
-  .phase p{font-size:13.5px;color:#596172}
-
-  /* ---------- SECTIONS ---------- */
-  section{padding:88px 0}
-  .sec-head{max-width:640px;margin-bottom:48px}
-  .sec-head h2{font-family:var(--disp);font-weight:900;font-size:clamp(28px,3.6vw,40px);color:var(--navy);letter-spacing:-.01em;line-height:1.12}
-  .sec-head p{margin-top:14px;color:#4b5468;font-size:16px}
-
-  /* approach cards */
-  .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-  @media(max-width:820px){.cards{grid-template-columns:1fr}}
-  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:30px 28px;position:relative;transition:transform .2s, box-shadow .2s}
-  .card:hover{transform:translateY(-3px);box-shadow:0 18px 40px -24px rgba(17,29,51,.28)}
-  .card .num{font-family:var(--mono);font-size:12px;letter-spacing:.2em;color:var(--amber)}
-  .card h3{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--navy);margin:10px 0 10px}
-  .card p{font-size:14.5px;color:#535c6e}
-
-  /* programs */
-  .prog{background:var(--deep);color:var(--bone);border-radius:34px;padding:72px 0}
-  .prog .sec-head h2{color:var(--bone)}
-  .prog .sec-head p{color:#aab3c4}
-  .prog-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  @media(max-width:860px){.prog-grid{grid-template-columns:1fr}}
-  .pcard{border:1px solid rgba(243,241,235,.14);border-radius:var(--radius);padding:30px 26px;background:linear-gradient(170deg,rgba(243,241,235,.05),rgba(243,241,235,.01))}
-  .pcard .tag{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--amber);text-transform:uppercase}
-  .pcard h3{font-family:var(--disp);font-weight:800;font-size:22px;margin:12px 0 10px}
-  .pcard p{font-size:14px;color:#b8c0d0}
-  .pcard ul{margin-top:16px;list-style:none}
-  .pcard li{font-size:13.5px;color:#cfd6e2;padding:7px 0;border-top:1px solid rgba(243,241,235,.1);display:flex;gap:10px}
-  .pcard li::before{content:"→";color:var(--amber);flex-shrink:0}
-
-  /* principles */
-  .principles{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-  @media(max-width:820px){.principles{grid-template-columns:1fr}}
-  .pr{border-top:2px solid var(--navy);padding-top:20px}
-  .pr .big{font-family:var(--disp);font-weight:900;font-size:34px;color:var(--navy);letter-spacing:-.02em}
-  .pr .big span{color:var(--amber)}
-  .pr p{font-size:14px;color:#535c6e;margin-top:8px}
-
-  /* contact / footer */
-  .game-band{background:linear-gradient(150deg,#16233F,#0F1A30);border:1px solid rgba(217,145,43,.4);border-radius:34px;padding:56px 48px;display:flex;align-items:center;justify-content:space-between;gap:36px;flex-wrap:wrap;position:relative;overflow:hidden}
-  .game-band::after{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(217,145,43,.18),transparent 70%);pointer-events:none}
-  .game-band h2{font-family:var(--disp);font-weight:900;font-size:clamp(26px,3.2vw,36px);color:var(--bone);letter-spacing:-.01em;margin:14px 0 12px}
-  .game-band p{color:#aab3c4;font-size:15px;max-width:42ch;margin-bottom:24px}
-  .game-band .eyebrow{margin-bottom:0}
-  .game-ms{text-align:right}
-  .game-ms b{font-family:var(--disp);font-weight:900;font-size:clamp(64px,9vw,110px);color:var(--bone);letter-spacing:-.03em;line-height:1;display:block}
-  .game-ms b i{font-style:normal;font-size:.32em;color:var(--amber)}
-  .game-ms span{display:block;margin-top:10px;font-family:var(--mono);font-size:11px;letter-spacing:.18em;color:var(--steel)}
-  @media(max-width:700px){.game-ms{text-align:left}}
-  .cta-band{background:var(--navy);border-radius:34px;padding:64px 48px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
-  .cta-band h2{font-family:var(--disp);font-weight:900;font-size:clamp(26px,3.2vw,36px);color:var(--bone);letter-spacing:-.01em;max-width:20ch;line-height:1.15}
-  .cta-band p{color:#b9c3d6;margin-top:10px;font-size:15px;max-width:44ch}
-  footer{padding:56px 0 40px;border-top:1px solid var(--line);margin-top:88px}
-  .foot{display:flex;justify-content:space-between;gap:32px;flex-wrap:wrap}
-  .foot .wordmark{font-size:18px}
-  .foot-col{font-size:13.5px;color:#596172}
-  .foot-col b{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--navy);text-transform:uppercase;margin-bottom:10px}
-  .foot-col a{display:block;padding:3px 0}
-  .foot-col a:hover{color:var(--navy)}
-  .legal{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--steel);display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;font-family:var(--mono)}
-
-  /* reveal */
-  .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease, transform .6s ease}
-  .reveal.in{opacity:1;transform:none}
-  @media (prefers-reduced-motion: reduce){
-    .reveal{opacity:1;transform:none;transition:none}
-    html{scroll-behavior:auto}
-  }
-
-  /* ---------- REAKSİYON MODAL (rx- scoped) ---------- */
   .rx-overlay{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;background:linear-gradient(160deg,#14213C 0%,#0F1A30 60%,#182B50 100%)}
   .rx-overlay.open{display:flex}
   .rx-overlay::before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(243,241,235,.06) 1px,transparent 1px);background-size:26px 26px;pointer-events:none}
@@ -293,601 +123,10 @@
   .rx-foot{padding:14px 22px;text-align:center;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--steel);position:relative;z-index:2}
   .rx-toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%);background:var(--bone);color:var(--deep);font-family:var(--mono);font-size:12.5px;padding:10px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:120}
   .rx-toast.rx-show{opacity:1}
-/* ---------- 1. Concept: the chain ---------- */
-  .chain{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:8px}
-  @media(max-width:700px){.chain{grid-template-columns:repeat(5,1fr);gap:8px}}
-  .link{background:rgba(243,241,235,.05);border:1px solid rgba(243,241,235,.12);border-radius:16px;padding:16px 10px;text-align:center}
-  .link .n{font-family:var(--disp);font-weight:900;font-size:34px;line-height:1;color:var(--bone)}
-  .link .l{font-family:var(--mono);font-size:10px;letter-spacing:.18em;color:rgba(243,241,235,.6);margin-top:8px;text-transform:uppercase}
-  .link.weak{border-color:rgba(231,125,106,.6);background:rgba(231,125,106,.08)}
-  .link.weak .n{color:var(--bad)}
-  .rule{display:flex;align-items:center;gap:14px;margin-top:22px;padding-top:18px;border-top:1px solid rgba(243,241,235,.12);flex-wrap:wrap}
-  .rule .eq{font-family:var(--mono);font-size:13px;color:rgba(243,241,235,.75);letter-spacing:.04em}
-  .rule .eq b{color:var(--amber);font-weight:500}
-  .rule .res{margin-left:auto;font-family:var(--disp);font-weight:800;font-size:20px;color:var(--bone)}
-  .rule .res small{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.16em;color:var(--bad);margin-left:10px}
-
-  /* three pillars */
-  .pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
-  @media(max-width:760px){.pillars{grid-template-columns:1fr}}
-  .card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:28px 26px}
-  .card .k{font-family:var(--mono);font-size:11px;letter-spacing:.24em;color:var(--amber);text-transform:uppercase}
-  .card h3{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--navy);margin:10px 0 8px}
-  .card p{font-size:14.5px;color:#454e60}
-
-  /* ---------- 2. Report ---------- */
-  .rep{display:grid;grid-template-columns:1.05fr .95fr;gap:26px;align-items:start}
-  @media(max-width:820px){.rep{grid-template-columns:1fr}}
-  .hero-num{display:flex;align-items:flex-end;gap:16px}
-  .hero-num .pi-big{font-family:var(--disp);font-weight:900;font-size:96px;line-height:.9;color:var(--bone);letter-spacing:-.03em}
-  .hero-num .pi-big span{font-size:30px;color:rgba(243,241,235,.4);letter-spacing:0}
-  .hero-num .side{padding-bottom:10px}
-  .hero-num .side .t{font-family:var(--mono);font-size:10.5px;letter-spacing:.2em;color:rgba(243,241,235,.55)}
-  .hero-num .side .v{font-family:var(--disp);font-weight:600;font-size:15px;color:var(--ok);margin-top:4px}
-  .pi-prog{margin-top:20px}
-  .pi-prog .m-row{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:rgba(243,241,235,.6);margin-bottom:6px}
-  .m-bar{height:6px;border-radius:99px;background:rgba(243,241,235,.12);overflow:hidden}
-  .m-bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#D9912B,#E8B15E)}
-  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
-  .stat{background:rgba(243,241,235,.05);border:1px solid rgba(243,241,235,.1);border-radius:14px;padding:12px 14px}
-  .stat .t{font-family:var(--mono);font-size:9.5px;letter-spacing:.18em;color:rgba(243,241,235,.5);text-transform:uppercase}
-  .stat .v{font-family:var(--disp);font-weight:800;font-size:20px;color:var(--bone);margin-top:4px}
-  .stat .v.ok{color:var(--ok)}
-  .halkalar .row{display:grid;grid-template-columns:110px 1fr 28px;align-items:center;gap:12px;padding:9px 0;border-top:1px solid rgba(243,241,235,.08);font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;color:rgba(243,241,235,.8)}
-  .halkalar .row:first-child{border-top:0}
-  .seg{display:flex;gap:4px}
-  .seg i{flex:1;height:9px;border-radius:3px;background:rgba(243,241,235,.1)}
-  .seg i.f{background:var(--amber)}
-  .seg i.w{background:var(--bad)}
-  .halkalar .row .num{text-align:right;color:var(--bone);font-size:14px}
-  .halkalar .row.weak{color:var(--bad)}
-  .chip{display:inline-block;font-family:var(--mono);font-size:9.5px;letter-spacing:.12em;border-radius:999px;padding:3px 9px;margin-left:8px;vertical-align:middle}
-  .chip.bad{color:var(--bad);border:1px solid rgba(231,125,106,.5)}
-  .chip.ok{color:var(--ok);border:1px solid rgba(143,212,155,.45);background:rgba(46,125,50,.16)}
-  .chip.warn{color:var(--warn);border:1px solid rgba(232,177,94,.5)}
-  .tl{margin-top:22px;padding-top:18px;border-top:1px solid rgba(243,241,235,.12)}
-  .tl .t{font-family:var(--mono);font-size:10px;letter-spacing:.16em;color:rgba(243,241,235,.55);margin-bottom:10px}
-  .tl svg{width:100%;height:auto;display:block}
-
-  /* ---------- 3. App mockup ---------- */
-  .app-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:48px;align-items:center}
-  @media(max-width:860px){.app-grid{grid-template-columns:1fr}}
-  .phone{width:300px;margin:0 auto;background:var(--deep);border-radius:40px;padding:12px;box-shadow:0 40px 70px -30px rgba(17,29,51,.6)}
-  .screen{background:var(--bone);border-radius:30px;padding:18px 16px 14px;color:var(--ink)}
-  .s-top{display:flex;justify-content:space-between;align-items:center}
-  .s-top .who{font-family:var(--disp);font-weight:800;font-size:15px;color:var(--navy)}
-  .s-top .sub{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--steel)}
-  .s-lvl{text-align:center;margin:20px 0 8px}
-  .s-lvl .l{font-family:var(--mono);font-size:10px;letter-spacing:.24em;color:var(--steel);text-transform:uppercase}
-  .s-lvl .n{font-family:var(--disp);font-weight:900;font-size:72px;line-height:1;color:var(--navy);letter-spacing:-.03em}
-  .s-lvl .n span{font-size:22px;color:var(--steel);letter-spacing:0}
-  .s-lvl .d{font-size:12.5px;color:#2e7d32;font-weight:500;margin-top:6px}
-  .s-bar{margin:8px 6px 0}
-  .s-bar .r{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--steel)}
-  .s-bar .b{height:6px;border-radius:99px;background:var(--bone-2);margin-top:4px;overflow:hidden}
-  .s-bar .b i{display:block;height:100%;width:20%;background:var(--amber);border-radius:99px}
-  .s-card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:12px;margin-top:12px}
-  .s-card .h{display:flex;justify-content:space-between;align-items:center;font-family:var(--disp);font-weight:700;font-size:13px;color:var(--navy)}
-  .s-card .h .chip{margin:0;color:#b5482f;border-color:rgba(181,72,47,.4)}
-  .rings{display:flex;justify-content:space-between;margin-top:10px}
-  .ring{display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;letter-spacing:.06em;color:var(--steel)}
-  .ring b{width:40px;height:40px;border-radius:50%;background:var(--navy);color:var(--bone);display:flex;align-items:center;justify-content:center;font-family:var(--disp);font-weight:800;font-size:15px}
-  .ring.weak b{background:#fff;color:#b5482f;border:2px solid #b5482f}
-  .s-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-  .s-mini{background:#fff;border:1px solid var(--line);border-radius:16px;padding:10px 12px}
-  .s-mini .t{font-family:var(--mono);font-size:9px;letter-spacing:.18em;color:var(--steel);text-transform:uppercase}
-  .s-mini .v{font-family:var(--disp);font-weight:800;font-size:17px;color:var(--navy);margin-top:2px}
-  .s-mini .v.ok{color:#2e7d32}
-  .s-list{font-size:12px;color:#454e60}
-  .s-list div{display:flex;justify-content:space-between;padding:6px 0;border-top:1px solid var(--line)}
-  .s-list div:first-child{border-top:0}
-  .s-list span:last-child{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--steel)}
-  .s-nav{display:flex;justify-content:space-around;margin-top:14px;padding-top:10px;border-top:1px solid var(--line);font-family:var(--mono);font-size:9px;letter-spacing:.14em;color:var(--steel)}
-  .s-nav .on{color:var(--navy);font-weight:500}
-  .app-copy h3{font-family:var(--disp);font-weight:900;font-size:clamp(26px,3vw,34px);color:var(--navy);line-height:1.12;letter-spacing:-.01em}
-  .app-copy p{margin-top:14px;font-size:16px;color:#454e60;max-width:44ch}
-  .app-copy ul{list-style:none;margin-top:22px;display:grid;gap:12px}
-  .app-copy li{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;font-size:14.5px;color:#454e60}
-  .app-copy li b{font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--amber);padding-top:4px}
-  .app-copy li strong{display:block;font-family:var(--disp);font-weight:700;font-size:15px;color:var(--navy);margin-bottom:2px}
-  .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--disp);font-weight:600;font-size:14px;padding:11px 20px;border-radius:999px;border:1.5px solid var(--navy);color:var(--navy);background:transparent;margin-top:26px;text-decoration:none}
-  .btn.amber{background:var(--amber);border-color:var(--amber);color:var(--deep)}
-
-  /* ---------- 4. Demo calculator ---------- */
-  .calc{display:grid;grid-template-columns:1fr 1fr;gap:26px;align-items:start}
-  @media(max-width:820px){.calc{grid-template-columns:1fr}}
-  .sl{display:grid;grid-template-columns:120px 1fr 26px;gap:12px;align-items:center;padding:10px 0;border-top:1px solid rgba(243,241,235,.08);font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:rgba(243,241,235,.75)}
-  .sl:first-child{border-top:0}
-  .sl input[type=range]{width:100%;accent-color:var(--amber);cursor:pointer}
-  .sl output{text-align:right;font-size:15px;color:var(--bone)}
-  .sl.weak{color:var(--bad)}
-  .sl.weak output{color:var(--bad)}
-  .out{background:rgba(243,241,235,.05);border:1px solid rgba(243,241,235,.12);border-radius:20px;padding:22px}
-  .out .pi-big{font-family:var(--disp);font-weight:900;font-size:84px;line-height:.9;color:var(--amber);letter-spacing:-.03em}
-  .out .pi-big small{font-family:var(--mono);font-weight:400;font-size:11px;letter-spacing:.2em;color:rgba(243,241,235,.55);display:block;margin-bottom:8px}
-  .out .line{display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:rgba(243,241,235,.65);padding:9px 0;border-top:1px solid rgba(243,241,235,.1)}
-  .out .line b{color:var(--bone);font-weight:500}
-  .out .line b.bad{color:var(--bad)}
-  .out .formula{margin-top:14px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;color:rgba(243,241,235,.45);line-height:1.7}
-  .out .formula em{color:var(--amber);font-style:normal}
-  .disc{margin-top:22px;font-size:13.5px;color:#596172;max-width:64ch}
 </style>
 </head>
 <body>
 
-<nav>
-  <div class="wrap nav-in">
-    <a href="#top" class="wordmark">LOCOMOTION<small>ACADEMY &amp; STUDIO</small></a>
-    <div class="nav-links">
-      <a href="#yaklasim">Yaklaşım</a>
-      <a href="#programlar">Programlar</a>
-      <a href="#ilkeler">İlkeler</a>
-      <a href="#prehab">Prehab Index</a>
-      <a href="reaksiyon.html">REACTO ⚡</a>
-      <a href="#iletisim" class="btn solid">Değerlendirme Randevusu</a>
-    </div>
-  </div>
-</nav>
-
-<!-- HERO -->
-<header class="hero" id="top">
-  <div class="wrap hero-grid">
-    <div>
-      <div class="eyebrow">Medikal Fitness · Hareket Bilimi</div>
-      <h1>Hareketi<br><span class="stroke">bilimle</span><br>yeniden kur.</h1>
-      <p class="lead">Locomotion'da her program bir hekim değerlendirmesiyle başlar. Üç filtreli klinik
-      triyaj, yazılı onay ve bölgeye özel hareket protokolleri — antrenman güvenliği, sistemin kendisidir.</p>
-      <div class="hero-ctas">
-        <a href="#iletisim" class="btn amber">Değerlendirme Planla</a>
-        <a href="#yaklasim" class="btn">Sürecimizi İncele</a>
-      </div>
-      <div class="hero-note">locomotion.com.tr — hekim onayı olmadan program başlamaz.</div>
-    </div>
-    <div class="lab lab-game" id="heroGame">
-      <div class="dash-head">
-        <div class="hg-tabs" role="tablist">
-          <button class="hg-tab on" role="tab" aria-selected="true" data-pane="hgReaction">REACTO ⚡</button>
-          <button class="hg-tab" role="tab" aria-selected="false" data-pane="hgIndex">PREHAB INDEX</button>
-        </div>
-        <span class="dash-tag" id="hgTag">CANLI TEST</span>
-      </div>
-      <div class="hg-pane hg-body on" id="hgReaction">
-        <div class="hg-q">?<i>ms</i></div>
-        <h3>Ne kadar hızlısın?</h3>
-        <p>7 tur · yaklaşık 40 sn · uygulama gerekmez</p>
-        <span class="hg-avg">ORTALAMA İNSAN: ~273 MS</span>
-        <a class="btn amber" href="reaksiyon.html">Testi Başlat ⚡</a>
-      </div>
-      <div class="hg-pane hg-mini" id="hgIndex" data-calc>
-        <div class="sl"><span>AĞRI</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Ağrı"><output>3</output></div>
-        <div class="sl"><span>HAREKET</span><input type="range" min="1" max="5" step="1" value="4" aria-label="Hareket"><output>4</output></div>
-        <div class="sl"><span>GÜÇ</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Güç"><output>3</output></div>
-        <div class="sl"><span>KONTROL</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Kontrol"><output>2</output></div>
-        <div class="sl"><span>DAYANIKLILIK</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Dayanıklılık"><output>2</output></div>
-        <div class="hg-res">
-          <div class="hg-num"><small>PREHAB INDEX</small><span data-o="index">32</span></div>
-          <div class="hg-meta">SEVİYE <b data-o="lvl">2 / 5</b><br>İLERLEME <b data-o="pct">%60</b><br>SENİ TUTAN <b class="bad" data-o="weak">KONTROL</b></div>
-        </div>
-        <a class="hg-link" href="#prehab">Beş halka nasıl çalışır? Formülü gör →</a>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- GAIT STRIP: member journey mapped to gait phases -->
-<div class="gait">
-  <div class="wrap gait-in">
-    <div class="phase reveal">
-      <div class="ph">01 · Heel Strike</div>
-      <h3>Değerlendirme</h3>
-      <p>Hekim muayenesi ve üç filtreli klinik triyaj. Gerekirse görüntüleme ve FTR yönlendirmesi.</p>
-    </div>
-    <div class="phase reveal">
-      <div class="ph">02 · Mid Stance</div>
-      <h3>Programlama</h3>
-      <p>Bölgeye özel hareket kısıtlamalarıyla, yazılı onaya dayalı kişisel program.</p>
-    </div>
-    <div class="phase reveal">
-      <div class="ph">03 · Toe Off</div>
-      <h3>Güçlenme</h3>
-      <p>Kademeli yüklenme; her seansta semptom takibi ve kayıt.</p>
-    </div>
-    <div class="phase reveal">
-      <div class="ph">04 · Swing</div>
-      <h3>Sürdürülebilirlik</h3>
-      <p>4. haftada sınırlayıcı halka, 8. haftada tam Prehab Index ölçümü ile uzun vadeli ilerleme.</p>
-    </div>
-  </div>
-</div>
-
-<!-- YAKLAŞIM -->
-<section id="yaklasim">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <h2>Spor salonu değil,<br>klinik bir süreç.</h2>
-      <p>Locomotion'ın işleyişi yazılı bir standart işletim prosedürüne dayanır: kimin doğrudan
-      programa başlayabileceği, kimin önce rehabilitasyona yönlendirileceği önceden tanımlı
-      klinik kriterlerle belirlenir.</p>
-    </div>
-    <div class="cards">
-      <div class="card reveal">
-        <div class="num">ADIM / 01</div>
-        <h3>Hekim Değerlendirmesi</h3>
-        <p>Her üye, programa başlamadan önce muayene edilir. Bel/boyun, omuz, diz, kalça, ayak bileği
-        ve dirsek/el bileği için ayrı klinik triyaj protokolleri uygulanır.</p>
-      </div>
-      <div class="card reveal">
-        <div class="num">ADIM / 02</div>
-        <h3>FTR Köprüsü</h3>
-        <p>Aktif bulgusu olan üyeler önce fiziksel tıp ve rehabilitasyon sürecine yönlendirilir;
-        salona geçiş yalnızca yazılı transfer notuyla gerçekleşir.</p>
-      </div>
-      <div class="card reveal">
-        <div class="num">ADIM / 03</div>
-        <h3>Kısıtlamalı Programlama</h3>
-        <p>Hekim onay formunda her hareket grubu tek tek tanımlanır: serbest, sınırlı veya yasak.
-        Antrenör bu sınırların dışına çıkmaz.</p>
-      </div>
-      <div class="card reveal">
-        <div class="num">ADIM / 04</div>
-        <h3>Sürekli Takip</h3>
-        <p>Semptomlar her seansta kaydedilir; herhangi bir kötüleşmede egzersiz durdurulur ve
-        üye aynı gün hekime geri yönlendirilir. İlerleme Prehab Index ile ölçülür ve sevk eden hekime raporlanır.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROGRAMLAR -->
-<section id="programlar" style="padding-top:0">
-  <div class="wrap">
-    <div class="prog">
-      <div class="wrap">
-        <div class="sec-head reveal">
-          <h2>Programlar</h2>
-          <p>Üç ana hat: klinik gereksinimi olanlar, performansını geliştirmek isteyenler ve
-          bu yaklaşımı öğrenmek isteyen profesyoneller.</p>
-        </div>
-        <div class="prog-grid">
-          <div class="pcard reveal">
-            <div class="tag">Studio</div>
-            <h3>Medikal Fitness</h3>
-            <p>Kas-iskelet sistemi şikayeti olan üyeler için hekim onaylı, bölgeye özel programlar.</p>
-            <ul>
-              <li>Üç filtreli klinik triyaj</li>
-              <li>Bölgeye özel hareket kısıtlamaları</li>
-              <li>Prehab Index ile ilerleme takibi</li>
-            </ul>
-          </div>
-          <div class="pcard reveal">
-            <div class="tag">Studio</div>
-            <h3>Performans &amp; Kondisyon</h3>
-            <p>Sağlıklı bireyler için hareket kalitesi önceliğiyle kurgulanmış güç ve kondisyon antrenmanı.</p>
-            <ul>
-              <li>Hareket taraması ile başlangıç</li>
-              <li>Kademeli yüklenme modeli</li>
-              <li>Prehab Index ile ilerleme takibi</li>
-            </ul>
-          </div>
-          <div class="pcard reveal">
-            <div class="tag">Academy</div>
-            <h3>Eğitimler &amp; Atölyeler</h3>
-            <p>Antrenörler ve sağlık profesyonelleri için klinik triyaj ve güvenli programlama eğitimleri.</p>
-            <ul>
-              <li>Red flag tanıma atölyeleri</li>
-              <li>Vaka temelli programlama</li>
-              <li>Kurum içi protokol danışmanlığı</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- İLKELER -->
-<section id="ilkeler">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <h2>Sayılarla sistem</h2>
-      <p>Güven, söylemle değil yapıyla kurulur. Locomotion'ın işleyişini tanımlayan yapı taşları:</p>
-    </div>
-    <div class="principles">
-      <div class="pr reveal">
-        <div class="big">3<span>×</span> Filtre</div>
-        <p>Her başvuru üç aşamalı klinik triyajdan geçer: acil sevk, rehabilitasyon yönlendirmesi
-        veya kısıtlamalı kabul.</p>
-      </div>
-      <div class="pr reveal">
-        <div class="big">6 <span>Bölge</span></div>
-        <p>Bel/boyun, omuz, diz, kalça, ayak bileği ve dirsek/el bileği için ayrı yazılı protokoller.</p>
-      </div>
-      <div class="pr reveal">
-        <div class="big">0 <span>İstisna</span></div>
-        <p>Yazılı hekim onayı ve aydınlatılmış onam olmadan hiçbir program başlamaz.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-
-<!-- ===================== 1. KONSEPT ===================== -->
-<section id="prehab">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <div class="eyebrow">Prehab Index</div>
-      <h2>Vücudunuz en zayıf <span class="stroke">halkanız</span> kadar hazırdır.</h2>
-      <p>Beş halka, beş seviye. Puanları toplamıyoruz; hangi halkanın sizi tuttuğunu buluyoruz. Program o halkaya, hekim onay formundaki kısıtlamaların içinde kalarak yazılır; seviye o halka geçince değişir. Altı bölgenin her biri için ayrı kriter tablosu vardır.</p>
-    </div>
-
-    <div class="lab reveal">
-      <div class="dash">
-        <div class="dash-head">
-          <span class="dash-title">ZİNCİR MODELİ · PREHAB BEL</span>
-          <span class="dash-tag">HAFTA 0</span>
-        </div>
-        <div class="chain">
-          <div class="link"><div class="n">3</div><div class="l">Ağrı</div></div>
-          <div class="link"><div class="n">4</div><div class="l">Hareket</div></div>
-          <div class="link"><div class="n">3</div><div class="l">Güç</div></div>
-          <div class="link weak"><div class="n">2</div><div class="l">Kontrol</div></div>
-          <div class="link weak"><div class="n">2</div><div class="l">Dayanıklılık</div></div>
-        </div>
-        <div class="rule">
-          <span class="eq">ortalama <b>2,8</b> · tavan = en zayıf + 1 = <b>3</b></span>
-          <span class="res">Seviye 3 <small>SINIRLAYICI: KONTROL</small></span>
-        </div>
-        <div class="lab-note">HER HALKA 1–5 · SEVİYE = ORTALAMA, EN ZAYIF HALKA + 1'İ GEÇEMEZ · ÖLÇÜMLER STÜDYODA, DEĞERLENDİRME EKİBİ EŞLİĞİNDE · ALTI BÖLGE İÇİN AYRI KRİTER TABLOSU</div>
-      </div>
-    </div>
-
-    <div class="pillars reveal">
-      <div class="card">
-        <div class="k">Nerede</div>
-        <h3>Seviye</h3>
-        <p>1'den 5'e tek bir sayı. Ağrı, hareket, güç, kontrol ve yük toleransı için somut geçiş kriterleri; hepsini sağlamayan üst seviyeye çıkmaz. Yük toleransı yalnızca hekimin serbest bıraktığı hareket gruplarında test edilir.</p>
-      </div>
-      <div class="card">
-        <div class="k">Nereye</div>
-        <h3>İlerleme</h3>
-        <p>Hedef seviye işinize ve sporunuza göre belirlenir. 4. haftada sınırlayıcı halka, 8. haftada tüm halkalar yeniden ölçülür; kapatılan açık yüzde olarak raporlanır.</p>
-      </div>
-      <div class="card">
-        <div class="k">Ne kaçırıyoruz</div>
-        <h3>Risk bayrağı</h3>
-        <p>Asimetri, önceki atak, hareket korkusu. Seviye yükselse bile bayrak düşmeden "hazır" demeyiz. Sevk eden hekime giden raporun ilk satırı budur.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== 2. 12 HAFTA RAPORU ===================== -->
-<section id="rapor-ornek" style="padding-top:0">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <h2>Ölçmediğimizi programlamayız.</h2>
-      <p>Her üyenin dosyasında halka seviyeleri, hekim kısıtlamaları ve kontrol tarihleri yazılı olarak durur. Temsili bir dosya: kronik bel şikayetiyle hekim değerlendirmesinden üçüncü filtre (kısıtlamalı kabul) ile geldi; dört ölçüm, bir seviye atlama, risk bayrağı düştü.</p>
-    </div>
-
-    <div class="lab reveal">
-      <div class="dash">
-        <div class="dash-head">
-          <span class="dash-title">PREHAB BEL · 12. HAFTA RAPORU</span>
-          <span class="dash-tag">ÖRNEK DOSYA · A.K. · 45 · TRİYAJ FİLTRE 3</span>
-        </div>
-        <div class="rep">
-          <div>
-            <div class="hero-num">
-              <div class="pi-big">4<span>/5</span></div>
-              <div class="side">
-                <div class="t">BEL SEVİYESİ</div>
-                <div class="v">↗ 12 haftada 3 → 4</div>
-              </div>
-            </div>
-            <div class="pi-prog">
-              <div class="m-row"><span>SEVİYE 5'E</span><span>%20</span></div>
-              <div class="m-bar"><span style="width:20%"></span></div>
-            </div>
-            <div class="stats">
-              <div class="stat"><div class="t">Hedef</div><div class="v ok">4 ✓</div></div>
-              <div class="stat"><div class="t">Kapatılan açık</div><div class="v">%100</div></div>
-              <div class="stat"><div class="t">Risk</div><div class="v ok">Düşük</div></div>
-            </div>
-            <div class="tl">
-              <div class="t">HALKA SEVİYELERİ · HAFTA 0 → 12 <span style="color:var(--amber)">■ ort.</span> <span style="color:var(--bad)">■ dayanıklılık</span></div>
-              <svg viewBox="0 0 420 110" role="img" aria-label="Ortalama halka seviyesi 2,8'den 4,0'a; dayanıklılık 2'den 3'e">
-                <g stroke="rgba(243,241,235,.12)" stroke-width="1">
-                  <line x1="30" y1="14" x2="410" y2="14"/><line x1="30" y1="38" x2="410" y2="38"/><line x1="30" y1="62" x2="410" y2="62"/><line x1="30" y1="86" x2="410" y2="86"/>
-                </g>
-                <g font-family="IBM Plex Mono, monospace" font-size="9" fill="rgba(243,241,235,.45)">
-                  <text x="8" y="17">5</text><text x="8" y="41">4</text><text x="8" y="65">3</text><text x="8" y="89">2</text>
-                  <text x="30" y="106">H0</text><text x="150" y="106">H4</text><text x="270" y="106">H8</text><text x="392" y="106">H12</text>
-                </g>
-                <polyline points="34,86 154,86 274,62 394,62" fill="none" stroke="#E77D6A" stroke-width="2" stroke-dasharray="5 4" stroke-linejoin="round"/>
-                <polyline points="34,66.8 154,62 274,47.6 394,38" fill="none" stroke="#D9912B" stroke-width="2.5" stroke-linejoin="round"/>
-                <g fill="#D9912B"><circle cx="34" cy="66.8" r="4"/><circle cx="154" cy="62" r="4"/><circle cx="274" cy="47.6" r="4"/><circle cx="394" cy="38" r="4.5"/></g>
-                <g fill="#E77D6A"><circle cx="34" cy="86" r="3"/><circle cx="154" cy="86" r="3"/><circle cx="274" cy="62" r="3"/><circle cx="394" cy="62" r="3"/></g>
-              </svg>
-            </div>
-          </div>
-
-          <div class="halkalar">
-            <div class="row"><span>AĞRI</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span><span class="num">4</span></div>
-            <div class="row"><span>HAREKET</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i></span><span class="num">5</span></div>
-            <div class="row"><span>GÜÇ</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span><span class="num">4</span></div>
-            <div class="row"><span>KONTROL</span><span class="seg"><i class="f"></i><i class="f"></i><i class="f"></i><i class="f"></i><i></i></span><span class="num">4</span></div>
-            <div class="row weak"><span>DAYANIKLILIK</span><span class="seg"><i class="w"></i><i class="w"></i><i class="w"></i><i></i><i></i></span><span class="num">3</span></div>
-
-            <div class="tl">
-              <div class="t">ÖLÇÜM ÇİZELGESİ</div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>H0 · TAM DEĞERLENDİRME</span><span>SEVİYE 3 · %20 <span class="chip warn">ORTA</span></span></div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>H4 · SINIRLAYICI HALKA</span><span>KONTROL 2 → 3</span></div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>H8 · TAM DEĞERLENDİRME</span><span>SEVİYE 3 · %60 <span class="chip warn">ORTA</span></span></div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>H12 · TAM DEĞERLENDİRME</span><span>SEVİYE 4 · %20 <span class="chip ok">DÜŞÜK</span></span></div>
-            </div>
-            <div class="tl">
-              <div class="t">RİSK FAKTÖRLERİ</div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>Y-BALANCE ASİMETRİ %18 → %8</span><span style="color:var(--ok)">KAPANDI</span></div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>SORENSEN 45 → 95 SN</span><span style="color:var(--ok)">KAPANDI</span></div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>TSK-11 30 → 21</span><span style="color:var(--ok)">KAPANDI</span></div>
-              <div class="row" style="grid-template-columns:1fr auto"><span>SON 12 AYDA ATAK</span><span style="color:var(--warn)">DEVAM · 1</span></div>
-            </div>
-          </div>
-        </div>
-        <div class="lab-note">SONRAKİ 8 HAFTA: DAYANIKLILIK 3 → 4 · H16 SORENSEN TEKRAR · H20 TAM DEĞERLENDİRME · RAPOR SEVK EDEN HEKİME İLETİLDİ · TEMSİLİ VERİDİR, GERÇEK ÜYE VERİSİ DEĞİLDİR</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ===================== 3. UYGULAMA ===================== -->
-<section id="uygulama" style="padding-top:0">
-  <div class="wrap">
-    <div class="app-grid reveal">
-      <div class="phone" role="img" aria-label="Locomotion uygulaması ana ekranı: bel seviyesi 4, sınırlayıcı halka dayanıklılık, risk düşük">
-        <div class="screen">
-          <div class="s-top">
-            <div><div class="who">Merhaba Ahmet</div><div class="sub">PREHAB BEL · 12. HAFTA</div></div>
-            <div class="sub">LOCOMOTION</div>
-          </div>
-          <div class="s-lvl">
-            <div class="l">Bel seviyen</div>
-            <div class="n">4<span>/5</span></div>
-            <div class="d">↗ 3'ten 4'e · hedefe ulaştın</div>
-          </div>
-          <div class="s-bar"><div class="r"><span>SEVİYE 5'E</span><span>%20</span></div><div class="b"><i></i></div></div>
-          <div class="s-card">
-            <div class="h"><span>Zincirin</span><span class="chip">SENİ TUTAN: DAYANIKLILIK</span></div>
-            <div class="rings">
-              <div class="ring"><b>4</b>AĞRI</div>
-              <div class="ring"><b>5</b>HAREKET</div>
-              <div class="ring"><b>4</b>GÜÇ</div>
-              <div class="ring"><b>4</b>KONTROL</div>
-              <div class="ring weak"><b>3</b>DAYAN.</div>
-            </div>
-          </div>
-          <div class="s-two">
-            <div class="s-mini"><div class="t">Risk</div><div class="v ok">Düşük</div></div>
-            <div class="s-mini"><div class="t">Yeni hedef</div><div class="v">4 · %60</div></div>
-          </div>
-          <div class="s-card s-list">
-            <div><span>Dayanıklılık seansı</span><span>SAL · PER</span></div>
-            <div><span>Sorensen tekrar ölçümü</span><span>HAFTA 16</span></div>
-            <div><span>Hekim raporu</span><span style="color:#2e7d32">GÖNDERİLDİ</span></div>
-          </div>
-          <div class="s-nav"><span class="on">ANA</span><span>İLERLEME</span><span>SEANSLAR</span><span>PROFİL</span></div>
-        </div>
-      </div>
-
-      <div class="app-copy">
-        <div class="eyebrow">Üye uygulaması</div>
-        <h3>Tek sayı. Tek hedef. Bu haftanın işi.</h3>
-        <p>Üye ekranı klinik dosyanın sadeleştirilmiş hâlidir: seviyeniz, sizi tutan halka, risk bayrağınız ve bu haftaki seanslar. Ham ölçümler ve hekim raporları profil sekmesinde durur.</p>
-        <ul>
-          <li><b>01</b><div><strong>Seviye</strong>Stüdyoda ölçülür, uygulamada görünür. Uzaktan test yok; her sayı değerlendirme ekibi eşliğinde alınır, her seansta VAS kaydı tutulur.</div></li>
-          <li><b>02</b><div><strong>Sınırlayıcı halka</strong>Program neden buna odaklandı, tek cümleyle. 4. haftada yalnızca bu halka tekrar ölçülür.</div></li>
-          <li><b>03</b><div><strong>Hekim raporu</strong>Her tam değerlendirmede sevk eden hekime aynı yapıda rapor gider; üye gönderildiğini görür.</div></li>
-        </ul>
-        <a class="btn amber" href="#iletisim">Değerlendirme randevusu →</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-
-<!-- ===================== 4. DEMO HESAPLAYICI ===================== -->
-<section id="hesapla" style="padding-top:0">
-  <div class="wrap">
-    <div class="sec-head reveal">
-      <h2>Hesabı kendiniz deneyin.</h2>
-      <p>Bu bir tanı aracı değil, formülün nasıl çalıştığını gösteren bir deneme alanı. Halkaları kaydırın, tek bir zayıf halkanın puanı nasıl tuttuğunu görün. Gerçek ölçüm yalnızca stüdyoda, hekim onayından sonra yapılır; buraya girdiğiniz hiçbir değer kaydedilmez.</p>
-    </div>
-    <div class="lab reveal">
-      <div class="dash">
-        <div class="dash-head">
-          <span class="dash-title">PREHAB INDEX · DENEME HESABI</span>
-          <span class="dash-tag">VERİ KAYDEDİLMEZ</span>
-        </div>
-        <div class="calc" data-calc>
-          <div id="sliders">
-            <div class="sl"><span>AĞRI</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Ağrı halkası seviyesi"><output>3</output></div>
-            <div class="sl"><span>HAREKET</span><input type="range" min="1" max="5" step="1" value="4" aria-label="Hareket halkası seviyesi"><output>4</output></div>
-            <div class="sl"><span>GÜÇ</span><input type="range" min="1" max="5" step="1" value="3" aria-label="Güç halkası seviyesi"><output>3</output></div>
-            <div class="sl"><span>KONTROL</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Kontrol halkası seviyesi"><output>2</output></div>
-            <div class="sl"><span>DAYANIKLILIK</span><input type="range" min="1" max="5" step="1" value="2" aria-label="Dayanıklılık halkası seviyesi"><output>2</output></div>
-          </div>
-          <div class="out" aria-live="polite">
-            <div class="pi-big"><small>PREHAB INDEX</small><span data-o="index">44</span></div>
-            <div class="line" style="margin-top:16px"><span>SEVİYE</span><b data-o="lvl">3 / 5</b></div>
-            <div class="line"><span>SEVİYE İÇİ İLERLEME</span><b data-o="pct">%20</b></div>
-            <div class="line"><span>SINIRLAYICI HALKA</span><b class="bad" data-o="weak">KONTROL</b></div>
-            <div class="line"><span>ORTALAMA / TAVAN</span><b data-o="avg">2,8 / 3</b></div>
-            <div class="formula">seviye = min( ⌊ortalama⌋ , en zayıf + 1 )<br>ilerleme = üst seviyeyi geçen halka / 5<br>index = <em>(seviye − 1) × 20 + ilerleme × 0,2</em></div>
-          </div>
-        </div>
-        <div class="lab-note">RİSK BAYRAĞI PUANA DAHİL DEĞİLDİR · GERÇEK SEVİYE KRİTERLERİ STÜDYO PROTOKOLÜNDE TANIMLIDIR</div>
-      </div>
-    </div>
-    <p class="disc reveal">Gerçek Prehab Index'iniz hekim değerlendirmesi ve klinik triyajdan sonra ölçülür. Ölçüm 45–60 dakika sürer; seviyeniz ve sınırlayıcı halkanız aynı gün dosyanıza yazılır.</p>
-  </div>
-</section>
-
-
-
-<!-- CTA -->
-<section id="iletisim" style="padding-top:0">
-  <div class="wrap">
-    <div class="cta-band reveal">
-      <div>
-        <h2>İlk adım bir antrenman değil, bir değerlendirmedir.</h2>
-        <p>Randevu ve bilgi için bize ulaşın — ekibimiz süreci adım adım anlatır.</p>
-      </div>
-      <div style="display:flex;flex-direction:column;gap:12px;align-items:flex-start">
-        <a class="btn amber" href="tel:+900000000000">+90 (000) 000 00 00</a>
-        <a class="btn" style="border-color:var(--bone);color:var(--bone)" href="mailto:info@locomotion.com.tr">info@locomotion.com.tr</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="wrap">
-    <div class="foot">
-      <div>
-        <div class="wordmark">LOCOMOTION<small>ACADEMY &amp; STUDIO</small></div>
-        <p style="margin-top:14px;font-size:13px;color:#596172;max-width:32ch">Hareket bilimine dayalı,
-        hekim değerlendirmeli medikal fitness stüdyosu.</p>
-      </div>
-      <div class="foot-col">
-        <b>Keşfet</b>
-        <a href="#yaklasim">Yaklaşım</a>
-        <a href="#programlar">Programlar</a>
-        <a href="#ilkeler">İlkeler</a>
-        <a href="#prehab">Prehab Index</a>
-        <a href="reaksiyon.html">REACTO ⚡</a>
-      </div>
-      <div class="foot-col">
-        <b>İletişim</b>
-        <a href="mailto:info@locomotion.com.tr">info@locomotion.com.tr</a>
-        <a href="https://locomotion.com.tr">locomotion.com.tr</a>
-        <a href="#">Adres — [salon adresi]</a>
-      </div>
-      <div class="foot-col">
-        <b>Yasal</b>
-        <a href="#">KVKK Aydınlatma Metni</a>
-        <a href="#">Çerez Politikası</a>
-        <a href="#">Kullanım Koşulları</a>
-      </div>
-    </div>
-    <div class="legal">
-      <span>© 2026 Locomotion Academy &amp; Studio</span>
-      <span>Bu site bilgilendirme amaçlıdır; tanı veya tedavi vaadi içermez.</span>
-    </div>
-  </div>
-</footer>
-
-<!-- REAKSİYON MODAL -->
 <div class="rx-overlay" id="rxOverlay" aria-hidden="true" role="dialog" aria-label="Reaksiyon testi">
   <div class="rx-top">
     <div class="rx-title">REACTO ⚡</div>
@@ -901,16 +140,6 @@
 <div class="rx-toast" id="rxToast"></div>
 
 <script>
-/* ---------- scroll reveal ---------- */
-(function(){
-  const els=document.querySelectorAll('.reveal');
-  if(!('IntersectionObserver' in window)){ els.forEach(e=>e.classList.add('in')); return; }
-  const io=new IntersectionObserver((ents)=>{
-    ents.forEach(en=>{ if(en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target);} });
-  },{threshold:0.14});
-  els.forEach(e=>io.observe(e));
-})();
-
 /* ---------- Reaksiyon Lab modal engine ---------- */
 (function(){
   const TOTAL_ROUNDS = 7;
@@ -992,9 +221,10 @@
   }
 
   /* ---- Meydan okuma kartı (paylaşımda görselin kendisi gitsin) ---- */
-  let cardFile=null, cardUrl=null;
-  function drawCard(score, band, name, avgScore, valid, early, url){
-    const W=1080,H=1350,c=document.createElement('canvas');
+  let cardFile=null, cardUrl=null;     // 4:5 \u2014 WhatsApp / DM
+  let storyFile=null, storyUrl=null;   // 9:16 \u2014 Instagram hikaye
+  function drawCard(score, band, name, avgScore, valid, early, url, tall){
+    const W=1080,H=tall?1920:1350,c=document.createElement('canvas');
     c.width=W; c.height=H;
     const x=c.getContext('2d');
     const g=x.createLinearGradient(0,0,W*0.6,H);
@@ -1007,41 +237,42 @@
 
     sp('6px');
     x.font='600 26px Archivo, sans-serif'; x.fillStyle='rgba(243,241,235,0.5)';
-    x.fillText('LOCOMOTION  \u00b7  REACTO', W/2, 108);
+    x.fillText('LOCOMOTION  \u00b7  REACTO', W/2, H*0.080);
 
     sp('7px');
     x.font='500 30px "IBM Plex Mono", monospace'; x.fillStyle='#D9912B';
-    x.fillText(name? name.toUpperCase()+' \u2014 TAHTTAKİ SKOR' : 'TAHTTAKİ SKOR', W/2, 300);
+    x.fillText(name? name.toUpperCase()+' \u2014 TAHTTAKİ SKOR' : 'TAHTTAKİ SKOR', W/2, H*0.222);
 
     sp('-10px');
     x.font='900 300px Archivo, sans-serif'; x.fillStyle='#F3F1EB';
-    x.fillText(String(score), W/2, 560);
+    x.fillText(String(score), W/2, H*0.415);
 
     sp('4px');
     x.font='900 56px Archivo, sans-serif'; x.fillStyle='#D9912B';
-    x.fillText(band, W/2, 648);
+    x.fillText(band, W/2, H*0.480);
 
     x.strokeStyle='rgba(243,241,235,0.18)'; x.lineWidth=2;
-    x.beginPath(); x.moveTo(180,724); x.lineTo(W-180,724); x.stroke();
+    x.beginPath(); x.moveTo(180,H*0.536); x.lineTo(W-180,H*0.536); x.stroke();
 
     sp('4px');
     x.font='400 26px "IBM Plex Mono", monospace'; x.fillStyle='rgba(243,241,235,0.55)';
-    x.fillText(valid+' GEÇERLİ TUR  \u00b7  ORT. '+avgScore+(early?('  \u00b7  '+early+' ERKEN'):''), W/2, 782);
+    x.fillText(valid+' GEÇERLİ TUR  \u00b7  ORT. '+avgScore+(early?('  \u00b7  '+early+' ERKEN'):''), W/2, H*0.579);
 
     sp('0px');
     x.font='900 62px Archivo, sans-serif'; x.fillStyle='#F3F1EB';
-    x.fillText('Beni geçebilir misin?', W/2, 920);
+    x.fillText('Beni geçebilir misin?', W/2, H*0.681);
     x.font='500 38px "IBM Plex Sans", sans-serif'; x.fillStyle='rgba(243,241,235,0.7)';
-    x.fillText('7 tur, 45 saniye, tarayıcıda.', W/2, 984);
+    x.fillText('7 tur, 45 saniye, tarayıcıda.', W/2, H*0.729);
 
     // amber alt blok: adres
-    x.fillStyle='#D9912B'; x.fillRect(0,H-190,W,190);
+    const band0=tall?260:190;
+    x.fillStyle='#D9912B'; x.fillRect(0,H-band0,W,band0);
     sp('5px');
     x.font='900 46px Archivo, sans-serif'; x.fillStyle='#111D33';
-    x.fillText(url.replace(/^https?:\/\//,'').split('?')[0], W/2, H-108);
+    x.fillText(url.replace(/^https?:\/\//,'').split('?')[0], W/2, H-band0+(tall?150:82));
     sp('4px');
     x.font='500 24px "IBM Plex Mono", monospace'; x.fillStyle='rgba(17,29,51,0.72)';
-    x.fillText('MESAJDAKİ LİNKE DOKUN, SEN DE ÖLÇ', W/2, H-58);
+    x.fillText(tall?'PROFİLDEKİ LİNKE DOKUN, SEN DE ÖLÇ':'MESAJDAKİ LİNKE DOKUN, SEN DE ÖLÇ', W/2, H-band0+(tall?200:132));
     sp('0px');
     return c;
   }
@@ -1050,9 +281,8 @@
     // jesti async beklemeyi sevmiyor, dosya hazır olmalı.
     const go=function(){
       try{
-        const c=drawCard(score, band, name, avgScore, valid, early, url);
-        const prev=cardUrl;
-        c.toBlob(function(blob){
+        const prev=cardUrl, prevS=storyUrl;
+        drawCard(score, band, name, avgScore, valid, early, url, false).toBlob(function(blob){
           if(!blob){ console.warn('REACTO: kart üretilemedi (toBlob boş)'); return; }
           try{ cardFile=new File([blob],'reacto-'+score+'.png',{type:'image/png'}); }
           catch(e){ cardFile=null; }
@@ -1060,6 +290,13 @@
           const im=document.getElementById('rxCardImg');
           if(im){ im.src=cardUrl; im.style.display='block'; }
           if(prev) URL.revokeObjectURL(prev);   // yeni URL atandıktan SONRA bırak
+        },'image/png');
+        drawCard(score, band, name, avgScore, valid, early, url, true).toBlob(function(blob){
+          if(!blob) return;
+          try{ storyFile=new File([blob],'reacto-hikaye-'+score+'.png',{type:'image/png'}); }
+          catch(e){ storyFile=null; }
+          storyUrl=URL.createObjectURL(blob);
+          if(prevS) URL.revokeObjectURL(prevS);
         },'image/png');
       }catch(e){ console.warn('REACTO: kart çizilemedi',e); }
     };
@@ -1077,9 +314,10 @@
       } else once();
     }catch(e){ once(); }
   }
-  function canShareCard(){
-    try{ return !!(cardFile && navigator.canShare && navigator.canShare({files:[cardFile]})); }catch(e){ return false; }
+  function canShareFile(f){
+    try{ return !!(f && navigator.canShare && navigator.canShare({files:[f]})); }catch(e){ return false; }
   }
+  function canShareCard(){ return canShareFile(cardFile); }
 
   function shareUrl(best, opponentBest, round, name){
     let u = window.location.origin + window.location.pathname + '?meydan=' + best;
@@ -1308,7 +546,7 @@
       '<div class="rx-name"><input id="rxName" type="text" maxlength="20" placeholder="Takma adın (isteğe bağlı)" aria-label="Takma adın" /><small>Linkte görünür. Gerçek adın olması gerekmez; boş bırakırsan \u201cbir rakip\u201d yazar.</small></div>'+
       '<div class="rx-share">'+
         '<button class="rx-share-btn wa" id="rxShareWa" aria-label="WhatsApp\u2019ta meydan oku"><i class="ti ti-brand-whatsapp" aria-hidden="true"></i>WhatsApp\u2019ta meydan oku</button>'+
-        '<button class="rx-share-btn ig" id="rxShareIg" aria-label="Instagram\u2019da meydan oku"><i class="ti ti-brand-instagram" aria-hidden="true"></i>Instagram\u2019da meydan oku</button>'+
+        '<button class="rx-share-btn ig" id="rxShareIg" aria-label="Instagram\u2019da meydan oku"><i class="ti ti-brand-instagram" aria-hidden="true"></i>Hikaye kartı</button>'+
         (navigator.share?'<button class="rx-share-btn" id="rxShareMore" aria-label="Diğer uygulamada meydan oku"><i class="ti ti-share-2" aria-hidden="true"></i>Diğer</button>':'')+
         '<button class="rx-share-btn" id="rxShareCopy" aria-label="Bağlantıyı kopyala"><i class="ti ti-link" aria-hidden="true"></i>Linki kopyala</button>'+
         '<button class="rx-share-btn" id="rxCardDl" aria-label="Kartı indir"><i class="ti ti-download" aria-hidden="true"></i>Kartı indir</button>'+
@@ -1338,9 +576,8 @@
       e.stopPropagation(); times=[]; earlyCount=0; roundsDone=0; practiceMode=false; countdown();
     });
     document.getElementById('rxBridge').addEventListener('click',function(e){
-      e.preventDefault(); e.stopPropagation(); closeModal();
-      const tab=document.querySelector('.hg-tab[data-pane="hgIndex"]'); if(tab) tab.click();
-      const t=document.getElementById('heroGame'); if(t) t.scrollIntoView({behavior:'smooth',block:'center'});
+      e.preventDefault(); e.stopPropagation();
+      window.location.href='/#prehab';
     });
     (function(){
       const stats='('+times.length+' geçerli tur, ortalama skor '+scoreAvg+(earlyCount?', '+earlyCount+' erken':'')+')';
@@ -1360,12 +597,14 @@
         return {text:text, url:url};
       }
       function copy(){ const p=payload(); if(navigator.clipboard) return navigator.clipboard.writeText(p.text+'\n'+p.url).catch(function(){}); }
-      function downloadCard(){
-        if(!cardUrl) return;
+      function saveAs(url,fname){
+        if(!url) return;
         const a=document.createElement('a');
-        a.href=cardUrl; a.download='reacto-'+scoreBest+'.png';
+        a.href=url; a.download=fname;
         document.body.appendChild(a); a.click(); a.remove();
       }
+      function downloadCard(){ saveAs(cardUrl,'reacto-'+scoreBest+'.png'); }
+      function downloadStory(){ saveAs(storyUrl,'reacto-hikaye-'+scoreBest+'.png'); }
       function shareWithCard(fallback){
         const p=payload();
         if(canShareCard()){
@@ -1388,10 +627,17 @@
       const ig=document.getElementById('rxShareIg');
       if(ig) ig.addEventListener('click',function(e){
         e.stopPropagation();
-        shareWithCard(function(p){
-          if(cardUrl){ downloadCard(); showToast('Kart indirildi \u2014 Instagram hikayene ekle'); }
-          else { copy(); showToast('Link kopyalandı \u2014 Instagram\u2019da paylaş'); }
-        });
+        // Instagram metin/link almaz; yalnızca görsel kabul eder. 9:16 hikaye kartı gönderilir.
+        if(canShareFile(storyFile)){
+          navigator.share({files:[storyFile]})
+            .catch(function(err){
+              if(err && err.name==='AbortError') return;
+              if(storyUrl){ downloadStory(); showToast('Hikaye kartı indirildi \u2014 Instagram\u2019dan ekle'); }
+            });
+          return;
+        }
+        if(storyUrl){ downloadStory(); showToast('Hikaye kartı indirildi \u2014 Instagram\u2019dan hikayene ekle'); }
+        else { copy(); showToast('Kart hazırlanıyor, bir saniye'); }
       });
       const more=document.getElementById('rxShareMore');
       if(more) more.addEventListener('click',function(e){
@@ -1438,13 +684,12 @@
     overlay.setAttribute('aria-hidden','true');
     document.body.style.overflow='';
   }
-  closeBtn.addEventListener('click',closeModal);
+  if(closeBtn) closeBtn.addEventListener('click',closeModal);
   document.addEventListener('keydown',function(e){ if(e.key==='Escape'&&overlay.classList.contains('open')) closeModal(); });
 
   // triggers: nav link + game-band button open the modal (fallback: navigate to reaksiyon.html if JS off)
-  document.querySelectorAll('a[href="reaksiyon.html"]').forEach(function(a){
-    a.addEventListener('click',openModal);
-  });
+  // Tek sayfa sürüm: test doğrudan açılır.
+  openModal();
 
   // arrival via a shared challenge link: ?meydan=<rakibin rekoru>&tur=<kaçıncı raund>&skor=<benim önceki skorum>
   (function(){
@@ -1456,54 +701,9 @@
     myLastScore = parseInt(q.get('skor'),10) || null;
     leaderName = cleanName(q.get('ad')) || null;
     leaderAt = parseInt(q.get('t'),10) || null;
-    setTimeout(function(){ openModal(); },300);
+    /* tek sayfa sürümde modal zaten açık */
   })();
-  // hero panel: whole surface opens the modal (except the anchor, which handles itself)
-  const hg=document.getElementById('heroGame');
-  if(hg){
-    hg.addEventListener('click',function(ev){
-      if(ev.target.closest('a')||ev.target.closest('.hg-tabs')||ev.target.closest('#hgIndex')) return;
-      openModal();
-    });
-    const tabs=hg.querySelectorAll('.hg-tab');
-    tabs.forEach(function(t){
-      t.addEventListener('click',function(){
-        tabs.forEach(function(x){x.classList.remove('on');x.setAttribute('aria-selected','false');});
-        t.classList.add('on'); t.setAttribute('aria-selected','true');
-        hg.querySelectorAll('.hg-pane').forEach(function(pn){pn.classList.toggle('on',pn.id===t.dataset.pane);});
-        document.getElementById('hgTag').textContent=t.dataset.pane==='hgIndex'?'DENEME HESABI':'CANLI TEST';
-        hg.style.cursor=t.dataset.pane==='hgIndex'?'default':'pointer';
-      });
-    });
-  }
-})();
-
-/* ---------- prehab demo calculator (all instances) ---------- */
-(function(){
-  const names=['AĞRI','HAREKET','GÜÇ','KONTROL','DAYANIKLILIK'];
-  document.querySelectorAll('[data-calc]').forEach(function(box){
-    const rows=[...box.querySelectorAll('.sl')];
-    const out=function(k){return box.querySelector('[data-o="'+k+'"]');};
-    function calc(){
-      const v=rows.map(r=>+r.querySelector('input').value);
-      rows.forEach((r,i)=>r.querySelector('output').textContent=v[i]);
-      const avg=v.reduce((a,b)=>a+b,0)/5;
-      const mn=Math.min(...v);
-      const lvl=Math.min(Math.floor(avg),mn+1);
-      const above=v.filter(x=>x>lvl).length;
-      const pct=lvl>=5?100:Math.round(above/5*100);
-      const idx=Math.round((lvl-1)*20+pct*0.2);
-      const weakIdx=v.indexOf(mn);
-      rows.forEach((r,i)=>r.classList.toggle('weak',v[i]===mn && lvl<5));
-      if(out('index')) out('index').textContent=idx;
-      if(out('lvl')) out('lvl').textContent=lvl+' / 5';
-      if(out('pct')) out('pct').textContent='%'+pct;
-      if(out('weak')) out('weak').textContent=lvl>=5?'—':names[weakIdx];
-      if(out('avg')) out('avg').textContent=avg.toFixed(1).replace('.',',')+' / '+(mn+1);
-    }
-    rows.forEach(r=>r.querySelector('input').addEventListener('input',calc));
-    calc();
-  });
+  // (Ana sayfadaki hero paneli bu tek sayfa sürümde yok.)
 })();
 </script>
 </body>
